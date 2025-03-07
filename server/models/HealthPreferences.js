@@ -11,6 +11,37 @@ const preferenceSchema = new mongoose.Schema({
     enum: ["weight-loss", "muscle-gain", "maintenance"],
     required: true,
   },
+
+  //diet
+  dietType: {
+    type: String,
+    enum: [
+      "vegetarian",
+      "non-vegetarian",
+      "eggetarian",
+      "vegan",
+      "pescatarian",
+    ],
+    required: true,
+  },
+  foodAllergies: { type: [String], default: [] },
+  religiousRestrictions: { type: String, default: "None" },
+  favoriteFoods: { type: [String], default: [] },
+  dislikedFoods: { type: [String], default: [] },
+  budget: { type: String, enum: ["low", "medium", "high"], required: true },
+  targetWeight: { type: Number, required: true },
+  timePeriod: { type: String, required: true }, // e.g., "3 months"
+
+  // New fields for workout
+  workoutPreferences: {
+    type: String,
+    enum: ["home", "gym", "outdoor", "yoga"],
+    required: true,
+  },
+  availableTimePerDay: { type: String, required: true }, // e.g., "1 hour"
+  equipment: { type: [String], default: [] },
+  medicalConstraints: { type: [String], default: [] },
+
   dietaryRestrictions: {
     type: [String], // e.g., ['vegetarian', 'gluten-free']
     default: [],

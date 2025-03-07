@@ -87,6 +87,7 @@ export const login = async (req, res, next) => {
 
     // Check if password exists in the user object
     if (!user.password) {
+      console.log("Password not found in database");
       return res.status(500).json({
         success: false,
         error: "Server error - Password not found in database",
