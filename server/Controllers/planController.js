@@ -4,7 +4,6 @@ import WorkoutPlan from "../models/WorkoutPlan.js";
 import {
   generateDietPrompt,
   generateWorkoutPrompt,
-  generateComboPrompt,
 } from "../utils/promptGenerator.js";
 import initializeModel from "../config/gemini.js";
 import { formatPlanResponse } from "../utils/responseFormatter.js";

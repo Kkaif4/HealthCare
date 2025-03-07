@@ -113,30 +113,20 @@ export const generateWorkoutPrompt = (user, preferences) => {
     `;
 };
 
-// Generate Combo plan
-export const generateComboPrompt = (user, preferences) => {
-    const dietPrompt = generateDietPrompt(user, preferences);
-    const workoutPrompt = generateWorkoutPrompt(user, preferences);
-  
-    return `
-      **COMPREHENSIVE HEALTH TRANSFORMATION PLAN**
-      
-      ${dietPrompt}
-      
-      ---
-      
-      ${workoutPrompt}
-      
-      Additional Requirements:
-      - Ensure synergy between nutrition and exercise plans
-      - Include weekly progress tracking system
-      - Suggest recovery strategies (sleep, hydration, stress management)
-      - Provide adaptation guidelines for plateaus
-      
-      Format:
-      - Separate sections for diet and workout
-      - Integrated weekly schedule
-      - Progress measurement metrics
-      - Monthly adjustment recommendations
-    `;
-  };
+//Generate Dieases Prompt
+export const generateDiagnosePrompt = (symptoms, duration) => {
+  return `
+    Act as a medical expert. Analyze these symptoms:
+    - Symptoms: ${symptoms.join(', ')}
+    - Duration: ${duration} days
+    
+    Provide:
+    1. Possible conditions (list top 3 with probabilities)
+    2. Recommended medical tests
+    3. Immediate self-care advice
+    4. Specialist referral suggestions
+    5. Red flags requiring urgent care
+    
+    Format response in Markdown with clear section headers
+  `;
+}

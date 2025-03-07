@@ -23,7 +23,7 @@ const symptomSchema = new mongoose.Schema({
     enum: ["low", "medium", "high"],
     default: "low",
   },
-  reportedAt: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },

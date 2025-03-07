@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
+import dignoseRoutes from "./routes/diagnoseRoutes.js";
 import { errorHandler } from "./middlewares/errorMW.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,7 +20,7 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
-
+app.use("/api/dignose", dignoseRoutes);
 //Error handlers
 app.use(errorHandler);
 
