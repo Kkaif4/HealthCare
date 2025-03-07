@@ -59,6 +59,8 @@ export const generateDietPrompt = (user, preferences) => {
       - Day-wise meal structure
       - Weekly shopping list
       - Calorie tracking guidelines
+      Format response in Markdown with clear section headers
+      note: do not add header in the response.
     `;
 };
 
@@ -110,6 +112,9 @@ export const generateWorkoutPrompt = (user, preferences) => {
       - Exercise demonstrations (sets/reps/rest)
       - Progression roadmap
       - Safety precautions
+
+      Format response in Markdown with clear section headers
+      note: do not add header in the response.
     `;
 };
 
@@ -117,7 +122,7 @@ export const generateWorkoutPrompt = (user, preferences) => {
 export const generateDiagnosePrompt = (symptoms, duration) => {
   return `
     Act as a medical expert. Analyze these symptoms:
-    - Symptoms: ${symptoms.join(', ')}
+    - Symptoms: ${symptoms.join(", ")}
     - Duration: ${duration} days
     
     Provide:
@@ -128,5 +133,6 @@ export const generateDiagnosePrompt = (symptoms, duration) => {
     5. Red flags requiring urgent care
     
     Format response in Markdown with clear section headers
+    note: do not add header in the response.
   `;
-}
+};

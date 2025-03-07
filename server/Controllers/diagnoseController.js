@@ -1,6 +1,10 @@
 import Symptom from "../models/Symptom.js";
+import initializeModel from "../config/gemini.js";
 import { formatPlanResponse } from "../utils/responseFormatter.js";
 import { generateDiagnosePrompt } from "../utils/promptGenerator.js";
+
+const geminiModel = initializeModel();
+
 export const analyzeSymptoms = async (req, res, next) => {
   try {
     const { symptoms, durationDays } = req.body;
