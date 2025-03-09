@@ -8,7 +8,7 @@ const workoutPlanSchema = new mongoose.Schema({
   },
   preferencesId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "HealthPreferences",
+    ref: "WorkoutPreferences",
   },
   content: {
     type: String,
@@ -22,6 +22,28 @@ const workoutPlanSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  schedule: [
+    {
+      day: String,
+      focus: String,
+      exercises: [String],
+      setsReps: String,
+      duration: String,
+      intensity: String,
+    },
+  ],
+  totals: {
+    weeklySessions: Number,
+    totalHours: Number,
+    avgCalories: Number,
+  },
+  metadata: {
+    equipment: [String],
+    availableTime: String,
+  },
+  durationWeeks: Number,
+  isUnstructured: { type: Boolean, default: false },
+  rawContent: String,
 });
 
 const WorkoutPlan = mongoose.model("WorkoutPlan", workoutPlanSchema);

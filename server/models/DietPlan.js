@@ -8,11 +8,7 @@ const dietPlanSchema = new mongoose.Schema({
   },
   preferencesId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "HealthPreferences",
-  },
-  content: {
-    type: String,
-    required: true,
+    ref: "DietPreferences",
   },
   generatedAt: {
     type: Date,
@@ -23,6 +19,30 @@ const dietPlanSchema = new mongoose.Schema({
     enum: ["active", "completed", "archived"],
     default: "active",
   },
+  schedule: [
+    {
+      time: String,
+      mealType: String,
+      dishName: String,
+      ingredients: [String],
+      quantity: String,
+      calories: Number,
+      protein: Number,
+    },
+  ],
+  totals: {
+    calories: Number,
+    protein: Number,
+    carbs: Number,
+    fats: Number,
+  },
+  metadata: {
+    targetWeight: Number,
+    timePeriod: String,
+    dietType: String,
+  },
+  isUnstructured: { type: Boolean, default: false },
+  rawContent: String,
 });
 
 const DietPlan = mongoose.model("DietPlan", dietPlanSchema);

@@ -19,120 +19,89 @@ export const generateDietPrompt = (user, preferences) => {
     throw new Error("Missing required fields for diet prompt generation");
   }
 
-  const bmi = calculateBMI(user.weight, user.height);
-  const bmiClass = getBMIClassification(bmi);
-
   return `
-      **INDIAN DIET PLAN GENERATION**
-      please note that the plan should strictly follow the indian tredision while generating the plan.
-      Personal Details:
-      - Age: ${user.age}
-      - Gender: ${user.gender}
-      - Height: ${user.height} cm
-      - Current Weight: ${user.weight} kg
-      - BMI: ${bmi} (${bmiClass})
-      
-      Health Goals:
-      - Target Weight: ${preferences.targetWeight} kg
-      - Time Frame: ${preferences.timePeriod}
-      - Primary Goal: ${preferences.goal}
-      
-      Dietary Preferences:
-      - Diet Type: ${preferences.dietType}
-      - Food Allergies: ${preferences.foodAllergies.join(", ") || "None"}
-      - Cultural Restrictions: ${preferences.religiousRestrictions || "None"}
-      - Preferred Foods: ${preferences.favoriteFoods.join(", ") || "None"}
-      - Disliked Foods: ${preferences.dislikedFoods.join(", ") || "None"}
-      
-      Health Considerations:
-      - Medical Conditions: ${user.medicalHistory.join(", ") || "None"}
-      - Budget: ${preferences.budget}
-      
-      Requirements:
-      1. Calculate BMR and TDEE based on provided metrics
-      2. Create a ${preferences.timePeriod} meal plan with Indian foods
-      3. Include macronutrient breakdown for each meal
-      4. Suggest meal timing and portion sizes
-      5. Provide budget-friendly ingredient alternatives
-      
-      Format:
-      - Day-wise meal structure
-      - Weekly shopping list
-      - Calorie tracking guidelines
-      Format response in Markdown with clear section headers
-      note: do not add header in the response.
-    `;
+  **INDIAN DIET PLAN GENERATION**
+  
+  ### DAILY_SCHEDULE
+  Time | Meal Type | Food Items | Quantity | Calories | Protein(g) | Carbs(g)
+  ${getMealTimingStructure()}
+  Generate a ${preferences.timePeriod} meal plan following STRICT FORMAT:
+  
+  ### TOTALS
+  Daily Calories: X kcal
+  Total Protein: X g
+  Total Carbs: X g
+  Total Fats: X g
+
+  Responce Format RULES:
+  1. Use ONLY pipe (|) separators between columns
+  2. Follow Indian dietary traditions strictly
+  4. Quantity in standard units (e.g., 1 bowl, 2 roti)
+  5. Macronutrient values must be numeric only
+  6. Never use markdown or additional headers
+  7. Use EXACT header names and order shown above
+  8. Maintain column count (7 columns)
+  9. No additional formatting in headers
+  
+  Diet Plan RULES:
+  1. 
+  2. 
+  3. 
+
+  Personal Context:
+  - Age: ${user.age} | Gender: ${user.gender} | Weight: ${user.weight} kg
+  - Target: ${preferences.dietGoal} kg in ${preferences.timePeriod} months
+  - Diet Type: ${preferences.dietType}
+  - Prioritize: ${preferences.favoriteFoods.join(", ") || "No preferences"}
+  - Avoid: ${preferences.dislikedFoods.join(", ") || "Nothing"}
+  - Allergies: ${preferences.foodAllergies.join(", ") || "None"}
+  - Cultural Restrictions: ${preferences.dietaryRestrictions.join(", ")}
+  - Budget: ${preferences.budget}
+  `;
 };
 
 // Generate WorkoutPrompt
 export const generateWorkoutPrompt = (user, preferences) => {
-  // Validate required fields
-  if (!preferences.availableTimePerDay || !preferences.workoutDaysPerWeek) {
-    throw new Error("Missing required fields for workout prompt generation");
-  }
-
-  const bmi = calculateBMI(user.weight, user.height);
-  const bmiClass = getBMIClassification(bmi);
-
   return `
-      **INDIAN WORKOUT PLAN GENERATION**
-      
-      Personal Details:
-      - Age: ${user.age}
-      - Gender: ${user.gender}
-      - Weight: ${user.weight} kg
-      - Height: ${user.height} cm
-      - BMI: ${bmi} (${bmiClass})
-      
-      Fitness Profile:
-      - Primary Goal: ${preferences.goal}
-      - Experience Level: ${preferences.activityLevel}
-      - Available Days/Week: ${preferences.workoutDaysPerWeek}
-      - Daily Time Availability: ${preferences.availableTimePerDay}
-      
-      Equipment & Constraints:
-      - Available Equipment: ${preferences.equipment.join(", ") || "None"}
-      - Medical Constraints: ${
-        preferences.medicalConstraints.join(", ") || "None"
-      }
-      
-      Preferences:
-      - Workout Type: ${preferences.workoutPreferences}
-      - Preferred Intensity: ${preferences.activityLevel}
-      
-      Requirements:
-      1. Create a ${preferences.timePeriod} progressive plan
-      2. Include warm-up and cool-down routines
-      3. Balance strength training and cardio
-      4. Provide exercise alternatives for constraints
-      5. Include rest day recommendations
-      
-      Format:
-      - Weekly workout schedule
-      - Exercise demonstrations (sets/reps/rest)
-      - Progression roadmap
-      - Safety precautions
+  **WORKOUT PLAN**
+  Create ${preferences.timePeriod} plan for ${preferences.workoutPreferences} workouts:
 
-      Format response in Markdown with clear section headers
-      note: do not add header in the response.
-    `;
+  ### WEEKLY_SCHEDULE
+  Day | Focus Area | Exercises | Equipment | Sets/Reps | Duration | Intensity
+  ${getWeeklyScheduleStructure()}
+
+  ### TOTALS
+  Weekly Sessions: ${preferences.workoutDaysPerWeek}
+  Daily Time: ${preferences.availableTimePerDay}
+  Intensity Level: ${preferences.activityLevel}
+
+  RULES:
+  1. Equipment: ${preferences.equipment.join(", ") || "Bodyweight only"}
+  2. Medical Constraints: ${preferences.medicalConstraints.join(", ") || "None"}
+  3. Primary Goal: ${preferences.workoutGoal.replace("-", " ")}
+  4. Use Indian exercise names where possible
+  5. Include ${preferences.availableTimePerDay} warmup/cooldown
+  6. Use standard units for sets/reps (e.g., 3x12)
+  7. Duration in minutes
+  8. Time period ${preferences.timePeriod} months
+  9. Target weight: ${preferences.targetWeight} kg
+  
+  
+  Personal Context:
+  - Age: ${user.age} | Gender: ${user.gender} | Weight: ${user.weight} kg
+  SAMPLE ENTRY:
+  Monday | Upper Body | Surya Namaskar, Danda | Yoga mat | 5x12 | 45 mins | Medium
+  `;
 };
 
-//Generate Dieases Prompt
-export const generateDiagnosePrompt = (symptoms, duration) => {
-  return `
-    Act as a medical expert. Analyze these symptoms:
-    - Symptoms: ${symptoms.join(", ")}
-    - Duration: ${duration} days
-    
-    Provide:
-    1. Possible conditions (list top 3 with probabilities)
-    2. Recommended medical tests
-    3. Immediate self-care advice
-    4. Specialist referral suggestions
-    5. Red flags requiring urgent care
-    
-    Format response in Markdown with clear section headers
-    note: do not add header in the response.
-  `;
+const getMealTimingStructure = () => {
+  return `Example:
+  08:00 | Breakfast | Poha, Almonds | 1 bowl, 5-6 pieces | 250 | 6 | 45
+  11:00 | Mid-Morning | Fruit Salad | 1 cup | 100 | 1 | 25`;
+};
+
+const getWeeklyScheduleStructure = (days) => {
+  return `Example:
+  Monday | Strength Training | Push-ups, Dumbbell Rows | 3x12 | 45 mins | Medium
+  Tuesday | Yoga | Surya Namaskar, Pranayama | 5 rounds | 30 mins | Low`;
 };

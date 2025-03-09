@@ -1,10 +1,11 @@
 import express from "express";
 import { protect } from "../middlewares/authMW.js";
 import { planGenerationLimiter } from "../middlewares/rateLimitMW.js";
-import { validatePlanPreferences } from "../middlewares/validationMW.js";
+import { validateDietPlanPreferences, validateWorkoutPlanPreferences } from "../middlewares/validationMW.js";
 
 import {
-  savePreferences,
+  saveDietPreferences,
+  saveWorkoutPreferences,
   generateDietPlan,
   generateWorkoutPlan,
 } from "../Controllers/planController.js";
@@ -15,7 +16,8 @@ const router = express.Router();
 // Protected routes (require login)
 router.use(protect);
 
-router.post("/preferences", validatePlanPreferences, savePreferences);
+router.post("/diet-preferences", validateDietPlanPreferences, saveDietPreferences);
+router.post("/workout-preferences", validateWorkoutPlanPreferences, saveWorkoutPreferences);
 router.post("/generate-diet", planGenerationLimiter, generateDietPlan);
 router.post("/generate-workout", planGenerationLimiter, generateWorkoutPlan);
 
