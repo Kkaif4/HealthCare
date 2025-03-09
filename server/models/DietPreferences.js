@@ -8,7 +8,7 @@ const dietPreferenceSchema = new mongoose.Schema({
   },
   dietGoal: {
     type: String,
-    enum: ["weight-loss", "muscle-gain", "maintenance"],
+    enum: ["weight-loss","weight-gain", "muscle-gain", "maintenance"],
     required: true,
   },
   //diet
