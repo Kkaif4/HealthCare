@@ -4,33 +4,37 @@ import bcrypt from "bcrypt";
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name is required'],
+    required: [true, "Name is required"],
     trim: true,
+  },
+  avatar: {
+    type: String,
+    default: "default_avatar.png",
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: [true, "Email is required"],
     unique: true,
     lowercase: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please enter a valid email address'
+      "Please enter a valid email address",
     ],
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
-    minlength: [8, 'Password must be at least 8 characters'],
+    required: [true, "Password is required"],
+    minlength: [8, "Password must be at least 8 characters"],
     select: false,
   },
   age: {
     type: Number,
-    required: [true, 'Age is required'],
-    min: [13, 'Must be at least 13 years old'],
+    required: [true, "Age is required"],
+    min: [13, "Must be at least 13 years old"],
   },
   gender: {
     type: String,
-    enum: ['male', 'female', 'other'],
+    enum: ["male", "female", "other"],
     required: true,
   },
   weight: {
@@ -48,7 +52,7 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  }
+  },
 });
 
 // Hash password before saving

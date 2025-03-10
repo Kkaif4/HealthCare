@@ -1,3 +1,5 @@
+import { skipMiddlewareFunction } from "mongoose";
+
 export const validateDietPlanPreferences = (req, res, next) => {
   const requiredFields = [
     "dietGoal",
@@ -36,6 +38,7 @@ export const validateWorkoutPlanPreferences = (req, res, next) => {
 
   for (const field of requiredFields) {
     if (!req.body[field]) {
+      console.log("error in validation middleware");
       console.error(`Missing required field: ${field}`);
       return res.status(400).json({
         success: false,

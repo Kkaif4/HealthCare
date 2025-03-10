@@ -128,13 +128,13 @@ export const saveWorkoutPreferences = async (req, res, next) => {
       targetWeight,
       timePeriod,
     });
-
+    console.log("New preferences created");
     res.status(201).json({
       success: true,
       data: preferences,
     });
   } catch (error) {
-    console.error("Error saving preferences:", error.message);
+    console.error("Error saving workout preferences:", error.message);
     next(error);
   }
 };

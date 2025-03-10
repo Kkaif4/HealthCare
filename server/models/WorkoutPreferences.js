@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const WorkoutPreferenceSchema = new mongoose.Schema({
+const workoutPreferenceSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -39,8 +39,7 @@ const WorkoutPreferenceSchema = new mongoose.Schema({
   },
 });
 
-const WorkoutPreference = mongoose.model(
-  "workoutPreference",
-  WorkoutPreferenceSchema
-);
-export default WorkoutPreference;
+const WorkoutPreferences =
+  mongoose.models.WorkoutPreferences ||
+  mongoose.model("WorkoutPreferences", workoutPreferenceSchema);
+export default WorkoutPreferences;

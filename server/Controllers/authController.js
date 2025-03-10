@@ -32,6 +32,24 @@ export const register = async (req, res, next) => {
         .json({ success: false, error: "Email already registered" });
     }
 
+    let avatarUrl = "default-avatar.jpg";
+    // avatar upload
+    if (req.file) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: "health-app/avatars",
+          transformation: [{ width: 500, height: 500, crop: "fill" }],
+        });
+        user.avatar = result.secure_url;
+        await user.save();
+        // Cleanup temp file
+        await fs.unlink(req.file.path);
+      } catch (uploadError) {
+        console.error("Avatar upload failed:", uploadError);
+        // Continue without failing registration
+      }
+    }
+
     // Create user
     const user = await User.create({
       name,
@@ -42,6 +60,7 @@ export const register = async (req, res, next) => {
       weight,
       height,
       medicalHistory,
+      avatar: avatarUrl,
     });
     console.log("User created successfully");
 
@@ -61,9 +80,11 @@ export const register = async (req, res, next) => {
           name: user.name,
           email: user.email,
           age: user.age,
+          avatar: user.avatar,
         },
       });
   } catch (error) {
+    if (req.file) await fs.unlink(req.file.path).catch(() => {});
     console.error("Error registering user:", error.message);
     next(error);
   }
