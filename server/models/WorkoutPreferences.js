@@ -9,7 +9,7 @@ const workoutPreferenceSchema = new mongoose.Schema({
   //workout
   workoutGoal: {
     type: String,
-    enum: ["weight-loss", "muscle-gain", "maintenance"],
+    enum: ["weight-loss", "weight-gain", "muscle-gain", "maintenance"],
     required: true,
   },
   workoutPreferences: {
