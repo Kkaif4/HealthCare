@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Menu } from '@headlessui/react';
 import { FiUser, FiEdit, FiPlus, FiActivity, FiDroplet, FiSettings, FiCheckSquare } from 'react-icons/fi';
-import DietPlanForm from './DietPlanForm';
 
 const Dashboard = () => {
   const [userDetails] = useState({
@@ -14,11 +13,9 @@ const Dashboard = () => {
     bmi: 23.1
   });
 
-  const [isDietFormOpen, setIsDietFormOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-dark text-light">
-      {/* Navbar */}
+      {/* Navbar with Profile Dropdown */}
       <nav className="bg-dark/90 backdrop-blur-md fixed w-full z-50 border-b border-primary/20">
         <div className="mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
@@ -48,20 +45,20 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main Dashboard Content */}
       <div className="pt-20 pb-8 px-2 sm:px-4 lg:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* Left Column */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          {/* Left Column - User Details (reduced width) */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-3 space-y-4"
+            className="md:col-span-3 space-y-4"
           >
-            {/* User Details Card */}
             <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
               <h2 className="text-xl font-bold mb-4 flex items-center">
                 <FiUser className="mr-2 text-primary" /> User Details
               </h2>
+              
               <div className="space-y-4">
                 <DetailItem label="Name" value={userDetails.name} />
                 <DetailItem label="Age" value={userDetails.age} />
@@ -69,35 +66,38 @@ const Dashboard = () => {
                 <DetailItem label="Weight" value={`${userDetails.weight} kg`} />
                 <DetailItem label="Goal" value={userDetails.goal} />
               </div>
+              
               <button className="mt-6 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                 <FiEdit className="mr-2" /> Edit Profile
               </button>
             </div>
 
-            {/* Goals Card */}
+            {/* Goal Section */}
             <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
               <h2 className="text-xl font-bold mb-4 flex items-center">
                 <FiActivity className="mr-2 text-primary" /> Current Goal
               </h2>
+              
               <div className="space-y-4">
                 <div className="p-4 bg-dark/70 rounded-lg border border-primary/20">
                   <h3 className="text-lg font-bold mb-2">Primary Goal</h3>
                   <p className="text-light/80">{userDetails.goal}</p>
                 </div>
+                
                 <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                   <FiEdit className="mr-2" /> Update Goal
                 </button>
               </div>
             </div>
 
-            {/* Todo Button */}
+            {/* To Do List Button */}
             <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-4 rounded-lg transition-colors flex items-center justify-center">
               <FiCheckSquare className="mr-2" /> View To-Do List
             </button>
           </motion.div>
 
-          {/* Center Column */}
-          <div className="lg:col-span-6 h-full flex flex-col gap-4">
+          {/* Center Column - Plans (increased width and full height) */}
+          <div className="md:col-span-6 h-full flex flex-col gap-4">
             {/* Current Plans */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -120,7 +120,7 @@ const Dashboard = () => {
               </div>
             </motion.div>
 
-            {/* New Plans */}
+            {/* Generate New Plans */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -132,7 +132,7 @@ const Dashboard = () => {
                   icon={<FiDroplet className="h-8 w-8" />}
                   title="Diet Plan"
                   description="Create personalized nutrition plan based on your goals"
-                  onClick={() => setIsDietFormOpen(true)}
+                  onClick={() => console.log('Generate Diet Plan')}
                 />
                 <PlanCard
                   icon={<FiActivity className="h-8 w-8" />}
@@ -144,15 +144,16 @@ const Dashboard = () => {
             </motion.div>
           </div>
 
-          {/* Right Column */}
+          {/* Right Column - BMI Chart (reduced width) */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-3"
+            className="md:col-span-3"
           >
             <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
               <h2 className="text-xl font-bold mb-4">BMI Analysis</h2>
               <div className="relative w-full h-48">
+                {/* BMI Chart Placeholder */}
                 <div className="absolute inset-0 flex items-center justify-center bg-primary/10 rounded-xl">
                   <span className="text-4xl font-bold text-primary">{userDetails.bmi}</span>
                   <span className="text-light/80 ml-2">BMI</span>
@@ -168,12 +169,6 @@ const Dashboard = () => {
           </motion.div>
         </div>
       </div>
-
-      {/* Diet Plan Form Modal */}
-      <DietPlanForm 
-        isOpen={isDietFormOpen}
-        closeModal={() => setIsDietFormOpen(false)}
-      />
     </div>
   );
 };
@@ -212,7 +207,7 @@ const CurrentPlanCard = ({ title, progress, status }) => (
     </div>
     <div className="flex justify-between items-center text-sm">
       <span className="text-light/80">{progress}% Completed</span>
-      <span className={`px-2 py-1 rounded-full ${status === 'Active' ? 'bg-green-500/20 text-green-500' : 'bg-primary/20 text-primary'}`}>
+      <span className={`px-2 py-1 rounded-full ${status === 'Active' ? 'bg-green-500/20 text-green-500' : 'bg-primary/20 text-primary'}`} >
         {status}
       </span>
     </div>
