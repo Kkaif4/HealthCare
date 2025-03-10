@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu } from "@headlessui/react";
-import DietPlanForm from "./DietPlanForm"; 
-import WorkoutPlanForm from './WorkoutPlanForm'; 
-
+import DietPlanForm from "./DietPlanForm";
+import WorkoutPlanForm from './WorkoutPlanForm';
 import {
   FiUser,
   FiEdit,
@@ -12,23 +11,66 @@ import {
   FiDroplet,
   FiSettings,
   FiCheckSquare,
+  FiCalendar,
+  FiCheck,
+  FiTrash2
 } from "react-icons/fi";
 
 const Dashboard = () => {
   const [showDietForm, setShowDietForm] = useState(false);
   const [showWorkoutForm, setShowWorkoutForm] = useState(false);
+  const [showToDoList, setShowToDoList] = useState(false);
+  const [todos, setTodos] = useState([
+    { id: 1, text: "Drink 2L of water", completed: false },
+    { id: 2, text: "Complete today's workout", completed: false },
+    { id: 3, text: "Prepare meals for tomorrow", completed: true }
+  ]);
+  const [newTodo, setNewTodo] = useState("");
   const [userDetails] = useState({
     name: "John Doe",
     age: 28,
     height: 180,
     weight: 75,
-    goal: "Muscle Gain",
-    bmi: 23.1,
+    goal: "Muscle Gain"
   });
+  const [bmi, setBmi] = useState(0);
+
+  useEffect(() => {
+    const calculateBMI = () => {
+      const heightInMeters = userDetails.height / 100;
+      const calculatedBMI = (userDetails.weight / (heightInMeters * heightInMeters)).toFixed(1);
+      setBmi(parseFloat(calculatedBMI));
+    };
+    calculateBMI();
+  }, [userDetails]);
+
+  const addTodo = (e) => {
+    e.preventDefault();
+    if (newTodo.trim() === "") return;
+    const newTodoItem = {
+      id: Date.now(),
+      text: newTodo,
+      completed: false
+    };
+    setTodos([...todos, newTodoItem]);
+    setNewTodo("");
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
 
   return (
     <div className="min-h-screen bg-dark text-light">
-      {/* Navbar with Profile Dropdown */}
+      {/* Navbar */}
       <nav className="bg-dark/90 backdrop-blur-md fixed w-full z-50 border-b border-primary/20">
         <div className="mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
@@ -62,86 +104,166 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Main Dashboard Content */}
+      {/* Main Content */}
       <div className="pt-20 pb-8 px-2 sm:px-4 lg:px-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* Left Column - User Details (reduced width) */}
+          {/* Left Column */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="md:col-span-3 space-y-4"
           >
             <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
-              <h2 className="text-xl font-bold mb-4 flex items-center">
+              <h2 className="text-xl font-bold mb-3 flex items-center">
                 <FiUser className="mr-2 text-primary" /> User Details
               </h2>
-
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <DetailItem label="Name" value={userDetails.name} />
                 <DetailItem label="Age" value={userDetails.age} />
                 <DetailItem label="Height" value={`${userDetails.height} cm`} />
                 <DetailItem label="Weight" value={`${userDetails.weight} kg`} />
                 <DetailItem label="Goal" value={userDetails.goal} />
               </div>
-
-              <button className="mt-6 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
+              <button className="mt-3 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                 <FiEdit className="mr-2" /> Edit Profile
               </button>
             </div>
 
-            {/* Goal Section */}
             <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
-              <h2 className="text-xl font-bold mb-4 flex items-center">
+              <h2 className="text-xl font-bold mb-3 flex items-center">
                 <FiActivity className="mr-2 text-primary" /> Current Goal
               </h2>
-
-              <div className="space-y-4">
-                <div className="p-4 bg-dark/70 rounded-lg border border-primary/20">
-                  <h3 className="text-lg font-bold mb-2">Primary Goal</h3>
+              <div className="space-y-3">
+                <div className="p-3 bg-dark/70 rounded-lg border border-primary/20">
+                  <h3 className="text-lg font-bold mb-1">Primary Goal</h3>
                   <p className="text-light/80">{userDetails.goal}</p>
                 </div>
-
                 <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                   <FiEdit className="mr-2" /> Update Goal
                 </button>
               </div>
             </div>
 
-            {/* To Do List Button */}
-            <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-4 rounded-lg transition-colors flex items-center justify-center">
-              <FiCheckSquare className="mr-2" /> View To-Do List
+            <button 
+              onClick={() => setShowToDoList(!showToDoList)}
+              className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-3 rounded-lg transition-colors flex items-center justify-center"
+            >
+              <FiCheckSquare className="mr-2" /> 
+              {showToDoList ? "Hide To-Do List" : "View To-Do List"}
             </button>
+            
+            {showToDoList && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20"
+              >
+                <h2 className="text-xl font-bold mb-3 flex items-center">
+                  <FiCheckSquare className="mr-2 text-primary" /> To-Do List
+                </h2>
+                <form onSubmit={addTodo} className="flex mb-3">
+                  <input
+                    type="text"
+                    value={newTodo}
+                    onChange={(e) => setNewTodo(e.target.value)}
+                    placeholder="Add a new task..."
+                    className="flex-1 bg-dark/60 border border-primary/30 rounded-l-lg p-2 text-light focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-primary text-dark font-medium px-3 rounded-r-lg hover:bg-primary/90 transition-colors"
+                  >
+                    <FiPlus />
+                  </button>
+                </form>
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                  {todos.map((todo) => (
+                    <div 
+                      key={todo.id}
+                      className="flex items-center justify-between p-2 bg-dark/60 border border-primary/10 rounded-lg"
+                    >
+                      <div className="flex items-center">
+                        <button 
+                          onClick={() => toggleTodo(todo.id)}
+                          className={`h-5 w-5 rounded border flex items-center justify-center mr-2 
+                            ${todo.completed 
+                              ? "bg-primary border-primary" 
+                              : "border-primary/30 bg-dark/40"}`}
+                        >
+                          {todo.completed && <FiCheck size={12} className="text-dark" />}
+                        </button>
+                        <span className={todo.completed ? "line-through text-light/50" : ""}>
+                          {todo.text}
+                        </span>
+                      </div>
+                      <button 
+                        onClick={() => deleteTodo(todo.id)}
+                        className="text-light/50 hover:text-red-400 transition-colors"
+                      >
+                        <FiTrash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
-          {/* Center Column - Plans (increased width and full height) */}
+          {/* Center Column - Fixed Section */}
           <div className="md:col-span-6 h-full flex flex-col gap-4">
-            {/* Current Plans */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex-1"
             >
               <h2 className="text-2xl font-bold mb-4">Current Plans</h2>
               <div className="grid md:grid-cols-2 gap-4">
-                <CurrentPlanCard
-                  title="Current Diet Plan"
-                  progress={65}
-                  status="Active"
-                />
-                <CurrentPlanCard
-                  title="Current Workout Plan"
-                  progress={40}
-                  status="In Progress"
-                />
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-dark/60 border border-primary/20 rounded-xl p-4 hover:shadow-lg hover:shadow-primary/5 transition-all"
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-bold">Current Diet Plan</h3>
+                    <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-500 text-sm">
+                      Active
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-light/80">
+                      <FiCalendar className="mr-2" /> Created: March 5, 2025
+                    </div>
+                    <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
+                      <FiEdit className="mr-2" /> View Details
+                    </button>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-dark/60 border border-primary/20 rounded-xl p-4 hover:shadow-lg hover:shadow-primary/5 transition-all"
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-lg font-bold">Current Workout Plan</h3>
+                    <span className="px-2 py-1 rounded-full bg-primary/20 text-primary text-sm">
+                      Active
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center text-light/80">
+                      <FiCalendar className="mr-2" /> Created: March 3, 2025
+                    </div>
+                    <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
+                      <FiEdit className="mr-2" /> View Details
+                    </button>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
 
-            {/* Generate New Plans */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex-1"
             >
               <h2 className="text-2xl font-bold mb-4">Generate New Plans</h2>
               <div className="grid md:grid-cols-2 gap-4">
@@ -161,7 +283,7 @@ const Dashboard = () => {
             </motion.div>
           </div>
 
-          {/* Right Column - BMI Chart (reduced width) */}
+          {/* Right Column */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -169,47 +291,93 @@ const Dashboard = () => {
           >
             <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
               <h2 className="text-xl font-bold mb-4">BMI Analysis</h2>
-              <div className="relative w-full h-48">
-                {/* BMI Chart Placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center bg-primary/10 rounded-xl">
-                  <span className="text-4xl font-bold text-primary">
-                    {userDetails.bmi}
-                  </span>
-                  <span className="text-light/80 ml-2">BMI</span>
-                </div>
+              <div className="relative w-full h-52 mb-4">
+                <svg viewBox="0 0 200 120" className="w-full">
+                  <rect x="10" y="90" width="180" height="10" rx="5" fill="#1a1a1a" />
+                  <rect x="10" y="90" width="45" rx="5" height="10" fill="#3498db" />
+                  <rect x="55" y="90" width="45" rx="0" height="10" fill="#2ecc71" />
+                  <rect x="100" y="90" width="45" rx="0" height="10" fill="#f1c40f" />
+                  <rect x="145" y="90" width="45" rx="5" height="10" fill="#e74c3c" />
+                  
+                  <text x="32.5" y="110" fontSize="8" textAnchor="middle" fill="#3498db">Underweight</text>
+                  <text x="32.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(&lt;18.5)</text>
+                  <text x="77.5" y="110" fontSize="8" textAnchor="middle" fill="#2ecc71">Normal</text>
+                  <text x="77.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(18.5-24.9)</text>
+                  <text x="122.5" y="110" fontSize="8" textAnchor="middle" fill="#f1c40f">Overweight</text>
+                  <text x="122.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(25-29.9)</text>
+                  <text x="167.5" y="110" fontSize="8" textAnchor="middle" fill="#e74c3c">Obese</text>
+                  <text x="167.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(≥30)</text>
+                  
+                  <motion.g
+                    initial={{ x: 10 }}
+                    animate={{ 
+                      x: Math.min(Math.max(10 + ((bmi - 10) * 5), 10), 190)
+                    }}
+                    transition={{ type: "spring", stiffness: 100 }}
+                  >
+                    <path d="M0,90 L5,80 L-5,80 Z" fill="white" />
+                    <circle cy="60" r="20" fill="rgba(255,255,255,0.1)" stroke="white" strokeWidth="2" />
+                    <text y="63" fontSize="12" textAnchor="middle" fill="white" fontWeight="bold">{bmi}</text>
+                    <text y="50" fontSize="8" textAnchor="middle" fill="white">BMI</text>
+                  </motion.g>
+                </svg>
               </div>
-              <div className="mt-4 space-y-4">
-                <BMICategory
-                  label="Underweight"
-                  range="< 18.5"
-                  isCurrent={userDetails.bmi < 18.5}
-                />
-                <BMICategory
-                  label="Normal"
-                  range="18.5 - 24.9"
-                  isCurrent={userDetails.bmi >= 18.5 && userDetails.bmi <= 24.9}
-                />
-                <BMICategory
-                  label="Overweight"
-                  range="25 - 29.9"
-                  isCurrent={userDetails.bmi >= 25 && userDetails.bmi <= 29.9}
-                />
-                <BMICategory
-                  label="Obese"
-                  range="≥ 30"
-                  isCurrent={userDetails.bmi >= 30}
-                />
+              
+              <div className="space-y-2">
+                <div 
+                  className={`p-3 rounded-lg transition-colors duration-300 ${
+                    bmi < 18.5 
+                      ? "bg-blue-500/20 border border-blue-500/30" 
+                      : bmi >= 18.5 && bmi < 25 
+                        ? "bg-green-500/20 border border-green-500/30"
+                        : bmi >= 25 && bmi < 30
+                          ? "bg-yellow-500/20 border border-yellow-500/30"
+                          : "bg-red-500/20 border border-red-500/30"
+                  }`}
+                >
+                  <div className="font-bold mb-1">
+                    {bmi < 18.5 
+                      ? "Underweight" 
+                      : bmi >= 18.5 && bmi < 25 
+                        ? "Normal Weight"
+                        : bmi >= 25 && bmi < 30
+                          ? "Overweight"
+                          : "Obese"
+                    }
+                  </div>
+                  <div className="text-sm text-light/80">
+                    Your BMI is {bmi}, which is considered 
+                    {bmi < 18.5 
+                      ? " below the healthy range." 
+                      : bmi >= 18.5 && bmi < 25 
+                        ? " within the healthy range."
+                        : bmi >= 25 && bmi < 30
+                          ? " above the healthy range."
+                          : " well above the healthy range."
+                    }
+                  </div>
+                </div>
+                
+                <div className="p-3 bg-dark/60 rounded-lg">
+                  <div className="text-sm text-light/80">
+                    <strong>BMI</strong> = weight(kg) / height(m)²
+                  </div>
+                  <div className="text-sm text-light/80 mt-1">
+                    {userDetails.weight}kg / ({userDetails.height/100})² = {bmi}
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
       </div>
+
+      {/* Modals */}
       {showDietForm && (
         <DietPlanForm
           onClose={() => setShowDietForm(false)}
           onSubmit={(data) => {
             console.log("Diet Plan Data:", data);
-            // TODO: Handle form submission - send to AI service
             setShowDietForm(false);
           }}
         />
@@ -220,7 +388,6 @@ const Dashboard = () => {
           onClose={() => setShowWorkoutForm(false)}
           onSubmit={(data) => {
             console.log("Workout Plan Data:", data);
-            // TODO: Handle form submission - send to AI service
             setShowWorkoutForm(false);
           }}
         />
@@ -231,7 +398,7 @@ const Dashboard = () => {
 
 // Reusable Components
 const DetailItem = ({ label, value }) => (
-  <div className="flex justify-between items-center py-2 border-b border-primary/10">
+  <div className="flex justify-between items-center py-1 border-b border-primary/10">
     <span className="text-light/80">{label}:</span>
     <span className="font-medium">{value}</span>
   </div>
@@ -250,44 +417,6 @@ const PlanCard = ({ icon, title, description, onClick }) => (
       <FiPlus className="mr-2" /> Generate Plan
     </button>
   </motion.div>
-);
-
-const CurrentPlanCard = ({ title, progress, status }) => (
-  <div className="bg-dark/60 border border-primary/20 rounded-xl p-4">
-    <h3 className="text-lg font-bold mb-4">{title}</h3>
-    <div className="w-full bg-primary/10 rounded-full h-2 mb-4">
-      <div
-        className="bg-primary h-2 rounded-full transition-all duration-500"
-        style={{ width: `${progress}%` }}
-      />
-    </div>
-    <div className="flex justify-between items-center text-sm">
-      <span className="text-light/80">{progress}% Completed</span>
-      <span
-        className={`px-2 py-1 rounded-full ${
-          status === "Active"
-            ? "bg-green-500/20 text-green-500"
-            : "bg-primary/20 text-primary"
-        }`}
-      >
-        {status}
-      </span>
-    </div>
-  </div>
-);
-
-const BMICategory = ({ label, range, isCurrent }) => (
-  <div
-    className={`flex justify-between items-center p-3 rounded-lg ${
-      isCurrent ? "bg-primary/20 border border-primary/30" : "bg-dark/60"
-    }`}
-  >
-    <div>
-      <div className="font-medium">{label}</div>
-      <div className="text-sm text-light/60">{range}</div>
-    </div>
-    {isCurrent && <div className="w-2 h-2 bg-primary rounded-full" />}
-  </div>
 );
 
 export default Dashboard;
