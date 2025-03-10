@@ -1,71 +1,57 @@
-// frontend/src/components/Auth/Login.jsx
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
-import api from '../../utils/api';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = AuthContext();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setError('');
-      setLoading(true);
-      const response = await api.post('/auth/login', { email, password });
-      login(response.data.user, response.data.token);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-      <h2 className="text-2xl font-bold mb-6 text-center dark:text-white">Login</h2>
-      {error && <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 dark:text-gray-200">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            required
-          />
+    <div className="min-h-screen bg-dark flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-dark/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20 shadow-xl"
+      >
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Welcome Back
+          </h2>
+          <p className="text-light/80 mt-2">Login to continue your fitness journey</p>
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-1 dark:text-gray-200">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-700 dark:hover:bg-blue-800"
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
-      <div className="mt-4 text-center">
-        <span className="dark:text-gray-300">Don't have an account? </span>
-        <Link to="/signup" className="text-blue-600 hover:underline dark:text-blue-400">
-          Sign Up
-        </Link>
-      </div>
+
+        <form className="space-y-6">
+          <div>
+            <label className="block text-light/80 mb-2">Email</label>
+            <input
+              type="email"
+              className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div>
+            <label className="block text-light/80 mb-2">Password</label>
+            <input
+              type="password"
+              className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
+              placeholder="Password"
+            />
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors"
+          >
+            Login
+          </motion.button>
+
+          <p className="text-center text-light/80">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-primary hover:text-secondary transition-colors">
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </motion.div>
     </div>
   );
 };
