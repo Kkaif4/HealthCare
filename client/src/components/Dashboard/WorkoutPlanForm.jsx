@@ -1,422 +1,238 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Menu } from "@headlessui/react";
-import DietPlanForm from "./DietPlanForm";
-import WorkoutPlanForm from './WorkoutPlanForm';
-import {
-  FiUser,
-  FiEdit,
-  FiPlus,
-  FiActivity,
-  FiDroplet,
-  FiSettings,
-  FiCheckSquare,
-  FiCalendar,
-  FiCheck,
-  FiTrash2
-} from "react-icons/fi";
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FiArrowLeft, FiCheckCircle, FiActivity } from 'react-icons/fi';
 
-const Dashboard = () => {
-  const [showDietForm, setShowDietForm] = useState(false);
-  const [showWorkoutForm, setShowWorkoutForm] = useState(false);
-  const [showToDoList, setShowToDoList] = useState(false);
-  const [todos, setTodos] = useState([
-    { id: 1, text: "Drink 2L of water", completed: false },
-    { id: 2, text: "Complete today's workout", completed: false },
-    { id: 3, text: "Prepare meals for tomorrow", completed: true }
-  ]);
-  const [newTodo, setNewTodo] = useState("");
-  const [userDetails] = useState({
-    name: "John Doe",
-    age: 28,
-    height: 180,
-    weight: 75,
-    goal: "Muscle Gain"
+const WorkoutPlanForm = ({ onClose, onSubmit }) => {
+  const [formData, setFormData] = useState({
+    workoutGoal: "weight-loss",
+    workoutPreferences: "gym",
+    targetWeight: "",
+    timePeriod: "3",
+    availableTimePerDay: "60",
+    equipment: "",
+    medicalConstraints: "",
+    activityLevel: "moderate",
+    workoutDaysPerWeek: "3"
   });
-  const [bmi, setBmi] = useState(0);
 
-  useEffect(() => {
-    const calculateBMI = () => {
-      const heightInMeters = userDetails.height / 100;
-      const calculatedBMI = (userDetails.weight / (heightInMeters * heightInMeters)).toFixed(1);
-      setBmi(parseFloat(calculatedBMI));
-    };
-    calculateBMI();
-  }, [userDetails]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-  const addTodo = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (newTodo.trim() === "") return;
-    const newTodoItem = {
-      id: Date.now(),
-      text: newTodo,
-      completed: false
-    };
-    setTodos([...todos, newTodoItem]);
-    setNewTodo("");
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo => 
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    onSubmit(formData);
   };
 
   return (
-    <div className="min-h-screen bg-dark text-light">
-      {/* Navbar */}
-      <nav className="bg-dark/90 backdrop-blur-md fixed w-full z-50 border-b border-primary/20">
-        <div className="mx-auto px-2 sm:px-4 lg:px-6">
-          <div className="flex items-center justify-between h-16">
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              FitAI Dashboard
-            </span>
-
-            <Menu as="div" className="relative">
-              <Menu.Button className="flex items-center space-x-2 text-light/80 hover:text-primary transition-colors">
-                <FiUser className="h-6 w-6" />
-                <span>Profile</span>
-              </Menu.Button>
-
-              <Menu.Items className="absolute right-0 mt-2 w-48 bg-dark/90 backdrop-blur-lg rounded-lg shadow-xl border border-primary/20">
-                <div className="p-2 space-y-2">
-                  <Menu.Item>
-                    {({ active }) => (
-                      <button
-                        className={`w-full text-left px-4 py-2 rounded-md ${
-                          active ? "bg-primary/20" : ""
-                        }`}
-                      >
-                        <FiSettings className="inline mr-2" /> Settings
-                      </button>
-                    )}
-                  </Menu.Item>
-                </div>
-              </Menu.Items>
-            </Menu>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <div className="pt-20 pb-8 px-2 sm:px-4 lg:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          {/* Left Column */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="md:col-span-3 space-y-4"
-          >
-            <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
-              <h2 className="text-xl font-bold mb-3 flex items-center">
-                <FiUser className="mr-2 text-primary" /> User Details
-              </h2>
-              <div className="space-y-2">
-                <DetailItem label="Name" value={userDetails.name} />
-                <DetailItem label="Age" value={userDetails.age} />
-                <DetailItem label="Height" value={`${userDetails.height} cm`} />
-                <DetailItem label="Weight" value={`${userDetails.weight} kg`} />
-                <DetailItem label="Goal" value={userDetails.goal} />
-              </div>
-              <button className="mt-3 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                <FiEdit className="mr-2" /> Edit Profile
-              </button>
-            </div>
-
-            <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
-              <h2 className="text-xl font-bold mb-3 flex items-center">
-                <FiActivity className="mr-2 text-primary" /> Current Goal
-              </h2>
-              <div className="space-y-3">
-                <div className="p-3 bg-dark/70 rounded-lg border border-primary/20">
-                  <h3 className="text-lg font-bold mb-1">Primary Goal</h3>
-                  <p className="text-light/80">{userDetails.goal}</p>
-                </div>
-                <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                  <FiEdit className="mr-2" /> Update Goal
-                </button>
-              </div>
-            </div>
-
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto"
+    >
+      <div className="relative w-full max-w-3xl mx-2 my-4">
+        <motion.div
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-6"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-light flex items-center">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Generate Workout Plan
+              </span>
+            </h2>
             <button 
-              onClick={() => setShowToDoList(!showToDoList)}
-              className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-3 rounded-lg transition-colors flex items-center justify-center"
+              onClick={onClose}
+              className="text-light/60 hover:text-primary transition-colors"
             >
-              <FiCheckSquare className="mr-2" /> 
-              {showToDoList ? "Hide To-Do List" : "View To-Do List"}
+              <FiArrowLeft className="h-6 w-6" />
             </button>
-            
-            {showToDoList && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20"
-              >
-                <h2 className="text-xl font-bold mb-3 flex items-center">
-                  <FiCheckSquare className="mr-2 text-primary" /> To-Do List
-                </h2>
-                <form onSubmit={addTodo} className="flex mb-3">
-                  <input
-                    type="text"
-                    value={newTodo}
-                    onChange={(e) => setNewTodo(e.target.value)}
-                    placeholder="Add a new task..."
-                    className="flex-1 bg-dark/60 border border-primary/30 rounded-l-lg p-2 text-light focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                  <button 
-                    type="submit"
-                    className="bg-primary text-dark font-medium px-3 rounded-r-lg hover:bg-primary/90 transition-colors"
-                  >
-                    <FiPlus />
-                  </button>
-                </form>
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                  {todos.map((todo) => (
-                    <div 
-                      key={todo.id}
-                      className="flex items-center justify-between p-2 bg-dark/60 border border-primary/10 rounded-lg"
-                    >
-                      <div className="flex items-center">
-                        <button 
-                          onClick={() => toggleTodo(todo.id)}
-                          className={`h-5 w-5 rounded border flex items-center justify-center mr-2 
-                            ${todo.completed 
-                              ? "bg-primary border-primary" 
-                              : "border-primary/30 bg-dark/40"}`}
-                        >
-                          {todo.completed && <FiCheck size={12} className="text-dark" />}
-                        </button>
-                        <span className={todo.completed ? "line-through text-light/50" : ""}>
-                          {todo.text}
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => deleteTodo(todo.id)}
-                        className="text-light/50 hover:text-red-400 transition-colors"
-                      >
-                        <FiTrash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* Center Column - Fixed Section */}
-          <div className="md:col-span-6 h-full flex flex-col gap-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <h2 className="text-2xl font-bold mb-4">Current Plans</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-dark/60 border border-primary/20 rounded-xl p-4 hover:shadow-lg hover:shadow-primary/5 transition-all"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-bold">Current Diet Plan</h3>
-                    <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-500 text-sm">
-                      Active
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created: March 5, 2025
-                    </div>
-                    <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                      <FiEdit className="mr-2" /> View Details
-                    </button>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="bg-dark/60 border border-primary/20 rounded-xl p-4 hover:shadow-lg hover:shadow-primary/5 transition-all"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <h3 className="text-lg font-bold">Current Workout Plan</h3>
-                    <span className="px-2 py-1 rounded-full bg-primary/20 text-primary text-sm">
-                      Active
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created: March 3, 2025
-                    </div>
-                    <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                      <FiEdit className="mr-2" /> View Details
-                    </button>
-                  </div>
-                </motion.div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <h2 className="text-2xl font-bold mb-4">Generate New Plans</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <PlanCard
-                  icon={<FiDroplet className="h-8 w-8" />}
-                  title="Diet Plan"
-                  description="Create personalized nutrition plan based on your goals"
-                  onClick={() => setShowDietForm(true)}
-                />
-                <PlanCard
-                  icon={<FiActivity className="h-8 w-8" />}
-                  title="Workout Plan"
-                  description="Get custom exercise routine tailored for you"
-                  onClick={() => setShowWorkoutForm(true)}
-                />
-              </div>
-            </motion.div>
           </div>
 
-          {/* Right Column */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="md:col-span-3"
-          >
-            <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
-              <h2 className="text-xl font-bold mb-4">BMI Analysis</h2>
-              <div className="relative w-full h-52 mb-4">
-                <svg viewBox="0 0 200 120" className="w-full">
-                  <rect x="10" y="90" width="180" height="10" rx="5" fill="#1a1a1a" />
-                  <rect x="10" y="90" width="45" rx="5" height="10" fill="#3498db" />
-                  <rect x="55" y="90" width="45" rx="0" height="10" fill="#2ecc71" />
-                  <rect x="100" y="90" width="45" rx="0" height="10" fill="#f1c40f" />
-                  <rect x="145" y="90" width="45" rx="5" height="10" fill="#e74c3c" />
-                  
-                  <text x="32.5" y="110" fontSize="8" textAnchor="middle" fill="#3498db">Underweight</text>
-                  <text x="32.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(&lt;18.5)</text>
-                  <text x="77.5" y="110" fontSize="8" textAnchor="middle" fill="#2ecc71">Normal</text>
-                  <text x="77.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(18.5-24.9)</text>
-                  <text x="122.5" y="110" fontSize="8" textAnchor="middle" fill="#f1c40f">Overweight</text>
-                  <text x="122.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(25-29.9)</text>
-                  <text x="167.5" y="110" fontSize="8" textAnchor="middle" fill="#e74c3c">Obese</text>
-                  <text x="167.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(≥30)</text>
-                  
-                  <motion.g
-                    initial={{ x: 10 }}
-                    animate={{ 
-                      x: Math.min(Math.max(10 + ((bmi - 10) * 5), 10), 190)
-                    }}
-                    transition={{ type: "spring", stiffness: 100 }}
-                  >
-                    <path d="M0,90 L5,80 L-5,80 Z" fill="white" />
-                    <circle cy="60" r="20" fill="rgba(255,255,255,0.1)" stroke="white" strokeWidth="2" />
-                    <text y="63" fontSize="12" textAnchor="middle" fill="white" fontWeight="bold">{bmi}</text>
-                    <text y="50" fontSize="8" textAnchor="middle" fill="white">BMI</text>
-                  </motion.g>
-                </svg>
-              </div>
-              
-              <div className="space-y-2">
-                <div 
-                  className={`p-3 rounded-lg transition-colors duration-300 ${
-                    bmi < 18.5 
-                      ? "bg-blue-500/20 border border-blue-500/30" 
-                      : bmi >= 18.5 && bmi < 25 
-                        ? "bg-green-500/20 border border-green-500/30"
-                        : bmi >= 25 && bmi < 30
-                          ? "bg-yellow-500/20 border border-yellow-500/30"
-                          : "bg-red-500/20 border border-red-500/30"
-                  }`}
-                >
-                  <div className="font-bold mb-1">
-                    {bmi < 18.5 
-                      ? "Underweight" 
-                      : bmi >= 18.5 && bmi < 25 
-                        ? "Normal Weight"
-                        : bmi >= 25 && bmi < 30
-                          ? "Overweight"
-                          : "Obese"
-                    }
-                  </div>
-                  <div className="text-sm text-light/80">
-                    Your BMI is {bmi}, which is considered 
-                    {bmi < 18.5 
-                      ? " below the healthy range." 
-                      : bmi >= 18.5 && bmi < 25 
-                        ? " within the healthy range."
-                        : bmi >= 25 && bmi < 30
-                          ? " above the healthy range."
-                          : " well above the healthy range."
-                    }
-                  </div>
-                </div>
-                
-                <div className="p-3 bg-dark/60 rounded-lg">
-                  <div className="text-sm text-light/80">
-                    <strong>BMI</strong> = weight(kg) / height(m)²
-                  </div>
-                  <div className="text-sm text-light/80 mt-1">
-                    {userDetails.weight}kg / ({userDetails.height/100})² = {bmi}
-                  </div>
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Workout Goal Selection */}
+            <div>
+              <label className="block text-light/80 mb-2 font-medium">Workout Goal</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {["weight-loss", "weight-gain", "muscle-gain", "maintenance"].map(goal => (
+                  <GoalOption
+                    key={goal}
+                    name="workoutGoal"
+                    value={goal}
+                    selected={formData.workoutGoal === goal}
+                    onChange={handleChange}
+                  />
+                ))}
               </div>
             </div>
-          </motion.div>
-        </div>
+
+            {/* Workout Preferences */}
+            <div>
+              <label className="block text-light/80 mb-2 font-medium">Workout Preferences</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {["home", "gym", "outdoor", "yoga"].map(pref => (
+                  <GoalOption
+                    key={pref}
+                    name="workoutPreferences"
+                    value={pref}
+                    selected={formData.workoutPreferences === pref}
+                    onChange={handleChange}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            {/* Activity Level */}
+            <div>
+              <label className="block text-light/80 mb-2 font-medium">Activity Level</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {["sedentary", "light", "moderate", "active"].map(level => (
+                  <GoalOption
+                    key={level}
+                    name="activityLevel"
+                    value={level}
+                    selected={formData.activityLevel === level}
+                    onChange={handleChange}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Two Column Layout for Inputs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Target Weight */}
+              <div>
+                <label className="block text-light/80 mb-2 font-medium">Target Weight (kg)</label>
+                <input
+                  type="number"
+                  name="targetWeight"
+                  value={formData.targetWeight}
+                  onChange={handleChange}
+                  placeholder="Enter target weight"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+                />
+              </div>
+
+              {/* Time Period */}
+              <div>
+                <label className="block text-light/80 mb-2 font-medium">Time Period (months)</label>
+                <input
+                  type="number"
+                  name="timePeriod"
+                  value={formData.timePeriod}
+                  onChange={handleChange}
+                  min="1"
+                  max="24"
+                  placeholder="Enter time period in months"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+
+                />
+              </div>
+
+              {/* Available Time Per Day */}
+              <div>
+                <label className="block text-light/80 mb-2 font-medium">Available Time Per Day (minutes)</label>
+                <input
+                  type="number"
+                  name="availableTimePerDay"
+                  value={formData.availableTimePerDay}
+                  onChange={handleChange}
+                  min="15"
+                  max="240"
+                  placeholder="Minutes available per day"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+
+                />
+              </div>
+
+              {/* Workout Days Per Week */}
+              <div>
+                <label className="block text-light/80 mb-2 font-medium">Workout Days Per Week</label>
+                <input
+                  type="number"
+                  name="workoutDaysPerWeek"
+                  value={formData.workoutDaysPerWeek}
+                  onChange={handleChange}
+                  min="1"
+                  max="7"
+                  placeholder="Days per week (1-7)"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+
+                />
+              </div>
+            </div>
+
+            {/* Equipment */}
+            <div>
+              <label className="block text-light/80 mb-2 font-medium">Available Equipment</label>
+              <textarea
+                name="equipment"
+                value={formData.equipment}
+                onChange={handleChange}
+                placeholder="List any equipment you have access to..."
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-24"
+              ></textarea>
+            </div>
+
+            {/* Medical Constraints */}
+            <div>
+              <label className="block text-light/80 mb-2 font-medium">Medical Constraints</label>
+              <textarea
+                name="medicalConstraints"
+                value={formData.medicalConstraints}
+                onChange={handleChange}
+                placeholder="List any injuries, conditions, or limitations..."
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-24"
+              ></textarea>
+            </div>
+
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
+            >
+              <FiActivity className="mr-2" /> Generate Workout Plan
+            </motion.button>
+          </form>
+        </motion.div>
       </div>
-
-      {/* Modals */}
-      {showDietForm && (
-        <DietPlanForm
-          onClose={() => setShowDietForm(false)}
-          onSubmit={(data) => {
-            console.log("Diet Plan Data:", data);
-            setShowDietForm(false);
-          }}
-        />
-      )}
-
-      {showWorkoutForm && (
-        <WorkoutPlanForm
-          onClose={() => setShowWorkoutForm(false)}
-          onSubmit={(data) => {
-            console.log("Workout Plan Data:", data);
-            setShowWorkoutForm(false);
-          }}
-        />
-      )}
-    </div>
+    </motion.div>
   );
 };
 
-// Reusable Components
-const DetailItem = ({ label, value }) => (
-  <div className="flex justify-between items-center py-1 border-b border-primary/10">
-    <span className="text-light/80">{label}:</span>
-    <span className="font-medium">{value}</span>
-  </div>
-);
+// Reusable option component for goals and preferences
+const GoalOption = ({ name, value, selected, onChange }) => {
+  const formattedValue = value.split('-').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
 
-const PlanCard = ({ icon, title, description, onClick }) => (
-  <motion.div
-    whileHover={{ y: -5 }}
-    className="bg-dark/60 hover:bg-dark/80 border border-primary/20 rounded-xl p-4 transition-all cursor-pointer"
-    onClick={onClick}
-  >
-    <div className="text-primary mb-4">{icon}</div>
-    <h3 className="text-xl font-bold mb-2">{title}</h3>
-    <p className="text-light/80">{description}</p>
-    <button className="mt-4 text-primary flex items-center">
-      <FiPlus className="mr-2" /> Generate Plan
-    </button>
-  </motion.div>
-);
+  return (
+    <label className="cursor-pointer">
+      <input
+        type="radio"
+        name={name}
+        value={value}
+        checked={selected}
+        onChange={onChange}
+        className="sr-only"
+      />
+      <div className={`p-3 rounded-lg text-center border transition-all ${
+        selected 
+          ? 'border-primary bg-primary/20 text-primary font-medium' 
+          : 'border-primary/20 bg-dark/40 text-light/60'
+      }`}>
+        {formattedValue}
+      </div>
+    </label>
+  );
+};
 
-export default Dashboard;
+export default WorkoutPlanForm;
