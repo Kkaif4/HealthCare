@@ -23,7 +23,7 @@ export const generateDietPrompt = (user, preferences) => {
   **INDIAN DIET PLAN GENERATION**
   
   ### DAILY_SCHEDULE
-  Time | Meal Type | Food Items | Quantity | Calories | Protein(g) | Carbs(g)
+  Time | Meal Type | Food Items | Quantity | Calories | Protein | Carbs
   ${getMealTimingStructure()}
   Generate a ${preferences.timePeriod} meal plan following STRICT FORMAT:
   
@@ -60,38 +60,78 @@ export const generateDietPrompt = (user, preferences) => {
   `;
 };
 
+
+
 // Generate WorkoutPrompt
 export const generateWorkoutPrompt = (user, preferences) => {
+  const workoutDaysStructure = getWorkoutDaysStructure(preferences.daysPerWeek);
   return `
-  **WORKOUT PLAN**
-  Create ${preferences.timePeriod} plan for ${preferences.workoutPreferences} workouts:
-
-  ### WEEKLY_SCHEDULE
-  Day | Focus Area | Exercises | Equipment | Sets/Reps | Duration | Intensity
-  ${getWeeklyScheduleStructure()}
+  **INDIAN WORKOUT PLAN GENERATION**
+  
+  ### WORKOUT_SCHEDULE
+  Day | Workout Type | Exercises | Sets | Reps | Duration | Rest
+  ${workoutDaysStructure()}
+  Generate a ${preferences.daysPerWeek}-day per week structured workout plan following STRICT FORMAT:
 
   ### TOTALS
-  Weekly Sessions: ${preferences.workoutDaysPerWeek}
-  Daily Time: ${preferences.availableTimePerDay}
-  Intensity Level: ${preferences.activityLevel}
+  Weekly Workout Duration: X minutes
+  Total Sessions: X
+  Focus Areas: X
 
-  RULES:
-  1. Equipment: ${preferences.equipment.join(", ") || "Bodyweight only"}
-  2. Medical Constraints: ${preferences.medicalConstraints.join(", ") || "None"}
-  3. Primary Goal: ${preferences.workoutGoal.replace("-", " ")}
-  4. Use Indian exercise names where possible
-  5. Include ${preferences.availableTimePerDay} warmup/cooldown
-  6. Use standard units for sets/reps (e.g., 3x12)
-  7. Duration in minutes
-  8. Time period ${preferences.timePeriod} months
-  9. Target weight: ${preferences.targetWeight} kg
-  
-  
-  Personal Context:
+  **Response Format RULES:**
+  1. Use ONLY pipe (|) separators between columns
+  2. Follow scientifically structured workout principles
+  3. Use appropriate sets, reps, and rest periods
+  4. Duration should be in minutes (e.g., 45 min)
+  5. Maintain column count (7 columns)
+  6. No additional formatting in headers
+  7. Use EXACT header names and order shown above
+
+  **Workout Plan RULES:**
+  1. Must be tailored for ${preferences.workoutGoal}  
+  2. Should include progressive overload  
+  3. Consider ${preferences.equipment ? "available equipment" : "bodyweight exercises"}  
+
+  **Personal Context:**
   - Age: ${user.age} | Gender: ${user.gender} | Weight: ${user.weight} kg
-  SAMPLE ENTRY:
-  Monday | Upper Body | Surya Namaskar, Danda | Yoga mat | 5x12 | 45 mins | Medium
+  - Fitness Goal: ${preferences.workoutGoal}
+  - Experience Level: ${preferences.experienceLevel}
+  - Preferred Workout Type: ${preferences.preferredWorkoutType || "No preference"}
+  - Equipment Available: ${preferences.equipment || "None"}
+  - Days per Week: ${preferences.daysPerWeek}
+  - Time per Session: ${preferences.workoutDuration} minutes
+  ${getWeeklyScheduleStructure()}
   `;
+};
+
+/**
+ * Generates a structure for workout days based on number of days per week
+ * @param {Number} daysPerWeek - Number of workout days per week
+ * @returns {String} - Template structure
+ */
+const getWorkoutDaysStructure = (daysPerWeek) => {
+  let structure = '';
+  
+  if (daysPerWeek <= 3) {
+    // Full body focus for fewer days
+    for (let i = 1; i <= daysPerWeek; i++) {
+      structure += `Day ${i} (Full Body) | | | |\n`;
+    }
+  } else if (daysPerWeek <= 5) {
+    // Upper/Lower or Push/Pull/Legs split
+    const splits = ['Upper Body', 'Lower Body', 'Upper Body', 'Lower Body', 'Full Body'];
+    for (let i = 0; i < daysPerWeek; i++) {
+      structure += `Day ${i+1} (${splits[i]}) | | | |\n`;
+    }
+  } else {
+    // Body part split for 6-7 days
+    const splits = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core/Cardio', 'Active Recovery'];
+    for (let i = 0; i < daysPerWeek; i++) {
+      structure += `Day ${i+1} (${splits[i]}) | | | |\n`;
+    }
+  }
+  
+  return structure;
 };
 
 const getMealTimingStructure = () => {
@@ -101,7 +141,12 @@ const getMealTimingStructure = () => {
 };
 
 const getWeeklyScheduleStructure = (days) => {
-  return `Example:
-  Monday | Strength Training | Push-ups, Dumbbell Rows | 3x12 | 45 mins | Medium
-  Tuesday | Yoga | Surya Namaskar, Pranayama | 5 rounds | 30 mins | Low`;
+  return `
+  **Example Weekly Schedule:**
+  
+  | Monday   | Strength Training | Push-ups, Dumbbell Rows     | 3x12       | 45 mins  | Medium    |
+  | Tuesday  | Yoga              | Surya Namaskar, Pranayama   | 5 rounds   | 30 mins  | Low       |
+  
+  *This structure should be followed while planning a ${days}-day workout schedule.*  
+  `;
 };
