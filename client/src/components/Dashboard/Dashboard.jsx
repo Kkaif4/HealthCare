@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu } from "@headlessui/react";
 import DietPlanForm from "./DietPlanForm";
-import WorkoutPlanForm from './WorkoutPlanForm';
+import WorkoutPlanForm from "./WorkoutPlanForm";
 import {
   FiUser,
   FiEdit,
@@ -13,7 +13,7 @@ import {
   FiCheckSquare,
   FiCalendar,
   FiCheck,
-  FiTrash2
+  FiTrash2,
 } from "react-icons/fi";
 
 const Dashboard = () => {
@@ -23,7 +23,7 @@ const Dashboard = () => {
   const [todos, setTodos] = useState([
     { id: 1, text: "Drink 2L of water", completed: false },
     { id: 2, text: "Complete today's workout", completed: false },
-    { id: 3, text: "Prepare meals for tomorrow", completed: true }
+    { id: 3, text: "Prepare meals for tomorrow", completed: true },
   ]);
   const [newTodo, setNewTodo] = useState("");
   const [userDetails] = useState({
@@ -31,14 +31,17 @@ const Dashboard = () => {
     age: 28,
     height: 180,
     weight: 75,
-    goal: "Muscle Gain"
+    goal: "Muscle Gain",
   });
   const [bmi, setBmi] = useState(0);
 
   useEffect(() => {
     const calculateBMI = () => {
       const heightInMeters = userDetails.height / 100;
-      const calculatedBMI = (userDetails.weight / (heightInMeters * heightInMeters)).toFixed(1);
+      const calculatedBMI = (
+        userDetails.weight /
+        (heightInMeters * heightInMeters)
+      ).toFixed(1);
       setBmi(parseFloat(calculatedBMI));
     };
     calculateBMI();
@@ -50,7 +53,7 @@ const Dashboard = () => {
     const newTodoItem = {
       id: Date.now(),
       text: newTodo,
-      completed: false
+      completed: false,
     };
     setTodos([...todos, newTodoItem]);
     setNewTodo("");
@@ -58,14 +61,14 @@ const Dashboard = () => {
 
   const toggleTodo = (id) => {
     setTodos(
-      todos.map(todo => 
+      todos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
       )
     );
   };
 
   const deleteTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   return (
@@ -74,8 +77,14 @@ const Dashboard = () => {
       <nav className="bg-dark/90 backdrop-blur-md fixed w-full z-50 border-b border-primary/20">
         <div className="mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
+            <a
+              href="/"
+              className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+            >
+              OptiLife AI
+            </a>
             <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              FitAI Dashboard
+              Dashboard
             </span>
 
             <Menu as="div" className="relative">
@@ -144,14 +153,14 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <button 
+            <button
               onClick={() => setShowToDoList(!showToDoList)}
               className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-3 rounded-lg transition-colors flex items-center justify-center"
             >
-              <FiCheckSquare className="mr-2" /> 
+              <FiCheckSquare className="mr-2" />
               {showToDoList ? "Hide To-Do List" : "View To-Do List"}
             </button>
-            
+
             {showToDoList && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -170,7 +179,7 @@ const Dashboard = () => {
                     placeholder="Add a new task..."
                     className="flex-1 bg-dark/60 border border-primary/30 rounded-l-lg p-2 text-light focus:outline-none focus:ring-1 focus:ring-primary"
                   />
-                  <button 
+                  <button
                     type="submit"
                     className="bg-primary text-dark font-medium px-3 rounded-r-lg hover:bg-primary/90 transition-colors"
                   >
@@ -179,25 +188,33 @@ const Dashboard = () => {
                 </form>
                 <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                   {todos.map((todo) => (
-                    <div 
+                    <div
                       key={todo.id}
                       className="flex items-center justify-between p-2 bg-dark/60 border border-primary/10 rounded-lg"
                     >
                       <div className="flex items-center">
-                        <button 
+                        <button
                           onClick={() => toggleTodo(todo.id)}
                           className={`h-5 w-5 rounded border flex items-center justify-center mr-2 
-                            ${todo.completed 
-                              ? "bg-primary border-primary" 
-                              : "border-primary/30 bg-dark/40"}`}
+                            ${
+                              todo.completed
+                                ? "bg-primary border-primary"
+                                : "border-primary/30 bg-dark/40"
+                            }`}
                         >
-                          {todo.completed && <FiCheck size={12} className="text-dark" />}
+                          {todo.completed && (
+                            <FiCheck size={12} className="text-dark" />
+                          )}
                         </button>
-                        <span className={todo.completed ? "line-through text-light/50" : ""}>
+                        <span
+                          className={
+                            todo.completed ? "line-through text-light/50" : ""
+                          }
+                        >
                           {todo.text}
                         </span>
                       </div>
-                      <button 
+                      <button
                         onClick={() => deleteTodo(todo.id)}
                         className="text-light/50 hover:text-red-400 transition-colors"
                       >
@@ -293,77 +310,191 @@ const Dashboard = () => {
               <h2 className="text-xl font-bold mb-4">BMI Analysis</h2>
               <div className="relative w-full h-52 mb-4">
                 <svg viewBox="0 0 200 120" className="w-full">
-                  <rect x="10" y="90" width="180" height="10" rx="5" fill="#1a1a1a" />
-                  <rect x="10" y="90" width="45" rx="5" height="10" fill="#3498db" />
-                  <rect x="55" y="90" width="45" rx="0" height="10" fill="#2ecc71" />
-                  <rect x="100" y="90" width="45" rx="0" height="10" fill="#f1c40f" />
-                  <rect x="145" y="90" width="45" rx="5" height="10" fill="#e74c3c" />
-                  
-                  <text x="32.5" y="110" fontSize="8" textAnchor="middle" fill="#3498db">Underweight</text>
-                  <text x="32.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(&lt;18.5)</text>
-                  <text x="77.5" y="110" fontSize="8" textAnchor="middle" fill="#2ecc71">Normal</text>
-                  <text x="77.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(18.5-24.9)</text>
-                  <text x="122.5" y="110" fontSize="8" textAnchor="middle" fill="#f1c40f">Overweight</text>
-                  <text x="122.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(25-29.9)</text>
-                  <text x="167.5" y="110" fontSize="8" textAnchor="middle" fill="#e74c3c">Obese</text>
-                  <text x="167.5" y="120" fontSize="8" textAnchor="middle" fill="#fff">(≥30)</text>
-                  
+                  <rect
+                    x="10"
+                    y="90"
+                    width="180"
+                    height="10"
+                    rx="5"
+                    fill="#1a1a1a"
+                  />
+                  <rect
+                    x="10"
+                    y="90"
+                    width="45"
+                    rx="5"
+                    height="10"
+                    fill="#3498db"
+                  />
+                  <rect
+                    x="55"
+                    y="90"
+                    width="45"
+                    rx="0"
+                    height="10"
+                    fill="#2ecc71"
+                  />
+                  <rect
+                    x="100"
+                    y="90"
+                    width="45"
+                    rx="0"
+                    height="10"
+                    fill="#f1c40f"
+                  />
+                  <rect
+                    x="145"
+                    y="90"
+                    width="45"
+                    rx="5"
+                    height="10"
+                    fill="#e74c3c"
+                  />
+
+                  <text
+                    x="32.5"
+                    y="110"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#3498db"
+                  >
+                    Underweight
+                  </text>
+                  <text
+                    x="32.5"
+                    y="120"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#fff"
+                  >
+                    (&lt;18.5)
+                  </text>
+                  <text
+                    x="77.5"
+                    y="110"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#2ecc71"
+                  >
+                    Normal
+                  </text>
+                  <text
+                    x="77.5"
+                    y="120"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#fff"
+                  >
+                    (18.5-24.9)
+                  </text>
+                  <text
+                    x="122.5"
+                    y="110"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#f1c40f"
+                  >
+                    Overweight
+                  </text>
+                  <text
+                    x="122.5"
+                    y="120"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#fff"
+                  >
+                    (25-29.9)
+                  </text>
+                  <text
+                    x="167.5"
+                    y="110"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#e74c3c"
+                  >
+                    Obese
+                  </text>
+                  <text
+                    x="167.5"
+                    y="120"
+                    fontSize="8"
+                    textAnchor="middle"
+                    fill="#fff"
+                  >
+                    (≥30)
+                  </text>
+
                   <motion.g
                     initial={{ x: 10 }}
-                    animate={{ 
-                      x: Math.min(Math.max(10 + ((bmi - 10) * 5), 10), 190)
+                    animate={{
+                      x: Math.min(Math.max(10 + (bmi - 10) * 5, 10), 190),
                     }}
                     transition={{ type: "spring", stiffness: 100 }}
                   >
                     <path d="M0,90 L5,80 L-5,80 Z" fill="white" />
-                    <circle cy="60" r="20" fill="rgba(255,255,255,0.1)" stroke="white" strokeWidth="2" />
-                    <text y="63" fontSize="12" textAnchor="middle" fill="white" fontWeight="bold">{bmi}</text>
-                    <text y="50" fontSize="8" textAnchor="middle" fill="white">BMI</text>
+                    <circle
+                      cy="60"
+                      r="20"
+                      fill="rgba(255,255,255,0.1)"
+                      stroke="white"
+                      strokeWidth="2"
+                    />
+                    <text
+                      y="63"
+                      fontSize="12"
+                      textAnchor="middle"
+                      fill="white"
+                      fontWeight="bold"
+                    >
+                      {bmi}
+                    </text>
+                    <text y="50" fontSize="8" textAnchor="middle" fill="white">
+                      BMI
+                    </text>
                   </motion.g>
                 </svg>
               </div>
-              
+
               <div className="space-y-2">
-                <div 
+                <div
                   className={`p-3 rounded-lg transition-colors duration-300 ${
-                    bmi < 18.5 
-                      ? "bg-blue-500/20 border border-blue-500/30" 
-                      : bmi >= 18.5 && bmi < 25 
-                        ? "bg-green-500/20 border border-green-500/30"
-                        : bmi >= 25 && bmi < 30
-                          ? "bg-yellow-500/20 border border-yellow-500/30"
-                          : "bg-red-500/20 border border-red-500/30"
+                    bmi < 18.5
+                      ? "bg-blue-500/20 border border-blue-500/30"
+                      : bmi >= 18.5 && bmi < 25
+                      ? "bg-green-500/20 border border-green-500/30"
+                      : bmi >= 25 && bmi < 30
+                      ? "bg-yellow-500/20 border border-yellow-500/30"
+                      : "bg-red-500/20 border border-red-500/30"
                   }`}
                 >
                   <div className="font-bold mb-1">
-                    {bmi < 18.5 
-                      ? "Underweight" 
-                      : bmi >= 18.5 && bmi < 25 
-                        ? "Normal Weight"
-                        : bmi >= 25 && bmi < 30
-                          ? "Overweight"
-                          : "Obese"
-                    }
+                    {bmi < 18.5
+                      ? "Underweight"
+                      : bmi >= 18.5 && bmi < 25
+                      ? "Normal Weight"
+                      : bmi >= 25 && bmi < 30
+                      ? "Overweight"
+                      : "Obese"}
                   </div>
                   <div className="text-sm text-light/80">
-                    Your BMI is {bmi}, which is considered 
-                    {bmi < 18.5 
-                      ? " below the healthy range." 
-                      : bmi >= 18.5 && bmi < 25 
-                        ? " within the healthy range."
-                        : bmi >= 25 && bmi < 30
-                          ? " above the healthy range."
-                          : " well above the healthy range."
-                    }
+                    Your BMI is {bmi}, which is considered
+                    {bmi < 18.5
+                      ? " below the healthy range."
+                      : bmi >= 18.5 && bmi < 25
+                      ? " within the healthy range."
+                      : bmi >= 25 && bmi < 30
+                      ? " above the healthy range."
+                      : " well above the healthy range."}
                   </div>
                 </div>
-                
+
                 <div className="p-3 bg-dark/60 rounded-lg">
                   <div className="text-sm text-light/80">
                     <strong>BMI</strong> = weight(kg) / height(m)²
                   </div>
                   <div className="text-sm text-light/80 mt-1">
-                    {userDetails.weight}kg / ({userDetails.height/100})² = {bmi}
+                    {userDetails.weight}kg / ({userDetails.height / 100})² ={" "}
+                    {bmi}
                   </div>
                 </div>
               </div>

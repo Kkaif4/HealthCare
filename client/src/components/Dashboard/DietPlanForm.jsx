@@ -29,33 +29,35 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4"
     >
-      <div className="relative w-full max-w-3xl mx-2 my-4">
+      <div className="relative w-full max-w-3xl mx-auto my-4">
         <motion.div
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-6"
+          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-light flex items-center">
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Generate Diet Plan
-              </span>
-            </h2>
-            <button 
-              onClick={onClose}
-              className="text-light/60 hover:text-primary transition-colors"
-            >
-              <FiArrowLeft className="h-6 w-6" />
-            </button>
+          <div className="bg-dark z-10 pb-4 mb-4 border-b border-primary/10">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl md:text-2xl font-bold text-light flex items-center">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Generate Diet Plan
+                </span>
+              </h2>
+              <button 
+                onClick={onClose}
+                className="text-light/60 hover:text-primary transition-colors"
+              >
+                <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
+              </button>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Diet Goal Selection */}
             <div>
               <label className="block text-light/80 mb-2 font-medium">Diet Goal</label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
                 {["weight-loss", "muscle-gain", "maintenance", "weight-gain"].map(goal => (
                   <GoalOption
                     key={goal}
@@ -86,7 +88,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
             </div>
 
             {/* Two Column Layout for Inputs */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Food Allergies */}
               <div>
                 <label className="block text-light/80 mb-2 font-medium">Food Allergies</label>
@@ -95,7 +97,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                   value={formData.foodAllergies}
                   onChange={handleChange}
                   placeholder="List any food allergies..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-24"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
                 ></textarea>
               </div>
 
@@ -107,7 +109,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                   value={formData.favoriteFoods}
                   onChange={handleChange}
                   placeholder="List your favorite foods..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-24"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
                 ></textarea>
               </div>
 
@@ -119,7 +121,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                   value={formData.dislikedFoods}
                   onChange={handleChange}
                   placeholder="List foods you dislike..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-24"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
                 ></textarea>
               </div>
 
@@ -131,7 +133,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                   value={formData.dietaryRestrictions}
                   onChange={handleChange}
                   placeholder="Any additional dietary restrictions..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-24"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
                 ></textarea>
               </div>
             </div>
@@ -139,7 +141,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
             {/* Budget Selection */}
             <div>
               <label className="block text-light/80 mb-2 font-medium">Budget</label>
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-wrap items-center gap-2 md:gap-4">
                 {["low", "medium", "high"].map(option => (
                   <label key={option} className="flex items-center cursor-pointer">
                     <input
@@ -150,7 +152,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                       onChange={handleChange}
                       className="sr-only"
                     />
-                    <span className={`px-4 py-2 rounded-lg text-sm ${formData.budget === option ? 'bg-primary text-dark font-medium' : 'bg-dark/40 text-light/60 border border-primary/20'}`}>
+                    <span className={`px-3 py-2 rounded-lg text-sm ${formData.budget === option ? 'bg-primary text-dark font-medium' : 'bg-dark/40 text-light/60 border border-primary/20'}`}>
                       {option.charAt(0).toUpperCase() + option.slice(1)}
                     </span>
                   </label>
@@ -158,36 +160,37 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
               </div>
             </div>
 
-            {/* Target Weight */}
-            <div>
-              <label className="block text-light/80 mb-2 font-medium">Target Weight (kg)</label>
-              <input
-                type="number"
-                name="targetWeight"
-                value={formData.targetWeight}
-                onChange={handleChange}
-                placeholder="Enter target weight"
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                required
+            {/* Target Weight and Time Period in a grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Target Weight */}
+              <div>
+                <label className="block text-light/80 mb-2 font-medium">Target Weight (kg)</label>
+                <input
+                  type="number"
+                  name="targetWeight"
+                  value={formData.targetWeight}
+                  onChange={handleChange}
+                  placeholder="Enter target weight"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+                />
+              </div>
 
-              />
-            </div>
-
-            {/* Time Period */}
-            <div>
-              <label className="block text-light/80 mb-2 font-medium">Time Period (months)</label>
-              <input
-                type="number"
-                name="timePeriod"
-                value={formData.timePeriod}
-                onChange={handleChange}
-                min="1"
-                max="24"
-                placeholder="Enter time period in months"
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                required
-
-              />
+              {/* Time Period */}
+              <div>
+                <label className="block text-light/80 mb-2 font-medium">Time Period (months)</label>
+                <input
+                  type="number"
+                  name="timePeriod"
+                  value={formData.timePeriod}
+                  onChange={handleChange}
+                  min="1"
+                  max="24"
+                  placeholder="Enter time period in months"
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                  required
+                />
+              </div>
             </div>
 
             {/* Submit Button */}
@@ -222,7 +225,7 @@ const GoalOption = ({ name, value, selected, onChange }) => {
         onChange={onChange}
         className="sr-only"
       />
-      <div className={`p-3 rounded-lg text-center border transition-all ${
+      <div className={`p-2 md:p-3 rounded-lg text-center border text-sm md:text-base transition-all ${
         selected 
           ? 'border-primary bg-primary/20 text-primary font-medium' 
           : 'border-primary/20 bg-dark/40 text-light/60'

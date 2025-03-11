@@ -10,7 +10,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="navbar flex items-center justify-between">
           {/* Logo */}
-          <Link smooth to="#" className="flex items-center">
+          <Link smooth to="#" className="flex items-center" onClick={() => window.location.reload()}>
             <span className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               OptiLife AI
             </span>
@@ -34,7 +34,7 @@ const Navbar = () => {
             </Link>
             <Link
               smooth
-              to="#AboutUs"
+              to="#team"
               className="text-light/80 hover:text-primary transition-colors"
             >
               About Us
