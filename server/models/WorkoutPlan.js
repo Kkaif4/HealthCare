@@ -21,13 +21,13 @@ const workoutPlanSchema = new mongoose.Schema({
   },
   schedule: [
     {
-      time: String,
-      mealType: String,
-      dishName: String,
-      ingredients: [String],
-      quantity: String,
-      calories: Number,
-      protein: Number,
+      day: String,
+      workoutType: String,
+      exercises: [String],
+      sets: Number,
+      reps: String,
+      duration: String,
+      rest: String,
     },
   ],
   totals: {

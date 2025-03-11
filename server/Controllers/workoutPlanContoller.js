@@ -1,6 +1,5 @@
 import WorkoutPlan from "../models/WorkoutPlan.js";
 import initializeModel from "../config/gemini.js";
-import User from "../models/User.js";
 import WorkoutPreferences from "../models/WorkoutPreferences.js";
 import { generateWorkoutPrompt } from "../utils/promptGenerator.js";
 import { formatAndStoreWorkoutPlan } from "../utils/workoutReponseFormatter.js";
@@ -153,17 +152,11 @@ const generateWithRetry = async (
  * @param {Object} res - Express response object
  * @returns {Object} - Response with workout plan
  */
-const generateWorkoutPlan = async (req, res, next) => {
+const generateWorkoutPlan = async (req, res) => {
   try {
     const user = req.user;
     const userId = user.id;
     const preferences = await WorkoutPreferences.findOne({ userId });
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
 
     if (!preferences) {
       return res.status(400).json({
@@ -171,60 +164,34 @@ const generateWorkoutPlan = async (req, res, next) => {
         error: "Complete preferences questionnaire first",
       });
     }
-    // generate the prompt
     const prompt = generateWorkoutPrompt(user, preferences);
-    console.log("---------------------------------");
-    console.log(prompt);
-    console.log("---------------------------------");
     const formattedContent = await generateWithRetry(
       prompt,
-      "diet",
+      "workout",
       userId,
       preferences
     );
+    console.log(formattedContent);
     const workoutPlan = await WorkoutPlan.create({
-      userId: user.id,
+      userId,
       preferencesId: preferences._id,
-      schedule: formattedContent.schedule, // Ensure `formattedContent.schedule` is correctly structured
-      status: "active", // Default status
-      summary: {
-        totalSessions: formattedContent.totalSessions || 0, // Ensure totalSessions is available
-        focusAreas: formattedContent.focusAreas || [], // List of targeted muscle groups
-        estimatedCalories: formattedContent.estimatedCalories || 0, // If applicable
-      },
+      schedule: formattedContent.schedule,
+      totals: formattedContent.totals,
+      durationWeeks: parseInt(preferences.timePeriod.match(/\d+/)[0]),
       metadata: {
-        fitnessGoal: preferences.workoutGoal, // Mapping correctly
-        experienceLevel: preferences.activityLevel, // Assuming this exists in preferences
-        workoutDuration: preferences.availableTimePerDay, // Assuming this exists
-        daysPerWeek: preferences.workoutDaysPerWeek, // Assuming this exists
+        equipment: preferences.equipment,
       },
-      isUnstructured: false, // Assuming structured plans
-      rawContent: JSON.stringify(formattedContent), // Store full response as raw JSON
-      type: "workout", // Explicitly setting type
     });
-
+    console.log('workout plan created');
+    console.log(workoutPlan);
     res.status(201).json({
       success: true,
-      message: "Workout plan generated successfully",
+      message:"Workout plan created successfully",
       data: workoutPlan,
     });
   } catch (error) {
-    console.log("An error occurred in workout plan generation");
-    if (error.message.includes("Failed to generate")) {
-      const rawPlan = await DietPlan.create({
-        userId: req.user.id,
-        rawContent: error.rawContent || "Generation failed",
-        isUnstructured: true,
-      });
-
-      return res.status(206).json({
-        success: true,
-        data: rawPlan,
-        warning: "Plan generated in basic format",
-      });
-    }
-
-    next(error);
+    console.error(error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

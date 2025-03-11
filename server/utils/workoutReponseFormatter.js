@@ -15,7 +15,11 @@ import WorkoutPlan from "../models/WorkoutPlan.js";
  * @param {Object} preferences - Workout preferences used to generate the prompt
  * @returns {Object} - The saved workout plan document
  */
-export const formatAndStoreWorkoutPlan = async (rawResponse, userId, preferences) => {
+export const formatAndStoreWorkoutPlan = async (
+  rawResponse,
+  userId,
+  preferences
+) => {
   try {
     console.log("Formatting workout plan response...");
 
@@ -43,10 +47,10 @@ export const formatAndStoreWorkoutPlan = async (rawResponse, userId, preferences
         schedule,
         summary,
         metadata: {
-          fitnessGoal: preferences.fitnessGoal,
-          experienceLevel: preferences.experienceLevel,
-          workoutDuration: preferences.workoutDuration,
-          daysPerWeek: preferences.daysPerWeek,
+          fitnessGoal: preferences.workoutGoal,
+          experienceLevel: preferences.experience,
+          workoutDuration: preferences.duration,
+          daysPerWeek: preferences.workoutDaysPerWeek,
         },
         isUnstructured: false,
         rawContent: rawResponse,
@@ -63,7 +67,7 @@ export const formatAndStoreWorkoutPlan = async (rawResponse, userId, preferences
         generatedAt: new Date(),
         status: "active",
         schedule: [],
-        summary: {
+        totals: {
           totalSessions: 0,
           focusAreas: [],
           estimatedCalories: 0,
@@ -112,7 +116,8 @@ const isStructuredResponse = (response) => {
       response.includes("Duration"));
 
   const hasSummary =
-    response.includes("Summary") ||
+    response.includes("TOTALS") ||
+    response.includes("Weekly Workout Duration") ||
     response.includes("Total Sessions") ||
     response.includes("Focus Areas");
 
@@ -125,290 +130,74 @@ const isStructuredResponse = (response) => {
  * @returns {Object} - Parsed schedule and summary
  */
 const parseStructuredWorkoutResponse = (response) => {
-  // Initialize return objects
-  const schedule = [];
-  const summary = {
+  const sections = response.split(/###\s+/);
+  const scheduleSection = sections.find(
+    (section) =>
+      section.startsWith("WEEKLY_SCHEDULE") ||
+      section.includes("Day | Workout Type | Exercises")
+  );
+  const totalSection = sections.find(
+    (section) =>
+      section.startsWith("TOTALS") ||
+      section.includes("Weekly Workout Duration")
+  );
+  const schedule = parseWorkoutScheduleSection(scheduleSection);
+  const totals = parseWorkoutTotalsSection(totalSection);
+  return { schedule, totals };
+};
+
+const parseWorkoutScheduleSection = (scheduleSection) => {
+  if (!scheduleSection) return [];
+
+  const lines = scheduleSection
+    .split("\n")
+    .filter((line) => line.trim() !== "")
+    .filter((line) => line.includes("|"))
+    .filter((line) => !line.includes("Day | Workout Type | Exercises"));
+
+  return lines.map((line) => {
+    const parts = line.split("|").map((part) => part.trim());
+    if (parts.length < 7) {
+      return null;
+    }
+    return {
+      day: parts[0],
+      workoutType: parts[1],
+      exercises: parts[2],
+      duration: parts[3],
+      rest: line,
+      sets: parseInt(parts[4]),
+      reps: parts[5],
+      intensity: parts[6],
+    };
+  }).filter(Boolean);
+};
+
+const parseWorkoutTotalsSection = (totalsSection) => {
+  if (!totalsSection) {
+    return {
+      weeklyWorkoutDuration: 0,
+      totalSessions: 0,
+      focusAreas: "",
+    };
+  }
+
+  // Initialize totals object
+  const totals = {
+    weeklyWorkoutDuration: 0,
     totalSessions: 0,
-    focusAreas: [],
-    estimatedCalories: 0,
+    focusAreas: "",
   };
 
-  try {
-    // Split into lines for processing
-    const lines = response.split("\n").filter((line) => line.trim().length > 0);
+  // Extract values using regex
+  const durationMatch = totalsSection.match(/Weekly Workout Duration:\s*(\d+)/);
+  if (durationMatch) totals.weeklyWorkoutDuration = parseInt(durationMatch[1]);
 
-    // Process each line
-    let currentDay = null;
-    let inSummarySection = false;
+  const sessionsMatch = totalsSection.match(/Total Sessions:\s*(\d+)/);
+  if (sessionsMatch) totals.totalSessions = parseInt(sessionsMatch[1]);
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+  const focusAreasMatch = totalsSection.match(/Focus Areas:\s*(.+)/);
+  if (focusAreasMatch) totals.focusAreas = focusAreasMatch[1].trim();
 
-      // Check for day headers
-      if (
-        line.match(/^(Day|Week)\s*\d+/i) ||
-        line.match(
-          /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)/i
-        )
-      ) {
-        currentDay = {
-          day: line,
-          exercises: [],
-          notes: "",
-        };
-        schedule.push(currentDay);
-        continue;
-      }
-
-      // Check for summary section
-      if (line.match(/^Summary/i) || line.match(/^Overview/i)) {
-        inSummarySection = true;
-        continue;
-      }
-
-      // Process exercise lines if we're in a day
-      if (currentDay && !inSummarySection) {
-        // Check if line contains exercise information
-        if (
-          line.includes("x") ||
-          line.includes("sets") ||
-          line.includes("reps") ||
-          line.includes("min") ||
-          line.includes("sec")
-        ) {
-          const exercise = parseExerciseLine(line);
-          if (exercise) {
-            currentDay.exercises.push(exercise);
-          }
-        } else if (currentDay.exercises.length > 0) {
-          // If not an exercise, and we already have exercises, treat as notes
-          currentDay.notes += line + " ";
-        }
-      }
-
-      // Process summary information
-      if (inSummarySection) {
-        processSummaryLine(line, summary);
-      }
-    }
-
-    // Count total sessions
-    summary.totalSessions = schedule.length;
-
-    // If no focus areas were found, derive them from exercise names
-    if (summary.focusAreas.length === 0) {
-      const allExercises = schedule.flatMap((day) =>
-        day.exercises.map((ex) => ex.name)
-      );
-      summary.focusAreas = deriveBodyPartFocus(allExercises);
-    }
-
-    return { schedule, summary };
-  } catch (error) {
-    console.error("Error parsing workout response:", error);
-    return {
-      schedule: [],
-      summary: {
-        totalSessions: 0,
-        focusAreas: [],
-        estimatedCalories: 0,
-      },
-    };
-  }
-};
-
-/**
- * Parse a single line containing exercise information
- * @param {String} line - Line of text with exercise details
- * @returns {Object|null} - Parsed exercise or null if not parseable
- */
-const parseExerciseLine = (line) => {
-  try {
-    // Try to extract exercise details using regex patterns
-
-    // Pattern for standard lifting format: Exercise name: 3x12 (sets x reps)
-    const liftingMatch = line.match(/(.+?):\s*(\d+)\s*x\s*(\d+)/i);
-    if (liftingMatch) {
-      return {
-        name: liftingMatch[1].trim(),
-        sets: parseInt(liftingMatch[2]),
-        reps: parseInt(liftingMatch[3]),
-        duration: null,
-        rest: extractRest(line),
-      };
-    }
-
-    // Pattern for time-based exercises: Exercise name: 30 sec/3 min
-    const timeMatch = line.match(/(.+?):\s*(\d+)\s*(sec|min)/i);
-    if (timeMatch) {
-      return {
-        name: timeMatch[1].trim(),
-        sets: 1, // Default to 1 set for time-based exercises
-        reps: null,
-        duration: {
-          value: parseInt(timeMatch[2]),
-          unit: timeMatch[3].toLowerCase(),
-        },
-        rest: extractRest(line),
-      };
-    }
-
-    // Fallback - try to split on common separators
-    if (line.includes("-") || line.includes(":")) {
-      const parts = line.split(/[-:]/);
-      if (parts.length >= 2) {
-        return {
-          name: parts[0].trim(),
-          details: parts.slice(1).join(" ").trim(),
-          // These are fallbacks when structured parsing fails
-          sets: extractNumber(line, "sets") || null,
-          reps: extractNumber(line, "reps") || null,
-          duration: extractDuration(line),
-          rest: extractRest(line),
-        };
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error("Error parsing exercise line:", error);
-    return null;
-  }
-};
-
-/**
- * Process a line from the summary section
- * @param {String} line - Line from summary section
- * @param {Object} summary - Summary object to update
- */
-const processSummaryLine = (line, summary) => {
-  const lowerLine = line.toLowerCase();
-
-  // Extract focus areas
-  if (lowerLine.includes("focus") || lowerLine.includes("target")) {
-    const bodyParts = [
-      "chest",
-      "back",
-      "legs",
-      "shoulders",
-      "arms",
-      "core",
-      "abs",
-      "cardio",
-      "full body",
-      "upper body",
-      "lower body",
-      "biceps",
-      "triceps",
-      "quads",
-      "hamstrings",
-      "glutes",
-    ];
-
-    for (const part of bodyParts) {
-      if (lowerLine.includes(part)) {
-        if (!summary.focusAreas.includes(part)) {
-          summary.focusAreas.push(part);
-        }
-      }
-    }
-  }
-
-  // Extract estimated calories
-  const calorieMatch = line.match(/(\d+)\s*calories/i);
-  if (calorieMatch) {
-    summary.estimatedCalories = parseInt(calorieMatch[1]);
-  }
-};
-
-/**
- * Extract rest time from a line
- * @param {String} line - Line of text
- * @returns {Object|null} - Rest time object or null
- */
-const extractRest = (line) => {
-  const restMatch = line.match(/rest\s*:?\s*(\d+)\s*(sec|min)/i);
-  if (restMatch) {
-    return {
-      value: parseInt(restMatch[1]),
-      unit: restMatch[2].toLowerCase(),
-    };
-  }
-  return null;
-};
-
-/**
- * Extract a number with a specific label from text
- * @param {String} text - Text to search in
- * @param {String} label - Label to look for (sets, reps, etc.)
- * @returns {Number|null} - Extracted number or null
- */
-const extractNumber = (text, label) => {
-  const regex = new RegExp(`(\\d+)\\s*${label}`, "i");
-  const match = text.match(regex);
-  return match ? parseInt(match[1]) : null;
-};
-
-/**
- * Extract duration information from text
- * @param {String} text - Text to search in
- * @returns {Object|null} - Duration object or null
- */
-const extractDuration = (text) => {
-  const minMatch = text.match(/(\d+)\s*min/i);
-  if (minMatch) {
-    return { value: parseInt(minMatch[1]), unit: "min" };
-  }
-
-  const secMatch = text.match(/(\d+)\s*sec/i);
-  if (secMatch) {
-    return { value: parseInt(secMatch[1]), unit: "sec" };
-  }
-
-  return null;
-};
-
-/**
- * Derive body part focus from exercise names
- * @param {Array} exerciseNames - List of exercise names
- * @returns {Array} - List of body parts
- */
-const deriveBodyPartFocus = (exerciseNames) => {
-  const focusAreas = new Set();
-  const bodyPartMap = {
-    chest: ["chest", "bench", "push-up", "pushup", "dip", "flye", "press"],
-    back: ["back", "row", "pull-up", "pullup", "pulldown", "deadlift", "lat"],
-    legs: [
-      "leg",
-      "squat",
-      "lunge",
-      "calf",
-      "extension",
-      "curl",
-      "raise",
-      "press",
-    ],
-    shoulders: ["shoulder", "deltoid", "press", "raise", "lateral", "overhead"],
-    arms: ["bicep", "tricep", "curl", "extension", "arm"],
-    core: ["core", "ab", "crunch", "plank", "twist", "russian", "situp"],
-  };
-
-  exerciseNames.forEach((name) => {
-    const lowerName = name.toLowerCase();
-
-    for (const [bodyPart, keywords] of Object.entries(bodyPartMap)) {
-      for (const keyword of keywords) {
-        if (lowerName.includes(keyword)) {
-          focusAreas.add(bodyPart);
-          break;
-        }
-      }
-    }
-  });
-
-  if (focusAreas.size === 0) {
-    return ["full body"]; // Default if no specific focus is identified
-  }
-
-  return [...focusAreas];
+  return totals;
 };

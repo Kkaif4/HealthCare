@@ -70,7 +70,7 @@ export const generateWorkoutPrompt = (user, preferences) => {
   
   ### WORKOUT_SCHEDULE
   Day | Workout Type | Exercises | Sets | Reps | Duration | Rest
-  ${workoutDaysStructure()}
+  ${workoutDaysStructure}
   Generate a ${preferences.daysPerWeek}-day per week structured workout plan following STRICT FORMAT:
 
   ### TOTALS
