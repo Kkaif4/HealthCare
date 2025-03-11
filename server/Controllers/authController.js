@@ -29,7 +29,7 @@ export const register = async (req, res, next) => {
       console.log("Email already registered try to login");
       return res
         .status(400)
-        .json({ success: false, error: "Email already registered" });
+        .json({ success: false, message: "User already exists" });
     }
 
     let avatarUrl = "default-avatar.jpg";
@@ -62,7 +62,7 @@ export const register = async (req, res, next) => {
       medicalHistory,
       avatar: avatarUrl,
     });
-    console.log("User created successfully");
+    console.log("User registered successfully");
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -75,6 +75,7 @@ export const register = async (req, res, next) => {
       .status(201)
       .json({
         success: true,
+        token: token,
         data: {
           id: user._id,
           name: user.name,
@@ -100,7 +101,6 @@ export const login = async (req, res, next) => {
     }
     //find user
     const user = await User.findOne({ email }).select("+password");
-    console.log(user);
     if (!user) {
       console.log("User not found");
       return res.status(400).json({ success: false, error: "User not found" });
@@ -123,6 +123,7 @@ export const login = async (req, res, next) => {
         .status(400)
         .json({ success: false, error: "Invalid credentials" });
     }
+
     // Generate JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
@@ -140,6 +141,7 @@ export const login = async (req, res, next) => {
           age: user.age,
         },
       });
+    console.log("User Logged in Successfully");
   } catch (error) {
     console.log(error.message);
     next(error);

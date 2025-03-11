@@ -233,6 +233,7 @@ const getWorkoutPlan = async (req, res) => {
 
     const workoutPlan = await WorkoutPlan.findById(planId);
     if (!workoutPlan) {
+      console.log("Workout plan not found");
       return res
         .status(404)
         .json({ success: false, message: "Workout plan not found" });

@@ -1,7 +1,28 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { loginUser } from "../../api/auth.js";
 const Login = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    try {
+      await loginUser({ email, password });
+      navigate("/dashboard");
+      setIsLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-dark flex items-center justify-center p-4">
       <motion.div
@@ -14,14 +35,18 @@ const Login = () => {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Welcome Back
           </h2>
-          <p className="text-light/80 mt-2">Login to continue your fitness journey</p>
+          <p className="text-light/80 mt-2">
+            Login to continue your fitness journey
+          </p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label className="block text-light/80 mb-2">Email</label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
               placeholder="Enter your email"
             />
@@ -31,22 +56,33 @@ const Login = () => {
             <label className="block text-light/80 mb-2">Password</label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
               placeholder="Password"
             />
           </div>
 
+          {/* Error Message  */}
+          {/* {error && <p className="text-red-500 text-sm text-center">{error}</p>} */}
+
+          {/* Login Button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            type="submit"
+            disabled={isLoading}
             className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors"
           >
-            Login
+            {isLoading ? "Logging in..." : "Login"}
           </motion.button>
 
           <p className="text-center text-light/80">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary hover:text-secondary transition-colors">
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="text-primary hover:text-secondary transition-colors"
+            >
               Sign up
             </Link>
           </p>
