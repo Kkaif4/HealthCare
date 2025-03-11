@@ -182,11 +182,11 @@ const generateWorkoutPlan = async (req, res) => {
         equipment: preferences.equipment,
       },
     });
-    console.log('workout plan created');
+    console.log("workout plan created");
     console.log(workoutPlan);
     res.status(201).json({
       success: true,
-      message:"Workout plan created successfully",
+      message: "Workout plan created successfully",
       data: workoutPlan,
     });
   } catch (error) {

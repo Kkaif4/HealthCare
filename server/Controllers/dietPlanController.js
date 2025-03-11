@@ -1,8 +1,6 @@
-import DietPreference from "../models/DietPreferences.js";;
+import DietPreference from "../models/DietPreferences.js";
 import DietPlan from "../models/DietPlan.js";
-import {
-  generateDietPrompt,
-} from "../utils/promptGenerator.js";
+import { generateDietPrompt } from "../utils/promptGenerator.js";
 import initializeModel from "../config/gemini.js";
 import { formatAndStoreDietPlan } from "../utils/dietResponseFormatter.js";
 const geminiModel = initializeModel();
@@ -119,7 +117,7 @@ export const saveDietPreferences = async (req, res, next) => {
       targetWeight,
       timePeriod,
     });
-    console.log("new preferences created")
+    console.log("new preferences created");
     res.status(201).json({
       success: true,
       data: preferences,
@@ -166,7 +164,7 @@ export const generateDietPlan = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message:"diet plan Successfully created",
+      message: "diet plan Successfully created",
       data: dietPlan,
     });
   } catch (error) {

@@ -60,8 +60,6 @@ export const generateDietPrompt = (user, preferences) => {
   `;
 };
 
-
-
 // Generate WorkoutPrompt
 export const generateWorkoutPrompt = (user, preferences) => {
   const workoutDaysStructure = getWorkoutDaysStructure(preferences.daysPerWeek);
@@ -71,7 +69,9 @@ export const generateWorkoutPrompt = (user, preferences) => {
   ### WORKOUT_SCHEDULE
   Day | Workout Type | Exercises | Sets | Reps | Duration | Rest
   ${workoutDaysStructure}
-  Generate a ${preferences.daysPerWeek}-day per week structured workout plan following STRICT FORMAT:
+  Generate a ${
+    preferences.daysPerWeek
+  }-day per week structured workout plan following STRICT FORMAT:
 
   ### TOTALS
   Weekly Workout Duration: X minutes
@@ -90,13 +90,17 @@ export const generateWorkoutPrompt = (user, preferences) => {
   **Workout Plan RULES:**
   1. Must be tailored for ${preferences.workoutGoal}  
   2. Should include progressive overload  
-  3. Consider ${preferences.equipment ? "available equipment" : "bodyweight exercises"}  
+  3. Consider ${
+    preferences.equipment ? "available equipment" : "bodyweight exercises"
+  }  
 
   **Personal Context:**
   - Age: ${user.age} | Gender: ${user.gender} | Weight: ${user.weight} kg
   - Fitness Goal: ${preferences.workoutGoal}
   - Experience Level: ${preferences.experienceLevel}
-  - Preferred Workout Type: ${preferences.preferredWorkoutType || "No preference"}
+  - Preferred Workout Type: ${
+    preferences.preferredWorkoutType || "No preference"
+  }
   - Equipment Available: ${preferences.equipment || "None"}
   - Days per Week: ${preferences.daysPerWeek}
   - Time per Session: ${preferences.workoutDuration} minutes
@@ -110,8 +114,8 @@ export const generateWorkoutPrompt = (user, preferences) => {
  * @returns {String} - Template structure
  */
 const getWorkoutDaysStructure = (daysPerWeek) => {
-  let structure = '';
-  
+  let structure = "";
+
   if (daysPerWeek <= 3) {
     // Full body focus for fewer days
     for (let i = 1; i <= daysPerWeek; i++) {
@@ -119,18 +123,32 @@ const getWorkoutDaysStructure = (daysPerWeek) => {
     }
   } else if (daysPerWeek <= 5) {
     // Upper/Lower or Push/Pull/Legs split
-    const splits = ['Upper Body', 'Lower Body', 'Upper Body', 'Lower Body', 'Full Body'];
+    const splits = [
+      "Upper Body",
+      "Lower Body",
+      "Upper Body",
+      "Lower Body",
+      "Full Body",
+    ];
     for (let i = 0; i < daysPerWeek; i++) {
-      structure += `Day ${i+1} (${splits[i]}) | | | |\n`;
+      structure += `Day ${i + 1} (${splits[i]}) | | | |\n`;
     }
   } else {
     // Body part split for 6-7 days
-    const splits = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core/Cardio', 'Active Recovery'];
+    const splits = [
+      "Chest",
+      "Back",
+      "Legs",
+      "Shoulders",
+      "Arms",
+      "Core/Cardio",
+      "Active Recovery",
+    ];
     for (let i = 0; i < daysPerWeek; i++) {
-      structure += `Day ${i+1} (${splits[i]}) | | | |\n`;
+      structure += `Day ${i + 1} (${splits[i]}) | | | |\n`;
     }
   }
-  
+
   return structure;
 };
 
