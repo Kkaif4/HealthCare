@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { loginUser } from "../../api/auth.js";
+
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -13,14 +13,7 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    try {
-      await loginUser({ email, password });
-      navigate("/dashboard");
-      setIsLoading(false);
-    } catch (error) {
-      setError(error.message);
-      setIsLoading(false);
-    }
+   
   };
 
   return (

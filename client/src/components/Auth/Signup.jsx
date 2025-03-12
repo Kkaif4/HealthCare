@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-import { registerUser } from "../../api/auth";
+import { useState, useRef} from "react";
+
 
 const Signup = () => {
   // State for form validation
@@ -66,37 +66,7 @@ const Signup = () => {
     // Form processing logic would go here
     console.log("Form submitted:", formData);
     console.log("Profile photo:", avatar);
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.password ||
-      !formData.age ||
-      !formData.gender ||
-      !formData.weight ||
-      !formData.height
-    ) {
-      console.log("Please enter all required fields");
-      alert("Please fill in all required fields.");
-      return;
-    }
-    // Send form data to server
-    const formDataInfo = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataInfo.append(key, formData[key]);
-    });
-    if (avatar) {
-      formDataInfo.append("avatar", avatar);
-    }
-    try {
-      const response = await registerUser(formDataInfo);
-      console.log(response?.data);
-      navigate("/dashboard");
-    } catch (error) {
-      if (error.response.data.message === "User already exists") {
-        navigate("/login");
-      }
-      console.log("Error registering user:", error.message);
-    }
+    
   };
 
   return (
