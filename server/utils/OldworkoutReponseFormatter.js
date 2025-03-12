@@ -1,4 +1,4 @@
-import WorkoutPlan from "../models/WorkoutPlan.js";
+import WorkoutPlan from "../models/OldWorkoutPlan.js";
 // Workout Plan Response Formatter
 /**
  * Checks if the AI response is structured correctly for a workout plan
@@ -155,22 +155,24 @@ const parseWorkoutScheduleSection = (scheduleSection) => {
     .filter((line) => line.includes("|"))
     .filter((line) => !line.includes("Day | Workout Type | Exercises"));
 
-  return lines.map((line) => {
-    const parts = line.split("|").map((part) => part.trim());
-    if (parts.length < 7) {
-      return null;
-    }
-    return {
-      day: parts[0],
-      workoutType: parts[1],
-      exercises: parts[2],
-      duration: parts[3],
-      rest: line,
-      sets: parseInt(parts[4]),
-      reps: parts[5],
-      intensity: parts[6],
-    };
-  }).filter(Boolean);
+  return lines
+    .map((line) => {
+      const parts = line.split("|").map((part) => part.trim());
+      if (parts.length < 7) {
+        return null;
+      }
+      return {
+        day: parts[0],
+        workoutType: parts[1],
+        exercises: parts[2],
+        duration: parts[3],
+        rest: line,
+        sets: parseInt(parts[4]),
+        reps: parts[5],
+        intensity: parts[6],
+      };
+    })
+    .filter(Boolean);
 };
 
 const parseWorkoutTotalsSection = (totalsSection) => {
