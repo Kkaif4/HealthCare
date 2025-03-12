@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../../services/authSerives';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,12 +26,17 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Add your authentication logic here
-      console.log('Login data:', formData);
-      // Simulated successful login
-      navigate('/dashboard');
+      // Call the login API function
+      const userData = await login(formData.email, formData.password);
+      
+      if (userData) {
+        // Handle successful login
+        navigate('/dashboard');
+      } else {
+        setError('Login failed. Please check your credentials.');
+      }
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError(err.response?.data?.message || 'An error occurred during login');
     } finally {
       setIsLoading(false);
     }
