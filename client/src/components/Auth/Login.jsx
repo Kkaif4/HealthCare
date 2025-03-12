@@ -13,8 +13,8 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
     }));
   };
@@ -24,36 +24,13 @@ const Login = () => {
     setError('');
     setIsLoading(true);
 
-    // Basic validation
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('https://your-backend-api.com/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      // Store the token in localStorage or context
-      localStorage.setItem('token', data.token);
-      
-      // Redirect to dashboard or home page
+      // Add your authentication logic here
+      console.log('Login data:', formData);
+      // Simulated successful login
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError('Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -71,14 +48,14 @@ const Login = () => {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Welcome Back
           </h2>
-          <p className="text-light/80 mt-2">Login to continue your fitness journey</p>
+          <p className="text-light/80 mt-2">Continue your health journey</p>
         </div>
 
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-lg mb-6"
+            className="mb-6 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg"
           >
             {error}
           </motion.div>
@@ -86,7 +63,9 @@ const Login = () => {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-light/80 mb-2">Email</label>
+            <label htmlFor="email" className="block text-light/80 mb-2">
+              Email
+            </label>
             <input
               id="email"
               name="email"
@@ -100,7 +79,9 @@ const Login = () => {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-light/80 mb-2">Password</label>
+            <label htmlFor="password" className="block text-light/80 mb-2">
+              Password
+            </label>
             <input
               id="password"
               name="password"
@@ -108,33 +89,57 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
-              placeholder="Password"
+              placeholder="Enter your password"
               required
             />
           </div>
 
           <div className="flex justify-end">
-            <Link to="/forgot-password" className="text-primary hover:text-secondary text-sm transition-colors">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-primary hover:text-secondary transition-colors"
+            >
               Forgot Password?
             </Link>
           </div>
 
           <motion.button
             type="submit"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             disabled={isLoading}
             className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {isLoading ? 'Authenticating...' : 'Login'}
           </motion.button>
 
-          <p className="text-center text-light/80">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-primary hover:text-secondary transition-colors">
-              Sign up
-            </Link>
-          </p>
+          <div className="text-center text-light/80 space-y-2">
+            <p>
+              New to Health Track?{' '}
+              <Link
+                to="/signup"
+                className="text-primary hover:text-secondary transition-colors"
+              >
+                Create Account
+              </Link>
+            </p>
+            <p className="text-xs">
+              By continuing, you agree to our{' '}
+              <Link
+                to="/terms"
+                className="text-primary hover:text-secondary transition-colors"
+              >
+                Terms
+              </Link>{' '}
+              and{' '}
+              <Link
+                to="/privacy"
+                className="text-primary hover:text-secondary transition-colors"
+              >
+                Privacy
+              </Link>
+            </p>
+          </div>
         </form>
       </motion.div>
     </div>
