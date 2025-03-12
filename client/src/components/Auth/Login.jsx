@@ -1,19 +1,26 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { useForm } from "react-hook-form";
+import { login } from "../../services/authSerives.js";
 const Login = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm();
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const submit = async ({ email, password }) => {
     setIsLoading(true);
-    setError("");
-   
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error in login:", error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,27 +40,31 @@ const Login = () => {
           </p>
         </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit(submit)}>
           <div>
             <label className="block text-light/80 mb-2">Email</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email", { required: "email is required" })}
               className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
               placeholder="Enter your email"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-light/80 mb-2">Password</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register("password", { required: "Password is required" })}
               className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
               placeholder="Password"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Error Message  */}
