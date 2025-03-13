@@ -4,7 +4,7 @@ axios.defaults.baseURL =
   process.env.NODE_ENV !== "production" ? "http://localhost:5000/api" : "/";
 
 axios.defaults.withCredentials = true;
-
+axios.defaults.credentials = true;
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token"); // Get token from localStorage
