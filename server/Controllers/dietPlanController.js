@@ -160,7 +160,7 @@ export const getDietPlan = async (req, res) => {
 
 export const getDietPreferences = async (req, res) => {
   try {
-    const userId = req.params.usesrId;
+    const userId = req.params.userId;
     const dietPreferences = await Preferences.findOne({ userId });
     if (!dietPreferences) {
       return res.status(404).json({

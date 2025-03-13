@@ -37,7 +37,8 @@ const Dashboard = () => {
   const [newTodo, setNewTodo] = useState("");
   const [user, setUser] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("user") || null);
+      const User = localStorage.getItem('user')
+      return User || null;
     } catch (error) {
       console.error("Error parsing user from localStorage:", error.message);
     }

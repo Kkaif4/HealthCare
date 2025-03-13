@@ -2,12 +2,21 @@ import axios from "axios";
 
 export const login = async (email, password) => {
   try {
-    const { data } = await axios.post("/auth/login", { email, password });
-    const token = data.token;
-    console.log(data.user);
+    const response = await axios.post("/auth/login", {
+      email,
+      password,
+    });
+    const { token, user } = response.data;
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    return data;
+    localStorage.setItem("user", JSON.stringify(user));
+    const userId = user._id;
+    try {
+      const preferences = getPreferences(userId);
+      localStorage.setItem("dietPreference", JSON.stringify(preferences));
+    } catch (error) {
+      console.error("Error fetching preferences:", error.message);
+    }
+    return user;
   } catch (error) {
     console.error("Error in login:", error.message);
   }
@@ -27,5 +36,16 @@ export const register = async (formData) => {
     throw new Error(
       error.response?.data?.message || "Registration request failed"
     );
+  }
+};
+
+const getPreferences = async (userId) => {
+  try {
+    const res = await axios.get(`/plans/user-diet-preferences/${userId}`);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching diet preferences:", error.message);
+    return null;
   }
 };
