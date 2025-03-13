@@ -8,7 +8,8 @@
 export const constructDietPlanPrompt = (user, preferences) => {
   return `
   Create a personalized Indian diet plan based on the following details:
-  rule: create in json format, no additional formatting, do not include user details.
+  rule: create in simple text no additional formatting and no unnecessary symbols
+  no headers no additional formatting do not include user details
   details.
   **User Information:**  
   - Name: ${user.name}  
@@ -23,13 +24,31 @@ export const constructDietPlanPrompt = (user, preferences) => {
   - Goal: ${preferences.dietGoal}  
   - Diet Type: ${preferences.dietType}  
   - Budget: ${preferences.budget}  
-  - Allergies: ${preferences.foodAllergies.length ? preferences.foodAllergies.join(", ") : "None"}  
-  - Favorite Foods: ${preferences.favoriteFoods.length ? preferences.favoriteFoods.join(", ") : "None specified"}  
-  - Disliked Foods: ${preferences.dislikedFoods.length ? preferences.dislikedFoods.join(", ") : "None specified"}  
-  - Dietary Restrictions: ${preferences.dietaryRestrictions.length ? preferences.dietaryRestrictions.join(", ") : "None"}  
+  - Allergies: ${
+    preferences.foodAllergies.length
+      ? preferences.foodAllergies.join(", ")
+      : "None"
+  }  
+  - Favorite Foods: ${
+    preferences.favoriteFoods.length
+      ? preferences.favoriteFoods.join(", ")
+      : "None specified"
+  }  
+  - Disliked Foods: ${
+    preferences.dislikedFoods.length
+      ? preferences.dislikedFoods.join(", ")
+      : "None specified"
+  }  
+  - Dietary Restrictions: ${
+    preferences.dietaryRestrictions.length
+      ? preferences.dietaryRestrictions.join(", ")
+      : "None"
+  }  
 
   **Requirements for the Diet Plan:**  
-  1. A structured meal plan for ${preferences.timePeriod} that includes breakfast, lunch, dinner, and snacks.  
+  1. A structured meal plan for ${
+    preferences.timePeriod
+  } that includes breakfast, lunch, dinner, and snacks.  
   2. Detailed portion sizes and approximate calorie counts for each meal.  
   3. A weekly grocery shopping list with key ingredients.  
   4. Meal prep tips to simplify cooking and save time.  
@@ -41,7 +60,6 @@ export const constructDietPlanPrompt = (user, preferences) => {
   important note: Follow scientifically structured diet principles, Generate a fully formatted HTML response for a personalized Indian diet plan based on the following details. The HTML should be well-structured, include proper headings, lists, and styling, and be directly usable on a website without additional modifications.
   `;
 };
-
 
 export const constructWorkoutPlanPrompt = (preferences) => {
   const heightUnit = "cm";
