@@ -43,14 +43,18 @@ Dietary Goals & Preferences:
   }
 
 Requirements for the Diet Plan:
-1. A structured meal plan for ${
+1. A structured weekly meal plan for ${
     preferences.timePeriod
-  } that includes breakfast, lunch, dinner, and snacks.
+  } with Indian foods, including breakfast, lunch, dinner, and snacks.
 2. Detailed portion sizes and approximate calorie counts for each meal.
-3. A weekly grocery shopping list with key ingredients.
-4. Meal prep tips to simplify cooking and save time.
-5. Adjustments based on budget and dietary restrictions.
-6. Healthy alternatives for disliked foods.
+3. Include macronutrient breakdown (carbohydrates, proteins, fats) for each meal.
+4. Suggest meal timings and portion sizes optimized for the user’s goals.
+5. A weekly grocery shopping list with key ingredients.
+6. Meal prep tips to simplify cooking and save time.
+7. Adjustments based on budget and dietary restrictions.
+8. Healthy alternatives for disliked foods.
+9. Suggest calorie tracking guidelines for better progress monitoring.
+10. Calculate BMR and TDEE based on provided metrics.
 
 The diet plan should be realistic, easy to follow, and optimized for long-term health benefits while staying within the user’s preferences and budget.
 
@@ -67,6 +71,7 @@ Grocery list:
 ...
 Meal prep tips:
 ...
+generate a response which in html file but without head tag and body just text of the body with tags and proper formatting
 `;
 };
 
@@ -124,5 +129,6 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Modifications: [modification details]
     Form Tips: [form tips]
     Recovery: [recovery details]
+    generate a response which in html file but without head tag and body just text of the body with tags and proper formatting
   `;
 };
