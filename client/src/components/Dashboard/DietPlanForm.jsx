@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import {
   saveDietPreferences,
   generateDietPlan,
@@ -10,7 +11,7 @@ import {
 const DietPlanForm = ({ onClose, onPlanGenerated }) => {
   const [isLoading, setLoadin] = useState(false);
   const [formData, setFormData] = useState({
-    dietGoal: "weight",
+    dietGoal: "",
     dietType: "",
     foodAllergies: "",
     favoriteFoods: "",
@@ -224,6 +225,7 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
             </div>
 
             {/* Submit Button */}
+            <Link to ="/diet-plan-details">
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
@@ -233,6 +235,7 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
             >
               <FiCheckCircle className="mr-2" /> Generate Plan
             </motion.button>
+            </Link>
           </form>
         </motion.div>
       </div>

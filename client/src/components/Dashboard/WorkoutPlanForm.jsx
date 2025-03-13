@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiCheckCircle, FiActivity } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 const WorkoutPlanForm = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -192,6 +193,7 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
             </div>
 
             {/* Submit Button */}
+            <Link to="/workout-plan-details">
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
@@ -200,6 +202,7 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
             >
               <FiActivity className="mr-2" /> Generate Workout Plan
             </motion.button>
+            </Link>
           </form>
         </motion.div>
       </div>

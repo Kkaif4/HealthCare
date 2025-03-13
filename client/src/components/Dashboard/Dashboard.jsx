@@ -3,13 +3,13 @@ import { motion } from "framer-motion";
 import { Menu } from "@headlessui/react";
 import DietPlanForm from "./DietPlanForm";
 import WorkoutPlanForm from "./WorkoutPlanForm";
+import { Link } from "react-router-dom";
 import {
   FiUser,
   FiEdit,
   FiPlus,
   FiActivity,
   FiDroplet,
-  FiSettings,
   FiCheckSquare,
   FiCalendar,
   FiCheck,
@@ -18,6 +18,7 @@ import {
   FiX,
   FiChevronDown,
   FiChevronUp,
+  FiLogOut
 } from "react-icons/fi";
 
 const Dashboard = () => {
@@ -223,11 +224,14 @@ const Dashboard = () => {
                   <Menu.Item>
                     {({ active }) => (
                       <button
+                        onClick={() => {
+                          /* Add your logout logic here */
+                        }}
                         className={`w-full text-left px-4 py-2 rounded-md ${
                           active ? "bg-primary/20" : ""
                         }`}
                       >
-                        <FiSettings className="inline mr-2" /> Settings
+                        <FiLogOut className="inline mr-2" /> Log Out
                       </button>
                     )}
                   </Menu.Item>
@@ -382,11 +386,14 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created: March 5, 2025
+                      <FiCalendar className="mr-2" /> Created: 
                     </div>
+                    <Link to="/diet-plan-details">
                     <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                       <FiEdit className="mr-2" /> View Details
                     </button>
+                    </Link>
+                    
                   </div>
                 </motion.div>
 
@@ -402,11 +409,14 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created: March 3, 2025
+                      <FiCalendar className="mr-2" /> Created: 
                     </div>
+                    <Link to="/workout-plan-details">
                     <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                       <FiEdit className="mr-2" /> View Details
                     </button>
+                    </Link>
+                
                   </div>
                 </motion.div>
               </div>

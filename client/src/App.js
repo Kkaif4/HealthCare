@@ -8,6 +8,8 @@ import Footer from './components/Footer';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
+import DietPlanDetails from './components/Dashboard/DietPlanDetails.jsx';
+import WorkoutPlanDetails from './components/Dashboard/WorkoutPlanDetails.jsx';
 import './axiosConfig.js'
 const LandingPage = () => {
   return (
@@ -31,6 +33,8 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/diet-plan-details" element={<DietPlanDetails />} />
+          <Route path="/workout-plan-details" element={<WorkoutPlanDetails />} />
         </Routes>
       </div>
     </Router>
