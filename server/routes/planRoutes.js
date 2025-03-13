@@ -5,9 +5,19 @@ import {
   validateWorkoutPlanPreferences,
 } from "../middlewares/validationMW.js";
 
-import { saveDietPreferences } from "../Controllers/dietPlanController.js";
+import {
+  saveDietPreferences,
+  generateDietPlan,
+  getDietPlan,
+} from "../Controllers/dietPlanController.js";
 
-import { saveWorkoutPreferences } from "../Controllers/workoutPlanContoller.js";
+import {
+  saveWorkoutPreferences,
+  generateWorkoutPlan,
+  getWorkoutPlan,
+} from "../Controllers/workoutPlanContoller.js";
+
+import { planGenerationLimiter } from "../middlewares/rateLimitMW.js";
 
 // Add after protect middleware
 const router = express.Router();
@@ -25,7 +35,9 @@ router.post(
   validateWorkoutPlanPreferences,
   saveWorkoutPreferences
 );
-// router.post("/generate-diet", planGenerationLimiter, generateDietPlan);
-// router.post("/generate-workout", planGenerationLimiter, generateWorkoutPlan);
+router.post("/generate-diet", planGenerationLimiter, generateDietPlan);
+router.post("/generate-workout", planGenerationLimiter, generateWorkoutPlan);
 
+router.get("/user-diet-plan", getDietPlan);
+router.get("/user-workout-plan", getWorkoutPlan);
 export default router;

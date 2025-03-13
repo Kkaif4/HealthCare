@@ -35,7 +35,7 @@ const Dashboard = () => {
     { id: 3, text: "Prepare meals for tomorrow", completed: true },
   ]);
   const [newTodo, setNewTodo] = useState("");
-  const [userDetails] = useState({
+  const [user] = useState({
     name: "John Doe",
     age: 28,
     height: 180,
@@ -66,15 +66,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     const calculateBMI = () => {
-      const heightInMeters = userDetails.height / 100;
+      const heightInMeters = user.height / 100;
       const calculatedBMI = (
-        userDetails.weight /
+        user.weight /
         (heightInMeters * heightInMeters)
       ).toFixed(1);
       setBmi(parseFloat(calculatedBMI));
     };
     calculateBMI();
-  }, [userDetails]);
+  }, [user]);
 
   const addTodo = (e) => {
     e.preventDefault();
@@ -283,11 +283,11 @@ const Dashboard = () => {
                   <FiUser className="mr-2 text-primary" /> User Details
                 </h2>
                 <div className="space-y-2">
-                  <DetailItem label="Name" value={userDetails.name} />
-                  <DetailItem label="Age" value={userDetails.age} />
-                  <DetailItem label="Height" value={`${userDetails.height} cm`} />
-                  <DetailItem label="Weight" value={`${userDetails.weight} kg`} />
-                  <DetailItem label="Goal" value={userDetails.goal} />
+                  <DetailItem label="Name" value={user.name} />
+                  <DetailItem label="Age" value={user.age} />
+                  <DetailItem label="Height" value={`${user.height} cm`} />
+                  <DetailItem label="Weight" value={`${user.weight} kg`} />
+                  <DetailItem label="Goal" value={user.goal} />
                 </div>
                 <button className="mt-3 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                   <FiEdit className="mr-2" /> Edit Profile
@@ -301,7 +301,7 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="p-3 bg-dark/70 rounded-lg border border-primary/20">
                     <h3 className="text-lg font-bold mb-1">Primary Goal</h3>
-                    <p className="text-light/80">{userDetails.goal}</p>
+                    <p className="text-light/80">{user.goal}</p>
                   </div>
                   <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                     <FiEdit className="mr-2" /> Update Goal
@@ -607,7 +607,7 @@ const Dashboard = () => {
                     <strong>BMI</strong> = weight(kg) / height(m)²
                   </div>
                   <div className="text-sm text-light/80 mt-1">
-                    {userDetails.weight}kg / ({userDetails.height / 100})² ={" "}
+                    {user.weight}kg / ({user.height / 100})² ={" "}
                     {bmi}
                   </div>
                 </div>

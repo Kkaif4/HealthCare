@@ -1,10 +1,6 @@
-import WorkoutPlan from "../models/OldWorkoutPlan.js";
 import initializeModel from "../config/gemini.js";
-import WorkoutPreferences from "../models/WorkoutPreferences.js";
-import { generateWorkoutPrompt } from "../utils/OldpromptGenerator.js";
-import { formatAndStoreWorkoutPlan } from "../utils/OldworkoutReponseFormatter.js";
-import { formatAndStoreDietPlan } from "../utils/OlddietResponseFormatter.js";
-const geminiModel = initializeModel();
+import User from "../models/User.js";
+import Preferences from "../models/WorkoutPreferences.js";
 
 // Save user workout preferences
 export const saveWorkoutPreferences = async (req, res, next) => {
@@ -24,10 +20,10 @@ export const saveWorkoutPreferences = async (req, res, next) => {
     const userId = req.user.id;
 
     // Delete previous preferences
-    await WorkoutPreferences.deleteMany({ userId });
+    await Preferences.deleteMany({ userId });
 
     // Create new preferences
-    const preferences = await WorkoutPreferences.create({
+    const preferences = await Preferences.create({
       userId,
       workoutGoal,
       workoutPreferences,
@@ -39,7 +35,7 @@ export const saveWorkoutPreferences = async (req, res, next) => {
       targetWeight,
       timePeriod,
     });
-    console.log("New preferences created");
+    console.log("New wokrout preferences created");
     res.status(201).json({
       success: true,
       data: preferences,
@@ -51,202 +47,143 @@ export const saveWorkoutPreferences = async (req, res, next) => {
 };
 
 /**
- * General function for generating with retry logic
- * @param {Function} prompt - Function that generates a prompt
- * @param {String} planType - Type of plan (workout or diet)
- * @param {Object} preferences - User preferences
- * @param {Number} maxRetries - Maximum number of retry attempts
- * @returns {Object} - Generated plan
- */
-const generateWithRetry = async (
-  prompt,
-  planType,
-  userId,
-  preferences,
-  maxRetries = 2
-) => {
-  let attempts = 0;
-  const RETRY_DELAY = 2000; // 2 seconds delay between retries
-
-  while (attempts < maxRetries) {
-    try {
-      console.log(
-        `Attempt ${attempts + 1}/${maxRetries} for ${planType} plan generation`
-      );
-
-      // Get response from Gemini
-      const result = await geminiModel.generateContent(prompt);
-
-      if (!result || !result.response) {
-        console.error("Empty response from Gemini API");
-        throw new Error("Empty response from Gemini API");
-      }
-
-      const response = result.response;
-
-      // Extract text from response
-      let responseText;
-      if (typeof response.text === "function") {
-        responseText = response.text();
-      } else {
-        responseText = response.text;
-      }
-
-      if (!responseText) {
-        console.error("Empty text in Gemini response");
-        throw new Error("Empty text in Gemini response");
-      }
-
-      // Format and store response based on plan type
-      let formatted;
-      if (planType === "workout") {
-        formatted = await formatAndStoreWorkoutPlan(
-          responseText,
-          userId,
-          preferences
-        );
-      } else if (planType === "diet") {
-        formatted = await formatAndStoreDietPlan(
-          responseText,
-          userId,
-          preferences
-        );
-      } else {
-        throw new Error(`Unsupported plan type: ${planType}`);
-      }
-
-      console.log(`Plan formatted with type:`, formatted?.type || "undefined");
-
-      // Return the formatted plan
-      if (formatted) {
-        console.log("Successfully generated plan");
-        return formatted;
-      } else {
-        throw new Error("Failed to format plan");
-      }
-    } catch (error) {
-      attempts++;
-      console.error(
-        `Generation error (Attempt ${attempts}/${maxRetries}):`,
-        error.message
-      );
-
-      // If we've reached the max retries, throw the error
-      if (attempts >= maxRetries) {
-        console.error(`All ${maxRetries} attempts failed`);
-        throw new Error(`Failed after ${maxRetries} retries: ${error.message}`);
-      }
-
-      // Add a delay before the next retry
-      console.log(`Waiting ${RETRY_DELAY}ms before next attempt...`);
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-    }
-  }
-
-  throw new Error(`Failed after ${maxRetries} retries`);
-};
-
-/**
- * Generate a workout plan for a user
+ * Generate a workout plan based on user information and preferences
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @returns {Object} - Response with workout plan
  */
-const generateWorkoutPlan = async (req, res) => {
+export const generateWorkoutPlan = async (req, res) => {
   try {
-    const user = req.user;
-    const userId = user.id;
-    const preferences = await WorkoutPreferences.findOne({ userId });
-
-    if (!preferences) {
-      return res.status(400).json({
-        success: false,
-        error: "Complete preferences questionnaire first",
-      });
+    if (!req.user || !req.user.id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user request" });
     }
-    const prompt = generateWorkoutPrompt(user, preferences);
-    const formattedContent = await generateWithRetry(
-      prompt,
-      "workout",
+    const user = await User.findById(req.user.id);
+    const userId = user.id;
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const preferences = await Preferences.findOne({
       userId,
-      preferences
-    );
-    console.log(formattedContent);
-    const workoutPlan = await WorkoutPlan.create({
-      userId,
-      preferencesId: preferences._id,
-      schedule: formattedContent.schedule,
-      totals: formattedContent.totals,
-      durationWeeks: parseInt(preferences.timePeriod.match(/\d+/)[0]),
-      metadata: {
-        equipment: preferences.equipment,
-      },
     });
-    console.log("workout plan created");
-    console.log(workoutPlan);
-    res.status(201).json({
+    if (!preferences) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Workout preferences not found" });
+    }
+
+    // Construct prompt for Gemini API
+    const prompt = constructWorkoutPlanPrompt(user, preferences);
+
+    const response = await initializeModel(prompt);
+
+    // Send the formatted response
+    res.status(200).json({
       success: true,
-      message: "Workout plan created successfully",
-      data: workoutPlan,
+      workoutPlan: response,
     });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error generating workout plan:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to generate workout plan",
+      error: error.message,
+    });
   }
 };
 
 /**
- * Get all workout plans for a user
+ * Get the latest workout plan for a user
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @returns {Object} - Response with workout plans
  */
-const getUserWorkoutPlans = async (req, res) => {
+export const getWorkoutPlan = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const workoutPlans = await WorkoutPlan.find({
-      userId,
-      status: { $ne: "archived" },
-    }).sort({ generatedAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: workoutPlans.length,
-      data: workoutPlans,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
-/**
- * Get a single workout plan by ID
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Object} - Response with workout plan
- */
-const getWorkoutPlan = async (req, res) => {
-  try {
-    const { planId } = req.params;
-
-    const workoutPlan = await WorkoutPlan.findById(planId);
-    if (!workoutPlan) {
-      console.log("Workout plan not found");
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "Workout plan not found" });
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Here you would typically fetch the latest workout plan from your database
+    // This is a placeholder assuming you store workout plans in the user object
+    // Modify according to your actual data model
+    if (!user.workoutPlan) {
+      return res.status(404).json({
+        success: false,
+        message: "No workout plan found for this user",
+      });
     }
 
     res.status(200).json({
       success: true,
-      data: workoutPlan,
+      workoutPlan: user.workoutPlan,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error getting workout plan:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve workout plan",
+      error: error.message,
+    });
   }
 };
 
-export { generateWorkoutPlan, getUserWorkoutPlans, getWorkoutPlan };
+/**
+ * Save a generated workout plan for a user
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+export const saveWorkoutPlan = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { workoutPlan } = req.body;
+
+    if (!workoutPlan) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Workout plan is required" });
+    }
+
+    // Find and update user with the new workout plan
+    // This is a placeholder - modify according to your actual data model
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { workoutPlan: workoutPlan },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Workout plan saved successfully",
+      workoutPlan: updatedUser.workoutPlan,
+    });
+  } catch (error) {
+    console.error("Error saving workout plan:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to save workout plan",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Construct a prompt for the Gemini API to generate a workout plan
+ * @param {Object} user - User object
+ * @param {Object} workoutPreferences - Workout preferences object
+ * @returns {string} - The constructed prompt
+ */
