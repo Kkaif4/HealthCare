@@ -1,10 +1,9 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef} from "react";
-
+import { useState, useRef } from "react";
+import { register } from "../../services/authSerives"; // Update import path
 
 const Signup = () => {
-  // State for form validation
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,13 +15,13 @@ const Signup = () => {
     medicalHistory: "",
   });
 
-  // State for profile photo
-  const [avatar, setavatar] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -31,43 +30,69 @@ const Signup = () => {
     }));
   };
 
-  // Handle photo upload
   const handlePhotoChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       const selectedFile = e.target.files[0];
-      setavatar(selectedFile);
+      setAvatar(selectedFile);
 
-      // Create preview URL
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
+      reader.onloadend = () => setPreviewUrl(reader.result);
       reader.readAsDataURL(selectedFile);
     }
   };
 
-  // Handle photo upload button click
-  const triggerFileInput = () => {
-    fileInputRef.current.click();
+  const triggerFileInput = () => fileInputRef.current.click();
+
+  const removePhoto = () => {
+    setAvatar(null);
+    setPreviewUrl("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Remove photo
-  const removePhoto = () => {
-    setavatar(null);
-    setPreviewUrl("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+  
+    try {
+      const formDataObj = new FormData();
+      
+      // Append all form fields with proper formatting
+      formDataObj.append("name", formData.name);
+      formDataObj.append("email", formData.email);
+      formDataObj.append("password", formData.password);
+      formDataObj.append("age", formData.age);
+      formDataObj.append("gender", formData.gender);
+      formDataObj.append("weight", formData.weight);
+      formDataObj.append("height", formData.height);
+      formDataObj.append("medicalHistory", formData.medicalHistory);
+      
+      // Append avatar if exists
+      if (avatar) {
+        formDataObj.append("avatar", avatar);
+      }
+  
+      // Debug: Log form data before sending
+      for (let [key, value] of formDataObj.entries()) {
+        console.log(key, value);
+      }
+  
+      const userData = await register(formDataObj);
+      
+      if (userData) {
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.error?.message || 
+                          error.response?.data?.message || 
+                          "Registration failed. Please check your inputs.";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Form processing logic would go here
-    console.log("Form submitted:", formData);
-    console.log("Profile photo:", avatar);
-    
-  };
 
   return (
     <div className="min-h-screen bg-dark flex items-center justify-center p-4">
