@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import {
-  FiArrowLeft,
-  FiCalendar,
-  FiUser,
-  FiTarget,
-  FiClock,
-  FiCheckCircle,
-} from "react-icons/fi";
-import axios from "axios";
 
 const PlanDetails = () => {
-  const { planType, planId } = useParams();
   const navigate = useNavigate();
   const [planData, setPlanData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,9 +11,15 @@ const PlanDetails = () => {
     const fetchPlan = async () => {
       try {
         setLoading(true);
-        const user = localStorage.getItem("user");
-        setPlanData(user.dietPlan);
-        setLoading(false);
+        const userString = localStorage.getItem("user");
+        if(userString){
+          const user = JSON.parse(userString)
+          setPlanData(user.dietPlan.text);
+          setLoading(false);
+        } else {
+          console.log("user not found in local storage");
+          navigate(-1);
+        }
       } catch (err) {
         console.error("Error fetching plan:", err);
         setError("Failed to load the plan. Please try again later.");
@@ -33,7 +28,7 @@ const PlanDetails = () => {
     };
 
     fetchPlan();
-  }, [planType, planId]);
+  }, []);
 
   if (loading) {
     return (
@@ -64,145 +59,7 @@ const PlanDetails = () => {
     );
   }
 
-  const renderDietPlan = () => (
-    <div className="space-y-6">
-      <div className="bg-dark/60 border border-primary/20 rounded-xl p-4">
-        <h3 className="text-lg font-bold mb-3">Daily Calorie Target</h3>
-        <p className="text-2xl font-bold text-primary">
-          {planData.dailyCalories} kcal
-        </p>
-        <div className="mt-2 text-light/80">
-          <span className="inline-block mr-4">
-            Proteins: {planData.macros.protein}g
-          </span>
-          <span className="inline-block mr-4">
-            Carbs: {planData.macros.carbs}g
-          </span>
-          <span className="inline-block">Fats: {planData.macros.fats}g</span>
-        </div>
-      </div>
-
-      <div className="bg-dark/60 border border-primary/20 rounded-xl p-4">
-        <h3 className="text-lg font-bold mb-3">Meal Plan</h3>
-        <div className="space-y-4">
-          {planData.meals.map((meal, index) => (
-            <div
-              key={index}
-              className="p-3 bg-dark/70 rounded-lg border border-primary/10"
-            >
-              <h4 className="font-bold text-primary">{meal.name}</h4>
-              <p className="text-sm text-light/80 mb-2">
-                {meal.time} - {meal.calories} kcal
-              </p>
-              <ul className="list-disc pl-5 space-y-1">
-                {meal.foods.map((food, i) => (
-                  <li key={i} className="text-light/90">
-                    {food}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {planData.recommendations && (
-        <div className="bg-dark/60 border border-primary/20 rounded-xl p-4">
-          <h3 className="text-lg font-bold mb-3">Recommendations</h3>
-          <ul className="list-disc pl-5 space-y-2">
-            {planData.recommendations.map((rec, index) => (
-              <li key={index} className="text-light/90">
-                {rec}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-
-  const renderWorkoutPlan = () => (
-    <div className="space-y-6">
-      <div className="bg-dark/60 border border-primary/20 rounded-xl p-4">
-        <h3 className="text-lg font-bold mb-3">Weekly Schedule</h3>
-        <p className="text-light/80 mb-4">
-          {planData.frequency} workouts per week
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {planData.schedule.map((day, index) => (
-            <div
-              key={index}
-              className={`p-3 rounded-lg border ${
-                day.isRestDay
-                  ? "bg-dark/40 border-primary/10"
-                  : "bg-dark/70 border-primary/20"
-              }`}
-            >
-              <h4 className="font-bold">{day.day}</h4>
-              {day.isRestDay ? (
-                <p className="text-light/70">Rest Day</p>
-              ) : (
-                <>
-                  <p className="text-primary font-medium">{day.focus}</p>
-                  <p className="text-sm text-light/80">
-                    {day.duration} minutes
-                  </p>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {planData.workouts &&
-        planData.workouts.map((workout, index) => (
-          <div
-            key={index}
-            className="bg-dark/60 border border-primary/20 rounded-xl p-4"
-          >
-            <h3 className="text-lg font-bold mb-3">{workout.name}</h3>
-            <p className="text-light/80 mb-4">{workout.description}</p>
-
-            <div className="space-y-4">
-              {workout.exercises.map((exercise, i) => (
-                <div
-                  key={i}
-                  className="p-3 bg-dark/70 rounded-lg border border-primary/10"
-                >
-                  <div className="flex justify-between items-center">
-                    <h4 className="font-bold text-primary">{exercise.name}</h4>
-                    <span className="text-sm bg-primary/20 text-primary px-2 py-1 rounded-full">
-                      {exercise.sets} sets × {exercise.reps} reps
-                    </span>
-                  </div>
-                  {exercise.notes && (
-                    <p className="text-sm text-light/80 mt-2">
-                      {exercise.notes}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-
-      {planData.tips && (
-        <div className="bg-dark/60 border border-primary/20 rounded-xl p-4">
-          <h3 className="text-lg font-bold mb-3">Tips</h3>
-          <ul className="list-disc pl-5 space-y-2">
-            {planData.tips.map((tip, index) => (
-              <li key={index} className="text-light/90">
-                {tip}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-
-  return <div>Hellow</div>;
+  return <div>{planData}</div>;
 };
 
 export default PlanDetails;
