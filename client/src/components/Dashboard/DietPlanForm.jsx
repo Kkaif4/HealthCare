@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
+import { toast } from "react-toastify";
+import {
+  saveDietPreferences,
+  generateDietPlan,
+} from "../../services/planServices";
 
-const DietPlanForm = ({ onClose, onSubmit }) => {
+const DietPlanForm = ({ onClose, onPlanGenerated }) => {
+  const [isLoading, setLoadin] = useState(false);
   const [formData, setFormData] = useState({
-    dietGoal: "weight-loss",
-    dietType: "non-vegetarian",
+    dietGoal: "weight",
+    dietType: "",
     foodAllergies: "",
     favoriteFoods: "",
     dislikedFoods: "",
-    budget: "medium",
+    budget: "",
     targetWeight: "",
     timePeriod: "3",
-    dietaryRestrictions: ""
+    dietaryRestrictions: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setLoadin(true);
+    try {
+      console.log(formData);
+      const preferences = await saveDietPreferences({ formData });
+      const DietPlan = await generateDietPlan({
+        ...formData,
+        preferencesId: preferences.data?._id,
+      });
+      toast.success("Diet Plan saved successfully");
+      if (onPlanGenerated && DietPlan.data) {
+        onPlanGenerated(DietPlan.data);
+      }
+    } catch (error) {
+      toast.error("Failed to save diet plan");
+      console.error("Error generating diet plan:", error);
+    } finally {
+      setLoadin(false);
+    }
   };
 
   return (
@@ -44,7 +67,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                   Generate Diet Plan
                 </span>
               </h2>
-              <button 
+              <button
                 onClick={onClose}
                 className="text-light/60 hover:text-primary transition-colors"
               >
@@ -56,9 +79,16 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Diet Goal Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Diet Goal</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Diet Goal
+              </label>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-                {["weight-loss", "muscle-gain", "maintenance", "weight-gain"].map(goal => (
+                {[
+                  "weight-loss",
+                  "muscle-gain",
+                  "maintenance",
+                  "weight-gain",
+                ].map((goal) => (
                   <GoalOption
                     key={goal}
                     name="dietGoal"
@@ -72,7 +102,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
             {/* Diet Type Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Diet Type</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Diet Type
+              </label>
               <select
                 name="dietType"
                 value={formData.dietType}
@@ -91,7 +123,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Food Allergies */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Food Allergies</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Food Allergies
+                </label>
                 <textarea
                   name="foodAllergies"
                   value={formData.foodAllergies}
@@ -103,7 +137,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Favorite Foods */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Favorite Foods</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Favorite Foods
+                </label>
                 <textarea
                   name="favoriteFoods"
                   value={formData.favoriteFoods}
@@ -115,7 +151,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Disliked Foods */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Disliked Foods</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Disliked Foods
+                </label>
                 <textarea
                   name="dislikedFoods"
                   value={formData.dislikedFoods}
@@ -127,7 +165,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Dietary Restrictions */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Dietary Restrictions</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Dietary Restrictions
+                </label>
                 <textarea
                   name="dietaryRestrictions"
                   value={formData.dietaryRestrictions}
@@ -140,10 +180,15 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
             {/* Budget Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Budget</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Budget
+              </label>
               <div className="flex flex-wrap items-center gap-2 md:gap-4">
-                {["low", "medium", "high"].map(option => (
-                  <label key={option} className="flex items-center cursor-pointer">
+                {["low", "medium", "high"].map((option) => (
+                  <label
+                    key={option}
+                    className="flex items-center cursor-pointer"
+                  >
                     <input
                       type="radio"
                       name="budget"
@@ -152,7 +197,13 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
                       onChange={handleChange}
                       className="sr-only"
                     />
-                    <span className={`px-3 py-2 rounded-lg text-sm ${formData.budget === option ? 'bg-primary text-dark font-medium' : 'bg-dark/40 text-light/60 border border-primary/20'}`}>
+                    <span
+                      className={`px-3 py-2 rounded-lg text-sm ${
+                        formData.budget === option
+                          ? "bg-primary text-dark font-medium"
+                          : "bg-dark/40 text-light/60 border border-primary/20"
+                      }`}
+                    >
                       {option.charAt(0).toUpperCase() + option.slice(1)}
                     </span>
                   </label>
@@ -164,7 +215,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Target Weight */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Target Weight (kg)</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Target Weight (kg)
+                </label>
                 <input
                   type="number"
                   name="targetWeight"
@@ -178,7 +231,9 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Time Period */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Time Period (months)</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Time Period (months)
+                </label>
                 <input
                   type="number"
                   name="timePeriod"
@@ -198,6 +253,7 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
             >
               <FiCheckCircle className="mr-2" /> Generate Plan
@@ -211,9 +267,10 @@ const DietPlanForm = ({ onClose, onSubmit }) => {
 
 // Reusable option component for diet goals
 const GoalOption = ({ name, value, selected, onChange }) => {
-  const formattedValue = value.split('-').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ');
+  const formattedValue = value
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
   return (
     <label className="cursor-pointer">
@@ -225,11 +282,13 @@ const GoalOption = ({ name, value, selected, onChange }) => {
         onChange={onChange}
         className="sr-only"
       />
-      <div className={`p-2 md:p-3 rounded-lg text-center border text-sm md:text-base transition-all ${
-        selected 
-          ? 'border-primary bg-primary/20 text-primary font-medium' 
-          : 'border-primary/20 bg-dark/40 text-light/60'
-      }`}>
+      <div
+        className={`p-2 md:p-3 rounded-lg text-center border text-sm md:text-base transition-all ${
+          selected
+            ? "border-primary bg-primary/20 text-primary font-medium"
+            : "border-primary/20 bg-dark/40 text-light/60"
+        }`}
+      >
         {formattedValue}
       </div>
     </label>

@@ -8,7 +8,7 @@ import Footer from './components/Footer';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
-
+import './axiosConfig.js'
 const LandingPage = () => {
   return (
     <>

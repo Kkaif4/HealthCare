@@ -22,10 +22,10 @@
     "react-router-hash-link": "^2.4.3",
     "react-scripts": "5.0.1",
     "react-share": "^5.2.2",
+    "react-toastify": "^11.0.5",
     "web-vitals": "^2.1.4"
   },
   "proxy": "http://localhost:5000",
-
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

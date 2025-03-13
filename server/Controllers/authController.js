@@ -134,6 +134,7 @@ export const login = async (req, res, next) => {
       .status(200)
       .json({
         success: true,
+        token: token,
         data: {
           id: user._id,
           name: user.name,

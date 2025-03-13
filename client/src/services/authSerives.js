@@ -1,10 +1,11 @@
 import axios from "axios";
 
-
 export const login = async (email, password) => {
   try {
-    const { data } = await axios.post("/api/auth/login", { email, password });
-    localStorage.setItem("user", JSON.stringify(data));
+    const { data } = await axios.post("/auth/login", { email, password });
+    const token = data.token;
+    console.log(token);
+    localStorage.setItem("token", token);
     return data;
   } catch (error) {
     console.error("Error in login:", error.message);
@@ -13,7 +14,7 @@ export const login = async (email, password) => {
 
 export const register = async (formData) => {
   try {
-    const { data } = await axios.post("/api/auth/register", formData, {
+    const { data } = await axios.post("/auth/register", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
