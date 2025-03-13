@@ -45,8 +45,6 @@ router.put("/password", sensitiveLimiter, changePassword);
 router.get("/diet-plan", getDietPlan);
 router.get("/workout-plan", getWorkoutPlan);
 
-
-
 // Data Export
 router.get("/export", sensitiveLimiter, profileLimiter, exportUserData);
 

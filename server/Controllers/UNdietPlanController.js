@@ -74,7 +74,6 @@ const generateWithRetry = async (prompt, planType, userId, preferences) => {
           `Failed after ${MAX_RETRIES} retries: ${error.message}`
         );
       }
-
       // Add a delay before the next retry
       console.log(`Waiting ${RETRY_DELAY}ms before next attempt...`);
       await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
@@ -162,7 +161,6 @@ export const generateDietPlan = async (req, res, next) => {
         dietType: preferences.dietType,
       },
     });
-
     res.status(201).json({
       success: true,
       message: "diet plan Successfully created",
@@ -201,3 +199,5 @@ export const getDietPlan = async (req, res) => {
     console.log(user._id);
   } catch (err) {}
 };
+
+//Hello
