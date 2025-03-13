@@ -9,10 +9,7 @@ export const saveDietPreferences = async (dietPreferences) => {
   try {
     const response = await axios.post(
       `/plans/diet-preferences`,
-      dietPreferences,
-      {
-        withCredentials: true,
-      }
+      dietPreferences
     );
     return response.data;
   } catch (error) {

@@ -42,7 +42,6 @@ export const register = async (formData) => {
 const getPreferences = async (userId) => {
   try {
     const res = await axios.get(`/plans/user-diet-preferences/${userId}`);
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.error("Error fetching diet preferences:", error.message);

@@ -15,8 +15,8 @@ const PlanDetails = () => {
     const fetchPlan = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/${planType}/${planId}`);
-        setPlanData(response.data);
+        const user = localStorage.getItem('user');
+        setPlanData(user.dietPlan)
         setLoading(false);
       } catch (err) {
         console.error("Error fetching plan:", err);
@@ -180,7 +180,7 @@ const PlanDetails = () => {
               <div className="flex items-center text-primary mb-1">
                 <FiCalendar className="mr-2" /> Created
               </div>
-              <div className="text-sm">{new Date(planData.createdAt).toLocaleDateString()}</div>
+              <div className="text-sm">{new Date(planData).toLocaleDateString()}</div>
             </div>
             
             <div className="bg-dark/60 p-3 rounded-lg border border-primary/10">
