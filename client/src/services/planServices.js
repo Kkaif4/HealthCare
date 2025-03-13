@@ -5,11 +5,12 @@ import axios from "axios";
  * @param {Object} dietPreferences - User's diet preferences data
  * @returns {Promise} - API response
  */
-export const saveDietPreferences = async (dietPreferences) => {
+export const saveDietPreferences = async (formData) => {
+  const dataToSend = { ...formData, dietGoal: formData.dietGoal || "weight-loss" };
   try {
     const response = await axios.post(
       `/plans/diet-preferences`,
-      dietPreferences
+      dataToSend
     );
     return response.data;
   } catch (error) {
