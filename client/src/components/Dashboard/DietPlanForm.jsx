@@ -1,46 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import {
-  saveDietPreferences,
-  generateDietPlan,
-} from "../../services/planServices";
+import { saveDietPreferences } from "../../services/planServices";
 
 const DietPlanForm = ({ onClose, onPlanGenerated }) => {
   const [isLoading, setLoadin] = useState(false);
   const [formData, setFormData] = useState({
     dietGoal: "",
     dietType: "",
-    foodAllergies: "",
-    favoriteFoods: "",
-    dislikedFoods: "",
+    foodAllergies: [],
+    favoriteFoods: [],
+    dislikedFoods: [],
     budget: "",
     targetWeight: "",
-    timePeriod: "3",
+    timePeriod: "",
     dietaryRestrictions: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoadin(true);
     try {
-      console.log(formData);
-      const preferences = await saveDietPreferences({ formData });
-      const DietPlan = await generateDietPlan({
-        ...formData,
-        preferencesId: preferences.data?._id,
-      });
+      await saveDietPreferences(formData);
       toast.success("Diet Plan saved successfully");
-      if (onPlanGenerated && DietPlan.data) {
-        onPlanGenerated(DietPlan.data);
-      }
     } catch (error) {
       toast.error("Failed to save diet plan");
       console.error("Error generating diet plan:", error);
@@ -48,6 +40,9 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
       setLoadin(false);
     }
   };
+  useEffect(() => {
+    console.log("formData current state:", formData);
+  }, [formData]);
 
   return (
     <motion.div
@@ -80,13 +75,17 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Diet Goal Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Diet Goal</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Diet Goal
+              </label>
               <select
                 name="dietGoal"
                 value={formData.dietGoal}
                 onChange={handleChange}
+                required
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
+                <option value="">Select yout Diet Goal</option>
                 <option value="weight-loss">Weight Loss</option>
                 <option value="muscle-gain">Muscle Gain</option>
                 <option value="maintenance">Maintenance</option>
@@ -105,6 +104,7 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
                 onChange={handleChange}
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
+                <option value="select">Select your Diet Type</option>
                 <option value="vegetarian">Vegetarian</option>
                 <option value="non-vegetarian">Non-Vegetarian</option>
                 <option value="eggetarian">Eggetarian</option>
@@ -124,6 +124,7 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
                   name="foodAllergies"
                   value={formData.foodAllergies}
                   onChange={handleChange}
+                  required
                   placeholder="List any food allergies..."
                   className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
                 ></textarea>
@@ -174,13 +175,17 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
 
             {/* Budget Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Budget</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Budget
+              </label>
               <select
                 name="budget"
                 value={formData.budget}
                 onChange={handleChange}
+                required
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
+                <option value="select">Select your budget</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -199,9 +204,9 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
                   name="targetWeight"
                   value={formData.targetWeight}
                   onChange={handleChange}
+                  required
                   placeholder="Enter target weight"
                   className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  required
                 />
               </div>
 
@@ -215,17 +220,17 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
                   name="timePeriod"
                   value={formData.timePeriod}
                   onChange={handleChange}
+                  required
                   min="1"
                   max="24"
                   placeholder="Enter time period in months"
                   className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                  required
                 />
               </div>
             </div>
 
             {/* Submit Button */}
-            <Link to ="/diet-plan-details">
+
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
@@ -235,7 +240,6 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
             >
               <FiCheckCircle className="mr-2" /> Generate Plan
             </motion.button>
-            </Link>
           </form>
         </motion.div>
       </div>

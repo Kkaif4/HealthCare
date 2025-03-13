@@ -6,12 +6,27 @@ import axios from "axios";
  * @returns {Promise} - API response
  */
 export const saveDietPreferences = async (formData) => {
-  const dataToSend = { ...formData, dietGoal: formData.dietGoal || "weight-loss" };
+  const preferences = {
+    dietGoal: formData.dietGoal,
+    dietType: formData.dietType,
+    budget: formData.budget,
+    foodAllergies: formData.foodAllergies,
+    favoriteFoods: formData.favoriteFoods,
+    dislikedFoods: formData.dislikedFoods,
+    targetWeight: formData.targetWeight,
+    timePeriod: formData.timePeriod,
+    dietaryRestrictions: formData.dietaryRestrictions,
+  };
+  console.log("about to send these preferences", preferences);
   try {
-    const response = await axios.post(
-      `/plans/diet-preferences`,
-      dataToSend
-    );
+    const token = localStorage.getItem("token");
+    const response = await axios.post(`/plans/diet-preferences`, preferences, {
+      withCredentials: true,
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+    console.log(response);
     return response.data;
   } catch (error) {
     throw (
