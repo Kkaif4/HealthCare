@@ -40,9 +40,9 @@ const Footer = () => {
             <h4 className="text-light font-semibold mb-4">Resources</h4>
             <ul className="space-y-2">
               <li><a href="#" className="text-light/80 hover:text-primary">Blog</a></li>
-              <li><a href="#" className="text-light/80 hover:text-primary">Documentation</a></li>
+              <li><a href="https://github.com/Kkaif4/HealthCare" className="text-light/80 hover:text-primary">Documentation</a></li>
               <li><a href="#" className="text-light/80 hover:text-primary">Help Center</a></li>
-              <li><a href="#" className="text-light/80 hover:text-primary">API Status</a></li>
+              <li><a href="https://aistudio.google.com/prompts/new_chat" className="text-light/80 hover:text-primary">API Status</a></li>
             </ul>
           </div>
 
@@ -56,7 +56,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center text-light/80">
                 <PhoneIcon className="h-5 w-5 mr-2 text-primary" />
-                +1 (555) 123-4567
+                +919878654521
               </div>
             </div>
           </div>
