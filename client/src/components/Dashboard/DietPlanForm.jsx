@@ -79,25 +79,18 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Diet Goal Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">
-                Diet Goal
-              </label>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-                {[
-                  "weight-loss",
-                  "muscle-gain",
-                  "maintenance",
-                  "weight-gain",
-                ].map((goal) => (
-                  <GoalOption
-                    key={goal}
-                    name="dietGoal"
-                    value={goal}
-                    selected={formData.dietGoal === goal}
-                    onChange={handleChange}
-                  />
-                ))}
-              </div>
+              <label className="block text-light/80 mb-2 font-medium">Diet Goal</label>
+              <select
+                name="dietGoal"
+                value={formData.dietGoal}
+                onChange={handleChange}
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="weight-loss">Weight Loss</option>
+                <option value="muscle-gain">Muscle Gain</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="weight-gain">Weight Gain</option>
+              </select>
             </div>
 
             {/* Diet Type Selection */}
@@ -180,35 +173,17 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
 
             {/* Budget Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">
-                Budget
-              </label>
-              <div className="flex flex-wrap items-center gap-2 md:gap-4">
-                {["low", "medium", "high"].map((option) => (
-                  <label
-                    key={option}
-                    className="flex items-center cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="budget"
-                      value={option}
-                      checked={formData.budget === option}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <span
-                      className={`px-3 py-2 rounded-lg text-sm ${
-                        formData.budget === option
-                          ? "bg-primary text-dark font-medium"
-                          : "bg-dark/40 text-light/60 border border-primary/20"
-                      }`}
-                    >
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </span>
-                  </label>
-                ))}
-              </div>
+              <label className="block text-light/80 mb-2 font-medium">Budget</label>
+              <select
+                name="budget"
+                value={formData.budget}
+                onChange={handleChange}
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
             </div>
 
             {/* Target Weight and Time Period in a grid */}

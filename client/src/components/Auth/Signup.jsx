@@ -80,7 +80,7 @@ const Signup = () => {
       const userData = await register(formDataObj);
       
       if (userData) {
-        navigate("/dashboard");
+        navigate("/login");
       }
     } catch (error) {
       console.error("Registration error:", error);

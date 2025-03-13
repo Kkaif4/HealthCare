@@ -57,49 +57,49 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
             {/* Workout Goal Selection */}
             <div>
               <label className="block text-light/80 mb-2 font-medium">Workout Goal</label>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-                {["weight-loss", "weight-gain", "muscle-gain", "maintenance"].map(goal => (
-                  <GoalOption
-                    key={goal}
-                    name="workoutGoal"
-                    value={goal}
-                    selected={formData.workoutGoal === goal}
-                    onChange={handleChange}
-                  />
-                ))}
-              </div>
+              <select
+                name="workoutGoal"
+                value={formData.workoutGoal}
+                onChange={handleChange}
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="weight-loss">Weight Loss</option>
+                <option value="weight-gain">Weight Gain</option>
+                <option value="muscle-gain">Muscle Gain</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
             </div>
 
             {/* Workout Preferences */}
             <div>
               <label className="block text-light/80 mb-2 font-medium">Workout Preferences</label>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-                {["home", "gym", "outdoor", "yoga"].map(pref => (
-                  <GoalOption
-                    key={pref}
-                    name="workoutPreferences"
-                    value={pref}
-                    selected={formData.workoutPreferences === pref}
-                    onChange={handleChange}
-                  />
-                ))}
-              </div>
+              <select
+                name="workoutPreferences"
+                value={formData.workoutPreferences}
+                onChange={handleChange}
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="home">Home</option>
+                <option value="gym">Gym</option>
+                <option value="outdoor">Outdoor</option>
+                <option value="yoga">Yoga</option>
+              </select>
             </div>
             
             {/* Activity Level */}
             <div>
               <label className="block text-light/80 mb-2 font-medium">Activity Level</label>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
-                {["sedentary", "light", "moderate", "active"].map(level => (
-                  <GoalOption
-                    key={level}
-                    name="activityLevel"
-                    value={level}
-                    selected={formData.activityLevel === level}
-                    onChange={handleChange}
-                  />
-                ))}
-              </div>
+              <select
+                name="activityLevel"
+                value={formData.activityLevel}
+                onChange={handleChange}
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="sedentary">Sedentary</option>
+                <option value="light">Light</option>
+                <option value="moderate">Moderate</option>
+                <option value="active">Active</option>
+              </select>
             </div>
 
             {/* Two Column Layout for Inputs */}
