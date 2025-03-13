@@ -1,16 +1,18 @@
 import initializeModel from "../config/gemini.js";
 import User from "../models/User.js";
 import Preferences from "../models/WorkoutPreferences.js";
-
+import { constructWorkoutPlanPrompt } from "../utils/promptGenerator.js";
+import { cleanGeminiResponse } from "../utils/responseFormatter.js";
+const geminiModel = initializeModel();
 // Save user workout preferences
 export const saveWorkoutPreferences = async (req, res, next) => {
   try {
     const {
       workoutGoal,
       workoutPreferences,
-      availableTimePerDay,
+      workoutDuration,
       equipment,
-      medicalConstraints,
+      healthConditions,
       activityLevel,
       workoutDaysPerWeek,
       targetWeight,
@@ -27,9 +29,9 @@ export const saveWorkoutPreferences = async (req, res, next) => {
       userId,
       workoutGoal,
       workoutPreferences,
-      availableTimePerDay,
+      workoutDuration,
       equipment,
-      medicalConstraints,
+      healthConditions,
       activityLevel,
       workoutDaysPerWeek,
       targetWeight,
@@ -78,12 +80,38 @@ export const generateWorkoutPlan = async (req, res) => {
     // Construct prompt for Gemini API
     const prompt = constructWorkoutPlanPrompt(user, preferences);
 
-    const response = await initializeModel(prompt);
-
+    const response = await geminiModel.generateContent(prompt);
+    if (
+      !response ||
+      !response.response.candidates ||
+      response.response.candidates.length === 0 ||
+      !response.response.candidates[0].content.parts ||
+      response.response.candidates[0].content.parts.length === 0
+    ) {
+      console.error("Gemini API returned an invalid response:", response);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to generate diet plan due to invalid API response",
+      });
+    }
+    const Text = response.response.candidates[0].content.parts[0].text;
+    if (!Text) {
+      console.log("Couldn't generate diet plan");
+      return res
+        .status(500)
+        .json({ success: false, message: "Failed to generate diet plan" });
+    }
+    const WorkoutPlan = cleanGeminiResponse(Text);
+    console.log("diet plan generated");
+    user.workoutPlan.text = null;
+    user.workoutPlan.text = WorkoutPlan;
+    user.workoutPlan.createdAt = Date.now();
+    await user.save();
     // Send the formatted response
     res.status(200).json({
       success: true,
-      workoutPlan: response,
+      workoutPlan: user.workoutPlan.text,
+      workoutPlanCreated: user.workoutPlan.createdAt,
     });
   } catch (error) {
     console.error("Error generating workout plan:", error);
@@ -102,7 +130,7 @@ export const generateWorkoutPlan = async (req, res) => {
  */
 export const getWorkoutPlan = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.id;
 
     // Find user
     const user = await User.findById(userId);
@@ -111,10 +139,6 @@ export const getWorkoutPlan = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-
-    // Here you would typically fetch the latest workout plan from your database
-    // This is a placeholder assuming you store workout plans in the user object
-    // Modify according to your actual data model
     if (!user.workoutPlan) {
       return res.status(404).json({
         success: false,
@@ -135,55 +159,3 @@ export const getWorkoutPlan = async (req, res) => {
     });
   }
 };
-
-/**
- * Save a generated workout plan for a user
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */
-export const saveWorkoutPlan = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const { workoutPlan } = req.body;
-
-    if (!workoutPlan) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Workout plan is required" });
-    }
-
-    // Find and update user with the new workout plan
-    // This is a placeholder - modify according to your actual data model
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { workoutPlan: workoutPlan },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedUser) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Workout plan saved successfully",
-      workoutPlan: updatedUser.workoutPlan,
-    });
-  } catch (error) {
-    console.error("Error saving workout plan:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to save workout plan",
-      error: error.message,
-    });
-  }
-};
-
-/**
- * Construct a prompt for the Gemini API to generate a workout plan
- * @param {Object} user - User object
- * @param {Object} workoutPreferences - Workout preferences object
- * @returns {string} - The constructed prompt
- */

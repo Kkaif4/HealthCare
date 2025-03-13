@@ -86,7 +86,7 @@ export const generateWorkoutPlan = async (userData) => {
  * @param {string} userId - User ID
  * @returns {Promise} - API response with user's diet plan
  */
-export const getUserDietPlan = async (user) => {
+export const getDietPlan = async (user) => {
   try {
     const response = await axios.get(`/plans/diet/${user}`);
     return response.data;

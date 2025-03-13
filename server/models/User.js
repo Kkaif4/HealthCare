@@ -50,12 +50,12 @@ const userSchema = new mongoose.Schema({
     default: [],
   },
   dietPlan: {
-    type: String,
-    default: null,
+    text: { type: String, default: null },
+    createdAt: { type: Date, default: Date.now },
   },
   workoutPlan: {
-    type: String,
-    default: null,
+    text: { type: String, default: null },
+    createdAt: { type: Date, default: Date.now },
   },
   createdAt: {
     type: Date,

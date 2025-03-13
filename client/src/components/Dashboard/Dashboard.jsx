@@ -35,20 +35,33 @@ const Dashboard = () => {
     { id: 3, text: "Prepare meals for tomorrow", completed: true },
   ]);
   const [newTodo, setNewTodo] = useState("");
-  const [user] = useState({
-    name: "John Doe",
-    age: 28,
-    height: 180,
-    weight: 75,
-    goal: "Muscle Gain",
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || null);
+    } catch (error) {
+      console.error("Error parsing user from localStorage:", error.message);
+    }
   });
+  const [diet, setDiet] = useState(null);
   const [bmi, setBmi] = useState(0);
+
+  // Fetch user data on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing user from localStorage:", error.message);
+      }
+    }
+  }, []);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
-      
+
       // Auto-hide user section on mobile
       if (window.innerWidth < 768) {
         setShowUserSection(false);
@@ -60,10 +73,10 @@ const Dashboard = () => {
     window.addEventListener("resize", handleResize);
     // Initial check
     handleResize();
-    
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  //calculate user BMI
   useEffect(() => {
     const calculateBMI = () => {
       const heightInMeters = user.height / 100;
@@ -146,14 +159,10 @@ const Dashboard = () => {
                       : "border-primary/30 bg-dark/40"
                   }`}
               >
-                {todo.completed && (
-                  <FiCheck size={12} className="text-dark" />
-                )}
+                {todo.completed && <FiCheck size={12} className="text-dark" />}
               </button>
               <span
-                className={
-                  todo.completed ? "line-through text-light/50" : ""
-                }
+                className={todo.completed ? "line-through text-light/50" : ""}
               >
                 {todo.text}
               </span>
@@ -237,7 +246,7 @@ const Dashboard = () => {
           className="fixed inset-0 bg-dark/95 z-40 md:hidden pt-16 px-4"
         >
           <div className="flex flex-col space-y-4 p-4">
-            <button 
+            <button
               onClick={toggleUserSection}
               className="flex items-center justify-between w-full bg-primary/20 hover:bg-primary/30 text-primary py-3 px-4 rounded-lg transition-colors"
             >
@@ -246,8 +255,8 @@ const Dashboard = () => {
               </span>
               {showUserSection ? <FiChevronUp /> : <FiChevronDown />}
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setShowToDoList(!showToDoList)}
               className="flex items-center justify-between w-full bg-primary/20 hover:bg-primary/30 text-primary py-3 px-4 rounded-lg transition-colors"
             >
@@ -256,8 +265,8 @@ const Dashboard = () => {
               </span>
               {showToDoList ? <FiChevronUp /> : <FiChevronDown />}
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setMobileMenuOpen(false)}
               className="w-full bg-primary text-dark font-medium py-3 rounded-lg hover:bg-primary/90 transition-colors"
             >
@@ -282,13 +291,19 @@ const Dashboard = () => {
                 <h2 className="text-xl font-bold mb-3 flex items-center">
                   <FiUser className="mr-2 text-primary" /> User Details
                 </h2>
-                <div className="space-y-2">
-                  <DetailItem label="Name" value={user.name} />
-                  <DetailItem label="Age" value={user.age} />
-                  <DetailItem label="Height" value={`${user.height} cm`} />
-                  <DetailItem label="Weight" value={`${user.weight} kg`} />
-                  <DetailItem label="Goal" value={user.goal} />
-                </div>
+                {/* Fetching User data */}
+                {user ? (
+                  <div className="space-y-2">
+                    <DetailItem label="Name" value={user.name} />
+                    <DetailItem label="Age" value={user.age} />
+                    <DetailItem label="Height" value={`${user.height} cm`} />
+                    <DetailItem label="Weight" value={`${user.weight} kg`} />
+                  </div>
+                ) : (
+                  <p className="text-light/80 text-center">
+                    No user data found.
+                  </p>
+                )}
                 <button className="mt-3 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
                   <FiEdit className="mr-2" /> Edit Profile
                 </button>
@@ -322,7 +337,7 @@ const Dashboard = () => {
 
           {/* Mobile toggle button for user section - only visible outside mobile menu */}
           {windowWidth < 768 && !mobileMenuOpen && (
-            <button 
+            <button
               onClick={toggleUserSection}
               className="mb-4 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center md:hidden"
             >
@@ -339,7 +354,11 @@ const Dashboard = () => {
           )}
 
           {/* Center Column - Takes full width on mobile */}
-          <div className={`${showUserSection ? "md:col-span-6" : "md:col-span-9"} h-full flex flex-col gap-4`}>
+          <div
+            className={`${
+              showUserSection ? "md:col-span-6" : "md:col-span-9"
+            } h-full flex flex-col gap-4`}
+          >
             {/* To-Do List for mobile view - only shown above Current Plans section on mobile */}
             {windowWidth < 768 && showToDoList && renderToDoList()}
 
@@ -607,8 +626,7 @@ const Dashboard = () => {
                     <strong>BMI</strong> = weight(kg) / height(m)²
                   </div>
                   <div className="text-sm text-light/80 mt-1">
-                    {user.weight}kg / ({user.height / 100})² ={" "}
-                    {bmi}
+                    {user.weight}kg / ({user.height / 100})² = {bmi}
                   </div>
                 </div>
               </div>
@@ -648,7 +666,7 @@ const Dashboard = () => {
 const DetailItem = ({ label, value }) => (
   <div className="flex justify-between items-center py-1 border-b border-primary/10">
     <span className="text-light/80">{label}:</span>
-    <span className="font-medium">{value}</span>
+    <span className="font-medium">{value || "N/A"}</span>
   </div>
 );
 

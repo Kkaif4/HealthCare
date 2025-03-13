@@ -44,12 +44,7 @@ const Testimonials = () => {
               className="group h-full"
             >
               <div className="overflow-hidden bg-dark/40 rounded-xl shadow-xl backdrop-blur-sm border border-light/10 h-full flex flex-col">
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={developer.image}
-                    alt={developer.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                <div className="relative h-10 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
                 </div>
                 

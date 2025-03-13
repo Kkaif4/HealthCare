@@ -19,14 +19,15 @@ const workoutPreferenceSchema = new mongoose.Schema({
   },
   targetWeight: { type: Number, required: true },
   timePeriod: { type: String, required: true }, // e.g., "3 months"
-  availableTimePerDay: { type: String, required: true }, // e.g., "1 hour"
+  workoutDuration: { type: Number, required: true }, // e.g., "1 hour"
   equipment: { type: [String], default: [] },
-  medicalConstraints: { type: [String], default: [] },
+  healthConditions: { type: [String], default: [] },
   activityLevel: {
     type: String,
     enum: ["sedentary", "light", "moderate", "active"],
     required: true,
   },
+  injuryHistory: { type: [String], default: [] },
   workoutDaysPerWeek: {
     type: Number,
     min: 1,

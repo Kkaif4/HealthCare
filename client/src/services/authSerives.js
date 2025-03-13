@@ -4,8 +4,9 @@ export const login = async (email, password) => {
   try {
     const { data } = await axios.post("/auth/login", { email, password });
     const token = data.token;
-    console.log(token);
+    console.log(data.user);
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     return data;
   } catch (error) {
     console.error("Error in login:", error.message);

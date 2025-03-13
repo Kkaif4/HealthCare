@@ -27,9 +27,9 @@ export const validateWorkoutPlanPreferences = (req, res, next) => {
   const requiredFields = [
     "workoutGoal",
     "workoutPreferences",
-    "availableTimePerDay",
+    "workoutDuration",
     "equipment",
-    "medicalConstraints",
+    "healthConditions",
     "activityLevel",
     "workoutDaysPerWeek",
     "targetWeight",

@@ -9,6 +9,7 @@ import {
   saveDietPreferences,
   generateDietPlan,
   getDietPlan,
+  getDietPreferences,
 } from "../Controllers/dietPlanController.js";
 
 import {
@@ -37,6 +38,8 @@ router.post(
 );
 router.post("/generate-diet", planGenerationLimiter, generateDietPlan);
 router.post("/generate-workout", planGenerationLimiter, generateWorkoutPlan);
+
+router.get("/user-diet-preferences/:userId", getDietPreferences);
 
 router.get("/user-diet-plan", getDietPlan);
 router.get("/user-workout-plan", getWorkoutPlan);
