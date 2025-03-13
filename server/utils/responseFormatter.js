@@ -5,9 +5,7 @@ export const cleanGeminiResponse = (responseText) => {
   }
 
   // ... your cleaning logic ...
-  let cleanedText = responseText.replace(/<[^>]*>/g, "");
-  cleanedText = cleanedText.replace(/\s+/g, " ").trim();
-  cleanedText = cleanedText.replace(/\n+/g, "<br>");
+  let cleanedText = cleanedText.replace(/\n+/g, "<br>");
 
   return cleanedText;
 };

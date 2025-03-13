@@ -92,6 +92,7 @@ export const generateDietPlan = async (req, res) => {
       });
     }
 
+    const FormattedResponse = cleanGeminiResponse(response); 
     const Text = response.response.candidates[0].content.parts[0].text;
     if (!Text) {
       console.log("Couldn't generate diet plan");
@@ -102,7 +103,7 @@ export const generateDietPlan = async (req, res) => {
     const DietPlan = cleanGeminiResponse(Text);
     console.log("diet plan generated");
     user.dietPlan.text = null;
-    user.dietPlan.text = DietPlan;
+    user.dietPlan.text = FormattedResponse;
     user.dietPlan.createdAt = Date.now();
     await user.save();
     console.log(user.dietPlan);
