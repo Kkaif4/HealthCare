@@ -54,7 +54,6 @@ Requirements for the Diet Plan:
 7. Adjustments based on budget and dietary restrictions.
 8. Healthy alternatives for disliked foods.
 9. Suggest calorie tracking guidelines for better progress monitoring.
-10. Calculate BMR and TDEE based on provided metrics.
 
 The diet plan should be realistic, easy to follow, and optimized for long-term health benefits while staying within the user’s preferences and budget.
 
@@ -88,18 +87,28 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Height: ${user?.height || "Not specified"} ${heightUnit}
     Weight: ${user?.weight || "Not specified"} ${weightUnit}
     Activity Level: ${preferences?.activityLevel || "Not specified"}
-    Health Conditions: ${preferences?.healthConditions?.join(", ") || "None reported"}
+    Health Conditions: ${
+      preferences?.healthConditions?.join(", ") || "None reported"
+    }
 
     Workout Preferences:
     - Workout Goal: ${preferences?.workoutGoal || "Not specified"}
     - Workout Location: ${preferences?.workoutLocation || "Not specified"}
-    - Target Weight: ${preferences?.targetWeight || "Not specified"} ${weightUnit}
+    - Target Weight: ${
+      preferences?.targetWeight || "Not specified"
+    } ${weightUnit}
     - Time Period: ${preferences?.timePeriod || "Not specified"}
     - Available Time Per Day: ${preferences?.workoutDuration || "Not specified"}
     - Equipment: ${preferences?.equipment?.join(", ") || "None specified"}
-    - Workout Duration: ${preferences?.workoutDuration || "Not specified"} minutes per session
-    - Injury History: ${preferences?.injuryHistory?.join(", ") || "None reported"}
-    - Workout Days Per Week: ${preferences?.workoutDaysPerWeek || "Not specified"} days per week
+    - Workout Duration: ${
+      preferences?.workoutDuration || "Not specified"
+    } minutes per session
+    - Injury History: ${
+      preferences?.injuryHistory?.join(", ") || "None reported"
+    }
+    - Workout Days Per Week: ${
+      preferences?.workoutDaysPerWeek || "Not specified"
+    } days per week
 
     Please create a detailed workout plan that includes:
     1. An overview of the workout approach.

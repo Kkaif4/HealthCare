@@ -91,26 +91,17 @@ export const generateDietPlan = async (req, res) => {
         message: "Failed to generate diet plan due to invalid API response",
       });
     }
-
-    const FormattedResponse = cleanGeminiResponse(response); 
-    const Text = response.response.candidates[0].content.parts[0].text;
-    if (!Text) {
-      console.log("Couldn't generate diet plan");
-      return res
-        .status(500)
-        .json({ success: false, message: "Failed to generate diet plan" });
-    }
-    const DietPlan = cleanGeminiResponse(Text);
+    const plan = response.response.candidates[0].content.parts[0].text;
+    const formattedPlan = cleanGeminiResponse(plan);
     console.log("diet plan generated");
     user.dietPlan.text = null;
-    user.dietPlan.text = FormattedResponse;
+    user.dietPlan.text = formattedPlan;
     user.dietPlan.createdAt = Date.now();
     await user.save();
-    console.log(user.dietPlan);
     console.log("Diet Plan saved successfully");
     res.status(200).json({
       success: true,
-      dietPlan: DietPlan,
+      dietPlan: formattedPlan,
     });
   } catch (error) {
     console.error("Error generating diet plan:", error);
@@ -143,7 +134,6 @@ export const getDietPlan = async (req, res) => {
         message: "No diet plan found for this user try generating diet plan",
       });
     }
-
     res.status(200).json({
       success: true,
       dietPlan: user.dietPlan.text,

@@ -1,11 +1,8 @@
-export const cleanGeminiResponse = (responseText) => {
-  if (typeof responseText !== "string") {
-    console.error("Error: responseText is not a string:", responseText);
-    return ""; // Or handle the error appropriately
-  }
-
-  // ... your cleaning logic ...
-  let cleanedText = cleanedText.replace(/\n+/g, "<br>");
-
-  return cleanedText;
+export const cleanGeminiResponse = (plan) => {
+  let newplan = plan
+    .replace(/^```html\s*/, "")
+    .replace(/```$/, "")
+    .replace(/\n/g, "")
+    .trim();
+  return newplan;
 };

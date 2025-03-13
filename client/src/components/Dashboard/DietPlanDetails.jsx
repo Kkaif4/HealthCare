@@ -11,9 +11,9 @@ const PlanDetails = () => {
     const fetchPlan = async () => {
       try {
         setLoading(true);
-        const userString = localStorage.getItem("user");
-        if(userString){
-          const user = JSON.parse(userString)
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
           setPlanData(user.dietPlan.text);
           setLoading(false);
         } else {
@@ -28,7 +28,7 @@ const PlanDetails = () => {
     };
 
     fetchPlan();
-  }, []);
+  });
 
   if (loading) {
     return (
@@ -59,7 +59,12 @@ const PlanDetails = () => {
     );
   }
 
-  return <div>{planData}</div>;
+  return (
+    <div>
+      <h2>Your Diet Plan</h2>
+      <div dangerouslySetInnerHTML={{ __html: planData }} />
+    </div>
+  );
 };
 
 export default PlanDetails;

@@ -230,16 +230,17 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
             </div>
 
             {/* Submit Button */}
-
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
-            >
-              <FiCheckCircle className="mr-2" /> Generate Plan
-            </motion.button>
+            <Link to={"/diet-plan-details"}>
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
+              >
+                <FiCheckCircle className="mr-2" /> Generate Plan
+              </motion.button>
+            </Link>
           </form>
         </motion.div>
       </div>

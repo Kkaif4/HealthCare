@@ -6,27 +6,24 @@ import axios from "axios";
  * @returns {Promise} - API response
  */
 export const saveDietPreferences = async (formData) => {
-  const preferences = {
-    dietGoal: formData.dietGoal,
-    dietType: formData.dietType,
-    budget: formData.budget,
-    foodAllergies: formData.foodAllergies,
-    favoriteFoods: formData.favoriteFoods,
-    dislikedFoods: formData.dislikedFoods,
-    targetWeight: formData.targetWeight,
-    timePeriod: formData.timePeriod,
-    dietaryRestrictions: formData.dietaryRestrictions,
-  };
-  console.log("about to send these preferences", preferences);
   try {
     const token = localStorage.getItem("token");
-    const response = await axios.post(`/plans/diet-preferences`, preferences, {
+    const response = await axios.post(`/plans/diet-preferences`, formData, {
       withCredentials: true,
       headers: {
         Authorization: "Bearer " + token,
       },
     });
-    console.log(response);
+    try {
+      const user = localStorage.getItem("user");
+      await generateDietPlan(user);
+      localStorage.removeItem("user");
+      localStorage.setItem("user", JSON.stringify(response.data));
+
+      localStorage.remove();
+    } catch (error) {
+      console.error("Error generating diet plan:", error.message);
+    }
     return response.data;
   } catch (error) {
     throw (
@@ -101,7 +98,7 @@ export const generateWorkoutPlan = async (userData) => {
  */
 export const getDietPlan = async (user) => {
   try {
-    const response = await axios.get(`/plans/diet/${user}`);
+    const response = await axios.get(`/plans/user-diet-plan`, user);
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to fetch diet plan" };
