@@ -7,14 +7,14 @@ const Testimonials = () => {
       role: "Frontend Developer",
       description: "Crafting elegant user interfaces with modern frameworks and responsive design principles",
       image: "/images/dev-1.jpg",
-      linkedin: "https://linkedin.com/in/vahid-patel"
+      linkedin: "https://www.linkedin.com/in/vahid-patel-0a7a06260/"
     },
     {
       name: "Kaif Shaikh",
       role: "Backend Developer",
       description: "Engineering robust server architecture and scalable API solutions",
       image: "/images/dev-2.jpg",
-      linkedin: "https://linkedin.com/in/kaif-shaikh"
+      linkedin: "https://www.linkedin.com/in/mohommad-kaif-shaikh-a4294a25a/"
     }
   ];
 
