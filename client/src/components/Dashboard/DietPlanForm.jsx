@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { saveDietPreferences } from "../../services/planServices";
 
 const DietPlanForm = ({ onClose }) => {
@@ -18,6 +18,8 @@ const DietPlanForm = ({ onClose }) => {
     dietaryRestrictions: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -26,18 +28,22 @@ const DietPlanForm = ({ onClose }) => {
     }));
   };
 
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true); // Show loading screen immediately
+
+    // Save data in background (non-blocking)
     try {
       await saveDietPreferences(formData);
     } catch (error) {
-      console.error("Error saving diet preferences:", error);
-    } finally {
-      setIsLoading(false);
+      console.error("Error saving preferences:", error);
     }
+
+    // Force 15-second minimum loading time
+    setTimeout(() => {
+      navigate("/diet-plan-details");
+      setIsLoading(true);
+    }, 15000);
   };
 
   if (isLoading) {
@@ -45,7 +51,7 @@ const DietPlanForm = ({ onClose }) => {
       <div className="min-h-screen bg-dark text-light flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading plan details...</p>
+          <p className="mt-4">Creating your perfect diet plan...</p>
         </div>
       </div>
     );
@@ -92,7 +98,7 @@ const DietPlanForm = ({ onClose }) => {
                 required
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
-                <option value="">Select yout Diet Goal</option>
+                <option value="">Select your Diet Goal</option>
                 <option value="weight-loss">Weight Loss</option>
                 <option value="muscle-gain">Muscle Gain</option>
                 <option value="maintenance">Maintenance</option>
@@ -198,9 +204,8 @@ const DietPlanForm = ({ onClose }) => {
               </select>
             </div>
 
-            {/* Target Weight and Time Period in a grid */}
+            {/* Target Weight and Time Period */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-              {/* Target Weight */}
               <div>
                 <label className="block text-light/80 mb-2 font-medium">
                   Target Weight (kg)
@@ -216,7 +221,6 @@ const DietPlanForm = ({ onClose }) => {
                 />
               </div>
 
-              {/* Time Period */}
               <div>
                 <label className="block text-light/80 mb-2 font-medium">
                   Time Period (months)
@@ -236,17 +240,14 @@ const DietPlanForm = ({ onClose }) => {
             </div>
 
             {/* Submit Button */}
-            {/* <Link to={"/diet-plan-details"}> */}
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              disabled={isLoading}
               className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
             >
               <FiCheckCircle className="mr-2" /> Generate Plan
             </motion.button>
-            {/* </Link> */}
           </form>
         </motion.div>
       </div>
