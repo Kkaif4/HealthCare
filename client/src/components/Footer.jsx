@@ -84,7 +84,6 @@ const Footer = () => {
                   Documentation
                 </a>
               </li>
-
               <li>
                 <a
                   href="https://ai.google.dev/"
@@ -102,7 +101,11 @@ const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center text-light/80">
                 <EnvelopeIcon className="h-5 w-5 mr-2 text-primary" />
-                support@optilifeai.com
+                @gmail.com
+              </div>
+              <div className="flex items-center text-light/80">
+                <EnvelopeIcon className="h-5 w-5 mr-2 text-primary" />
+                kkaifshiakh.27@gamil.com
               </div>
               <div className="flex items-center text-light/80">
                 <PhoneIcon className="h-5 w-5 mr-2 text-primary" />

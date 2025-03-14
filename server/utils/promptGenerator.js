@@ -12,7 +12,7 @@ Strict Rule for creating Response:
 - Generate Response in html format
 - Do not Include HTML, body, header tags
 - use div, li, ui, p, b, strong and italic tags etc. as per requirement
-- Importrtant: Use <br> tag for better formatting 
+- Importrtant: Use <br> tag for better formatting [add extra <br> tags]
 
 User Information:
 - Name: ${user.name}
@@ -90,7 +90,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     - Generate Response in html format
     - Do not Include HTML, body, header tags
     - use div, li, ui, p, b, strong and italic tags etc. as per requirement
-    - Importrtant: Use <br> tag for better formatting 
+    - Importrtant: Use <br> tag for better formatting [add extra <br> tags]
     Name: ${user?.name || "Not specified"}
     Age: ${user?.age || "Not specified"}
     Gender: ${user?.gender || "Not specified"}
