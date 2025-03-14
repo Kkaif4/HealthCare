@@ -99,16 +99,6 @@ const Login = () => {
               required
             />
           </div>
-
-          <div className="flex justify-end">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-primary hover:text-secondary transition-colors"
-            >
-              Forgot Password?
-            </Link>
-          </div>
-
           <motion.button
             type="submit"
             whileHover={{ scale: 1.02 }}
