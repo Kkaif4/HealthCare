@@ -5,9 +5,9 @@ import DietPlanForm from "./DietPlanForm";
 import WorkoutPlanForm from "./WorkoutPlanForm";
 import { Link } from "react-router-dom";
 
-import axios from 'axios'; // ✅ Axios imported
-import { useDispatch } from 'react-redux'; // ✅ Redux (if using)
-import { useNavigate } from 'react-router-dom'; // ✅ React Router
+import axios from "axios"; // ✅ Axios imported
+import { useDispatch } from "react-redux"; // ✅ Redux (if using)
+import { useNavigate } from "react-router-dom"; // ✅ React Router
 
 import {
   FiUser,
@@ -66,8 +66,6 @@ const Dashboard = () => {
       }
     }
   }, []);
-
-<<<<<<< HEAD
   useEffect(() => {
     const storedPreferences = localStorage.getItem("dietPreferences");
     if (storedPreferences) {
@@ -85,23 +83,20 @@ const Dashboard = () => {
       setDietPreferences({});
     }
   }, []);
-=======
   const handleLogout = async () => {
     try {
       // Call the backend logout route to clear cookies
-      await axios.post('server\routes\authRoutes.js');
-      
+      await axios.post("server\routesauthRoutes.js");
+
       // Clear user state
-      dispatch({ type: 'LOGOUT' });
-      
+      dispatch({ type: "LOGOUT" });
+
       // Redirect to login
-      navigate('/login');
+      navigate("/login");
     } catch (err) {
       console.error(err);
     }
   };
->>>>>>> 1967154994931b07332c4e30abdd81e298ba0a87
-
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
@@ -114,8 +109,6 @@ const Dashboard = () => {
         setShowUserSection(true);
       }
     };
-
-    
 
     window.addEventListener("resize", handleResize);
     // Initial check
@@ -269,7 +262,7 @@ const Dashboard = () => {
                   <Menu.Item>
                     {({ active }) => (
                       <button
-                      onClick={handleLogout}
+                        onClick={handleLogout}
                         className={`w-full text-left px-4 py-2 rounded-md ${
                           active ? "bg-primary/20" : ""
                         }`}
@@ -454,7 +447,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <div className="space-y-2">
-                  <div className="flex items-center text-light/80">
+                    <div className="flex items-center text-light/80">
                       <FiCalendar className="mr-2" /> Created:
                       {new Date(user.workoutPlan?.createdAt).toLocaleDateString(
                         "en-IN",
