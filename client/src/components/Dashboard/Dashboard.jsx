@@ -49,6 +49,7 @@ const Dashboard = () => {
   });
   const [diet, setDiet] = useState(null);
   const [dietPreferences, setDietPreferences] = useState(null);
+  const [wokroutPreferences, setWorkoutPreferences] = useState(null);
   const [bmi, setBmi] = useState(0);
 
   // Fetch user data on mount
@@ -62,6 +63,7 @@ const Dashboard = () => {
       }
     }
   }, []);
+
   useEffect(() => {
     const storedPreferences = localStorage.getItem("dietPreferences");
     if (storedPreferences) {
@@ -79,6 +81,24 @@ const Dashboard = () => {
       setDietPreferences({});
     }
   }, []);
+  useEffect(() => {
+    const storedPreferences = localStorage.getItem("workoutPreferences");
+    if (storedPreferences) {
+      try {
+        setWorkoutPreferences(JSON.parse(storedPreferences));
+      } catch (error) {
+        console.error(
+          "Error parsing diet preferences from localStorage:",
+          error.message
+        );
+        setWorkoutPreferences({});
+      }
+    } else {
+      console.log("Couldn't find any preferences");
+      setWorkoutPreferences({});
+    }
+  }, []);
+
   const handleLogout = async () => {
     try {
       logout();
@@ -344,8 +364,12 @@ const Dashboard = () => {
                 <div className="space-y-3">
                   <div className="p-3 bg-dark/70 rounded-lg border border-primary/20">
                     <p className="text-light/80">
-                      <b>Workout Goal: </b>
+                      <b>Diet Goal: </b>
                       {dietPreferences?.dietGoal || "Not specified"}
+                    </p>
+                    <p className="text-light/80">
+                      <b>Workout Goal: </b>
+                      {wokroutPreferences?.workoutGoal || "Not specified"}
                     </p>
                   </div>
                 </div>

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 
 const PlanDetails = () => {
   const navigate = useNavigate();
-  const [planData, setPlanData] = useState(null);
+  const [WorkoutPlanData, setWorkoutPlanData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,11 +14,10 @@ const PlanDetails = () => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          setPlanData(user.workoutPlan.text);
+          setWorkoutPlanData(user.workoutPlan.text);
           setLoading(false);
         } else {
           console.log("user not found in local storage");
-          navigate(-1);
         }
       } catch (err) {
         console.error("Error fetching plan:", err);
@@ -28,7 +27,7 @@ const PlanDetails = () => {
     };
 
     fetchPlan();
-  });
+  }, [WorkoutPlanData]);
 
   if (loading) {
     return (
@@ -62,7 +61,11 @@ const PlanDetails = () => {
   return (
     <div>
       <h2>Your Diet Plan</h2>
-      <div dangerouslySetInnerHTML={{ __html: planData }} />
+      {WorkoutPlanData ? (
+        <div dangerouslySetInnerHTML={{ __html: WorkoutPlanData }} />
+      ) : (
+        <p>No data found</p>
+      )}
     </div>
   );
 };

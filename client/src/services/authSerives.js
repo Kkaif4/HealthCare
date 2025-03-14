@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getDietPreferences } from "./planServices.js";
+import { getDietPreferences, getWorkoutPreferences } from "./planServices.js";
 export const login = async (email, password) => {
   try {
     const response = await axios.post("/auth/login", {
@@ -14,6 +14,16 @@ export const login = async (email, password) => {
       const preferences = await getDietPreferences(userId);
       localStorage.removeItem("dietPreferences");
       localStorage.setItem("dietPreferences", JSON.stringify(preferences.data));
+    } catch (error) {
+      console.error("Error fetching preferences:", error.message);
+    }
+    try {
+      const preferences = await getWorkoutPreferences(userId);
+      localStorage.removeItem("workoutPreferences");
+      localStorage.setItem(
+        "workoutPreferences",
+        JSON.stringify(preferences.data)
+      );
     } catch (error) {
       console.error("Error fetching preferences:", error.message);
     }

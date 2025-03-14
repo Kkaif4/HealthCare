@@ -14,11 +14,19 @@ export const saveDietPreferences = async (formData) => {
         Authorization: "Bearer " + token,
       },
     });
+    console.log(response);
     try {
       const user = localStorage.getItem("user");
+      const userId = user._id;
+      const dietPreference = await getDietPreferences(userId);
       await generateDietPlan(user);
       localStorage.removeItem("user");
       localStorage.setItem("user", JSON.stringify(response.data));
+      localStorage.removeItem("dietPreferences");
+      localStorage.setItem(
+        "dietPreferences",
+        JSON.stringify(dietPreference.data)
+      );
     } catch (error) {
       console.log("Error generating diet plan:", error.message);
     }
@@ -64,7 +72,13 @@ export const saveWorkoutPreferences = async (formData) => {
       },
     });
     console.log(response);
-
+    try {
+      const user = localStorage.getItem("user");
+      const userId = user._id;
+      const preferences = await getDietPreferences(userId);
+      localStorage.removeItem("dietPreferences");
+      localStorage.setItem("dietPreferences", JSON.stringify(preferences.data));
+    } catch (error) {}
     try {
       const user = localStorage.getItem("user");
       await generateWorkoutPlan(user);
@@ -133,6 +147,16 @@ export const getWorkoutPlan = async (userId) => {
 export const getDietPreferences = async (userId) => {
   try {
     const res = await axios.get(`/plans/user-diet-preferences/${userId}`);
+    console.log(res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching diet preferences:", error.message);
+    return null;
+  }
+};
+export const getWorkoutPreferences = async (userId) => {
+  try {
+    const res = await axios.get(`/plans/user-workout-preferences/${userId}`);
     return res.data;
   } catch (error) {
     console.error("Error fetching diet preferences:", error.message);
