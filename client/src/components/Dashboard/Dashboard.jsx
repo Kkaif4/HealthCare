@@ -47,8 +47,8 @@ const Dashboard = () => {
       console.error("Error parsing user from localStorage:", error.message);
     }
   });
-  const [dietPreferences, setDietPreferences] = useState(null);
-  const [wokroutPreferences, setWorkoutPreferences] = useState(null);
+  const [dietPreferences, setDietPreferences] = useState({});
+  const [workoutPreferences, setWorkoutPreferences] = useState({});
   const [bmi, setBmi] = useState(0);
 
   // Fetch user data on mount
@@ -61,7 +61,6 @@ const Dashboard = () => {
           const parsedUser = JSON.parse(storedUser);
           if (parsedUser && typeof parsedUser === "object") {
             setUser(parsedUser);
-            console.log("User data retrieved: -> ", parsedUser);
           } else {
             console.error(
               "Invalid user data retrieved from localStorage:",
@@ -81,7 +80,6 @@ const Dashboard = () => {
           const parsedDietPrefs = JSON.parse(storedDietPrefs);
           if (parsedDietPrefs && typeof parsedDietPrefs === "object") {
             setDietPreferences(parsedDietPrefs);
-            console.log("Diet preferences loaded:", parsedDietPrefs);
           } else {
             console.error("Invalid diet preferences format");
             setDietPreferences({});
@@ -102,7 +100,6 @@ const Dashboard = () => {
           const parsedWorkoutPrefs = JSON.parse(storedWorkoutPrefs);
           if (parsedWorkoutPrefs && typeof parsedWorkoutPrefs === "object") {
             setWorkoutPreferences(parsedWorkoutPrefs);
-            console.log("Workout preferences loaded:", parsedWorkoutPrefs);
           } else {
             console.error("Invalid workout preferences format");
             setWorkoutPreferences({});
@@ -391,11 +388,11 @@ const Dashboard = () => {
                   <div className="p-3 bg-dark/70 rounded-lg border border-primary/20">
                     <p className="text-light/80">
                       <b>Diet Goal: </b>
-                      {dietPreferences?.dietGoal || "Not specified"}
+                      {dietPreferences.data?.dietGoal || "Not specified"}
                     </p>
                     <p className="text-light/80">
                       <b>Workout Goal: </b>
-                      {wokroutPreferences?.workoutGoal || "Not specified"}
+                      {workoutPreferences.data?.workoutGoal || "Not specified"}
                     </p>
                   </div>
                 </div>

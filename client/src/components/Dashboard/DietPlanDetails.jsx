@@ -4,25 +4,34 @@ import { motion } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
 const PlanDetails = ({ onClose }) => {
   const navigate = useNavigate();
-  const [DietPlanData, setDietPlanData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPlan = async () => {
-      try {
-        setLoading(true);
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          setDietPlanData(user.workoutPlan.text);
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser && typeof parsedUser === "object") {
+            setUser(parsedUser);
+            console.log("user----->", parsedUser);
+            setLoading(false);
+          } else {
+            console.error(
+              "Invalid user data retrieved from localStorage:",
+              storedUser
+            );
+          }
+        } catch (error) {
+          console.error("Error parsing user from localStorage:", error.message);
+          setError("Failed to load user data. Please try again later.");
+        } finally {
           setLoading(false);
-        } else {
-          setError("User not found");
         }
-      } catch (error) {
-        setError("Failed to load plan details");
-        console.error(error);
+      } else {
+        console.log("No user data found in local storage");
       }
     };
     fetchPlan();
@@ -47,7 +56,7 @@ const PlanDetails = ({ onClose }) => {
           <h2 className="text-xl font-bold mb-4">Error</h2>
           <p className="mb-6">{error}</p>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/dashboard")}
             className="bg-primary text-dark font-medium px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
           >
             Go Back
@@ -84,9 +93,7 @@ const PlanDetails = ({ onClose }) => {
               </button>
             </div>
           </div>
-          <div>
-            Diet Plan
-          </div>
+          <div>{user.dietPlan.text}</div>
         </motion.div>
       </div>
     </motion.div>

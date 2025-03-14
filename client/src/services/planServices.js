@@ -210,9 +210,7 @@ export const getWorkoutPlan = async (userId) => {
 
 export const getDietPreferences = async (userId) => {
   try {
-    console.log("Fetching diet preferences for user ID:", userId);
     const response = await axios.get(`/plans/user-diet-preferences/${userId}`);
-    console.log("Diet preferences response:", response.data);
     return response;
   } catch (error) {
     console.error("Error fetching diet preferences:", error.message);
@@ -225,11 +223,9 @@ export const getWorkoutPreferences = async (userId) => {
     return null;
   }
   try {
-    console.log("Fetching workout preferences for user ID:", userId);
     const response = await axios.get(
       `/plans/user-workout-preferences/${userId}`
     );
-    console.log("Workout preferences response:", response.data);
     return response; // Return the whole response object
   } catch (error) {
     console.error("Error fetching workout preferences:", error.message);

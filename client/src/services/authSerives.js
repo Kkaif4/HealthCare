@@ -41,7 +41,6 @@ export const login = async (email, password) => {
           "workoutPreferences",
           JSON.stringify(workoutPreferencesResponse.data)
         );
-        console.log("Workout preferences saved to localStorage");
       }
     } catch (error) {
       console.error("Error fetching preferences:", error.message);
