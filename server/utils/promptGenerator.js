@@ -14,6 +14,7 @@ User Information:
 - Gender: ${user.gender}
 - Height: ${user.height} cm
 - Weight: ${user.weight} kg
+- Medical History: ${user.medicalHistory} || "Not Specified"
 - Target Weight: ${preferences.targetWeight} kg
 - Time Period: ${preferences.timePeriod}
 
@@ -86,6 +87,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Gender: ${user?.gender || "Not specified"}
     Height: ${user?.height || "Not specified"} ${heightUnit}
     Weight: ${user?.weight || "Not specified"} ${weightUnit}
+    Medical History: ${user?.medicalHistory || "Not specified"}
     Activity Level: ${preferences?.activityLevel || "Not specified"}
     Health Conditions: ${
       preferences?.healthConditions?.join(", ") || "None reported"
@@ -98,7 +100,9 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
       preferences?.targetWeight || "Not specified"
     } ${weightUnit}
     - Time Period: ${preferences?.timePeriod || "Not specified"}
-    - Available Time Per Day: ${preferences?.workoutDuration || "Not specified"} mins
+    - Available Time Per Day: ${
+      preferences?.workoutDuration || "Not specified"
+    } mins
     - Equipment: ${preferences?.equipment?.join(", ") || "None specified"}
     - Workout Duration: ${
       preferences?.workoutDuration || "Not specified"
