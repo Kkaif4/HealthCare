@@ -7,10 +7,6 @@ const userSchema = new mongoose.Schema({
     required: [true, "Name is required"],
     trim: true,
   },
-  avatar: {
-    type: String,
-    default: "default_avatar.png",
-  },
   email: {
     type: String,
     required: [true, "Email is required"],
@@ -51,11 +47,11 @@ const userSchema = new mongoose.Schema({
   },
   dietPlan: {
     text: { type: String, default: null },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: null },
   },
   workoutPlan: {
     text: { type: String, default: null },
-    createdAt: { type: Date, default: Date.now },
+    createdAt: { type: Date, default: null },
   },
   createdAt: {
     type: Date,
