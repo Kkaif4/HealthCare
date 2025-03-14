@@ -4,6 +4,11 @@ import { Menu } from "@headlessui/react";
 import DietPlanForm from "./DietPlanForm";
 import WorkoutPlanForm from "./WorkoutPlanForm";
 import { Link } from "react-router-dom";
+
+import axios from 'axios'; // ✅ Axios imported
+import { useDispatch } from 'react-redux'; // ✅ Redux (if using)
+import { useNavigate } from 'react-router-dom'; // ✅ React Router
+
 import {
   FiUser,
   FiEdit,
@@ -22,6 +27,8 @@ import {
 } from "react-icons/fi";
 
 const Dashboard = () => {
+  const dispatch = useDispatch(); // ✅ Redux dispatch
+  const navigate = useNavigate(); // ✅ Navigation
   const [showDietForm, setShowDietForm] = useState(false);
   const [showWorkoutForm, setShowWorkoutForm] = useState(false);
   const [showToDoList, setShowToDoList] = useState(false);
@@ -59,6 +66,21 @@ const Dashboard = () => {
     }
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      // Call the backend logout route to clear cookies
+      await axios.post('server\routes\authRoutes.js');
+      
+      // Clear user state
+      dispatch({ type: 'LOGOUT' });
+      
+      // Redirect to login
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
@@ -71,6 +93,8 @@ const Dashboard = () => {
         setShowUserSection(true);
       }
     };
+
+    
 
     window.addEventListener("resize", handleResize);
     // Initial check
@@ -224,9 +248,7 @@ const Dashboard = () => {
                   <Menu.Item>
                     {({ active }) => (
                       <button
-                        onClick={() => {
-                          /* Add your logout logic here */
-                        }}
+                      onClick={handleLogout}
                         className={`w-full text-left px-4 py-2 rounded-md ${
                           active ? "bg-primary/20" : ""
                         }`}
