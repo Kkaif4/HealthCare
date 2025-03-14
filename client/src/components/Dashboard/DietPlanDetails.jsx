@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
+import { Link } from "react-router-dom";
 const PlanDetails = ({ onClose }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -85,12 +86,14 @@ const PlanDetails = ({ onClose }) => {
                   Generate Diet Plan
                 </span>
               </h2>
+              <Link to="/dashboard">
               <button
-                onClick={onClose}
+                
                 className="text-light/60 hover:text-primary transition-colors"
               >
                 <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
               </button>
+              </Link>
             </div>
           </div>
           {user && user.dietPlan ? (
