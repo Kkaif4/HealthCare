@@ -22,7 +22,6 @@ export const register = async (req, res, next) => {
       height,
       medicalHistory,
     } = req.body;
-
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -66,7 +65,6 @@ export const register = async (req, res, next) => {
         },
       });
   } catch (error) {
-    if (req.file) await fs.unlink(req.file.path).catch(() => {});
     console.error("Error registering user:", error.message);
     next(error);
   }

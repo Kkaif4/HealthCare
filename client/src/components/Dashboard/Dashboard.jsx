@@ -455,19 +455,20 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created:
-                      {new Date(user.dietPlan?.createdAt).toLocaleDateString(
-                        "en-IN",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          hour12: true,
-                        }
-                      )}
+                      <FiCalendar className="mr-2" /> Created:{" "}
+                      {user.dietPlan?.createdAt
+                        ? new Date(user.dietPlan.createdAt).toLocaleString(
+                            "en-IN",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )
+                        : "Date not available"}
                     </div>
                     <Link to="/diet-plan-details">
                       <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
@@ -476,7 +477,6 @@ const Dashboard = () => {
                     </Link>
                   </div>
                 </motion.div>
-
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="bg-dark/60 border border-primary/20 rounded-xl p-4 hover:shadow-lg hover:shadow-primary/5 transition-all"
@@ -489,19 +489,20 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created:
-                      {new Date(user.workoutPlan?.createdAt).toLocaleDateString(
-                        "en-IN",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          hour12: true,
-                        }
-                      )}
+                      <FiCalendar className="mr-2" /> Created:{" "}
+                      {user.dietPlan?.createdAt
+                        ? new Date(user.workoutPlan.createdAt).toLocaleString(
+                            "en-IN",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }
+                          )
+                        : "Date not available"}
                     </div>
                     <Link to="/workout-plan-details">
                       <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
