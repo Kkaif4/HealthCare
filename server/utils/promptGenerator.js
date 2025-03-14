@@ -98,7 +98,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
       preferences?.targetWeight || "Not specified"
     } ${weightUnit}
     - Time Period: ${preferences?.timePeriod || "Not specified"}
-    - Available Time Per Day: ${preferences?.workoutDuration || "Not specified"}
+    - Available Time Per Day: ${preferences?.workoutDuration || "Not specified"} mins
     - Equipment: ${preferences?.equipment?.join(", ") || "None specified"}
     - Workout Duration: ${
       preferences?.workoutDuration || "Not specified"

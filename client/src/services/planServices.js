@@ -7,26 +7,57 @@ import axios from "axios";
  */
 export const saveDietPreferences = async (formData) => {
   try {
+    // Get token for authentication
     const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    //Save diet preferences to the database
     const response = await axios.post(`/plans/diet-preferences`, formData, {
       withCredentials: true,
       headers: {
-        Authorization: "Bearer " + token,
+        Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response);
+
     try {
-      const user = localStorage.getItem("user");
+      // Get Current user from localStorage and parse it properly
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        throw new Error("User not found in localStorage");
+      }
+
+      const user = JSON.parse(userStr);
       const userId = user._id;
-      const dietPreference = await getDietPreferences(userId);
+
+      if (!userId) {
+        throw new Error("User ID not found");
+      }
+      // Get diet preferences
+      const dietPreferenceResponse = await getDietPreferences(userId);
+
+      // Generate diet plan
       await generateDietPlan(user);
-      localStorage.removeItem("user");
-      localStorage.setItem("user", JSON.stringify(response.data));
-      localStorage.removeItem("dietPreferences");
-      localStorage.setItem(
-        "dietPreferences",
-        JSON.stringify(dietPreference.data)
-      );
+
+      const updatedUserResponse = await axios.get(`/profile`, user, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (updatedUserResponse && updatedUserResponse.data) {
+        localStorage.setItem("user", JSON.stringify(updatedUserResponse.data));
+        console.log("Updated user with diet plan saved to localStorage");
+      }
+
+      if (dietPreferenceResponse && dietPreferenceResponse.data) {
+        localStorage.setItem(
+          "dietPreferences",
+          JSON.stringify(dietPreferenceResponse.data)
+        );
+        console.log("Updated diet preferences saved to localStorage");
+      }
     } catch (error) {
       console.log("Error generating diet plan:", error.message);
     }
@@ -64,28 +95,61 @@ export const generateDietPlan = async (userData) => {
  */
 export const saveWorkoutPreferences = async (formData) => {
   try {
+    // Get token for authentication
     const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    // Save workout preferences to the database
     const response = await axios.post(`/plans/workout-preferences`, formData, {
       withCredentials: true,
       headers: {
         Authorization: "Bearer " + token,
       },
     });
-    console.log(response);
+
     try {
-      const user = localStorage.getItem("user");
+      // Get user from localStorage and parse it properly
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        throw new Error("User not found in localStorage");
+      }
+      const user = JSON.parse(userStr);
       const userId = user._id;
-      const preferences = await getDietPreferences(userId);
-      localStorage.removeItem("dietPreferences");
-      localStorage.setItem("dietPreferences", JSON.stringify(preferences.data));
-    } catch (error) {}
-    try {
-      const user = localStorage.getItem("user");
+
+      if (!userId) {
+        throw new Error("User ID not found");
+      }
+      // Get updated workout preferences
+      const workoutPreferenceResponse = await getDietPreferences(userId);
+      // Generate workout plan
       await generateWorkoutPlan(user);
-      localStorage.removeItem("user");
-      localStorage.setItem("user", JSON.stringify(response.data));
+
+      // Update localStorage with new data
+      const updatedUserResponse = await axios.get(`/profile`, user, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (updatedUserResponse && updatedUserResponse.data) {
+        localStorage.setItem("user", JSON.stringify(updatedUserResponse.data));
+        console.log("Updated user with workout plan saved to localStorage");
+      }
+
+      if (workoutPreferenceResponse && workoutPreferenceResponse.data) {
+        localStorage.setItem(
+          "workoutPreferences",
+          JSON.stringify(workoutPreferenceResponse.data)
+        );
+        console.log(
+          "Updated workout preferences",
+          workoutPreferenceResponse.data
+        );
+        console.log("Updated workout preferences saved to localStorage");
+      }
     } catch (error) {
-      console.log("Error generating workout plan:", error.message);
+      console.log("Error fetching preferences:", error.message);
     }
     return response.data;
   } catch (error) {
@@ -146,20 +210,29 @@ export const getWorkoutPlan = async (userId) => {
 
 export const getDietPreferences = async (userId) => {
   try {
-    const res = await axios.get(`/plans/user-diet-preferences/${userId}`);
-    console.log(res.data);
-    return res.data;
+    console.log("Fetching diet preferences for user ID:", userId);
+    const response = await axios.get(`/plans/user-diet-preferences/${userId}`);
+    console.log("Diet preferences response:", response.data);
+    return response;
   } catch (error) {
     console.error("Error fetching diet preferences:", error.message);
     return null;
   }
 };
 export const getWorkoutPreferences = async (userId) => {
+  if (!userId) {
+    console.error("No userId provided to getWorkoutPreferences");
+    return null;
+  }
   try {
-    const res = await axios.get(`/plans/user-workout-preferences/${userId}`);
-    return res.data;
+    console.log("Fetching workout preferences for user ID:", userId);
+    const response = await axios.get(
+      `/plans/user-workout-preferences/${userId}`
+    );
+    console.log("Workout preferences response:", response.data);
+    return response; // Return the whole response object
   } catch (error) {
-    console.error("Error fetching diet preferences:", error.message);
+    console.error("Error fetching workout preferences:", error.message);
     return null;
   }
 };

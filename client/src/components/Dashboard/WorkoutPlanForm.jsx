@@ -238,7 +238,7 @@ const WorkoutPlanForm = ({ onClose }) => {
             </div>
 
             {/* Submit Button */}
-            <Link to="/WorkoutPlanDetails">
+            {/* <Link to="/WorkoutPlanDetails"> */}
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
@@ -248,7 +248,7 @@ const WorkoutPlanForm = ({ onClose }) => {
             >
               <FiActivity className="mr-2" /> Generate Workout Plan
             </motion.button>
-            </Link>
+            {/* </Link> */}
           </form>
         </motion.div>
       </div>

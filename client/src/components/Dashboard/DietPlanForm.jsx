@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { saveDietPreferences } from "../../services/planServices";
 
 const DietPlanForm = ({ onClose }) => {
-  const [isLoading, setLoadin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     dietGoal: "",
     dietType: "",
@@ -26,20 +26,30 @@ const DietPlanForm = ({ onClose }) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoadin(true);
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true); // Start loading
     try {
       await saveDietPreferences(formData);
     } catch (error) {
-      console.error("Error generating diet plan:", error);
+      console.error("Error saving diet preferences:", error);
     } finally {
-      setLoadin(false);
+      setIsLoading(false);
     }
   };
-  useEffect(() => {
-    console.log("formData current state:", formData);
-  }, [formData]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-dark text-light flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4">Loading plan details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -121,7 +131,6 @@ const DietPlanForm = ({ onClose }) => {
                   name="foodAllergies"
                   value={formData.foodAllergies}
                   onChange={handleChange}
-                  required
                   placeholder="List any food allergies..."
                   className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
                 ></textarea>
@@ -228,15 +237,15 @@ const DietPlanForm = ({ onClose }) => {
 
             {/* Submit Button */}
             {/* <Link to={"/diet-plan-details"}> */}
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                disabled={isLoading}
-                className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
-              >
-                <FiCheckCircle className="mr-2" /> Generate Plan
-              </motion.button>
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
+            >
+              <FiCheckCircle className="mr-2" /> Generate Plan
+            </motion.button>
             {/* </Link> */}
           </form>
         </motion.div>

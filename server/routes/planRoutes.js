@@ -45,4 +45,5 @@ router.get("/user-workout-preferences/:userId", getWorkoutPreferences);
 
 router.get("/user-diet-plan", getDietPlan);
 router.get("/user-workout-plan", getWorkoutPlan);
+
 export default router;

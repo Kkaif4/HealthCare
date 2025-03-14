@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const PlanDetails = () => {
   const navigate = useNavigate();
-  const [WorkoutPlanData, setWorkoutPlanData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [WorkoutPlanData, setWorkoutPlanData] = useState(null);
   useEffect(() => {
     const fetchPlan = async () => {
       try {
@@ -14,8 +14,12 @@ const PlanDetails = () => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          setWorkoutPlanData(user.workoutPlan.text);
-          setLoading(false);
+          console.log(user.workoutPlan);
+          if (user.workoutPlan && user.workoutPlan.text) {
+            setWorkoutPlanData(user.workoutPlan.text);
+          } else {
+            console.log("Workout plan not found in user data");
+          }
         } else {
           console.log("user not found in local storage");
         }
@@ -23,13 +27,15 @@ const PlanDetails = () => {
         console.error("Error fetching plan:", err);
         setError("Failed to load the plan. Please try again later.");
         setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPlan();
-  }, [WorkoutPlanData]);
+  }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-dark text-light flex items-center justify-center">
         <div className="text-center">

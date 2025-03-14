@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-
-const PlanDetails = () => {
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FiArrowLeft } from "react-icons/fi";
+const PlanDetails = ({ onClose }) => {
   const navigate = useNavigate();
   const [DietPlanData, setDietPlanData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,20 +15,18 @@ const PlanDetails = () => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          setDietPlanData(user.dietPlan.text);
+          setDietPlanData(user.workoutPlan.text);
           setLoading(false);
         } else {
-          console.log("user not found in local storage");
+          setError("User not found");
         }
-      } catch (err) {
-        console.error("Error fetching plan:", err);
-        setError("Failed to load the plan. Please try again later.");
-        setLoading(false);
+      } catch (error) {
+        setError("Failed to load plan details");
+        console.error(error);
       }
     };
-
     fetchPlan();
-  }, [DietPlanData]);
+  });
 
   if (loading) {
     return (
@@ -59,14 +58,38 @@ const PlanDetails = () => {
   }
 
   return (
-    <div>
-      <h2>Your Workout Plan</h2>
-      {DietPlanData ? (
-        <div dangerouslySetInnerHTML={{ __html: DietPlanData }} />
-      ) : (
-        <p>No data found</p>
-      )}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4"
+    >
+      <div relative w-full max-w-3xl mx-auto my-4>
+        <motion.div
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto"
+        >
+          <div className="bg-dark z-10 pb-4 mb-4 border-b border-primary/10">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl md:text-2xl font-bold text-light flex items-center">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Generate Diet Plan
+                </span>
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-light/60 hover:text-primary transition-colors"
+              >
+                <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
+              </button>
+            </div>
+          </div>
+          <div>
+            Diet Plan
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 

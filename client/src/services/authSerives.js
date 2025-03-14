@@ -7,29 +7,49 @@ export const login = async (email, password) => {
       password,
     });
     const { token, user } = response.data;
+
+    // Store the token and user data in local storage
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
+
     const userId = user._id;
-    try {
-      const preferences = await getDietPreferences(userId);
-      localStorage.removeItem("dietPreferences");
-      localStorage.setItem("dietPreferences", JSON.stringify(preferences.data));
-    } catch (error) {
-      console.error("Error fetching preferences:", error.message);
+
+    //Check if the userId exists
+    if (!userId) {
+      console.log("Couldn't find the userId");
+      return user;
     }
+
+    //Get Diet Preferences
     try {
-      const preferences = await getWorkoutPreferences(userId);
-      localStorage.removeItem("workoutPreferences");
-      localStorage.setItem(
-        "workoutPreferences",
-        JSON.stringify(preferences.data)
-      );
+      const dietPreferencesResponse = await getDietPreferences(userId);
+      if (dietPreferencesResponse && dietPreferencesResponse.data) {
+        localStorage.setItem(
+          "dietPreferences",
+          JSON.stringify(dietPreferencesResponse.data)
+        );
+      }
+    } catch (error) {
+      console.log("Error fetching preferences:", error.message);
+    }
+
+    // Get workout preferences
+    try {
+      const workoutPreferencesResponse = await getWorkoutPreferences(userId);
+      if (workoutPreferencesResponse && workoutPreferencesResponse.data) {
+        localStorage.setItem(
+          "workoutPreferences",
+          JSON.stringify(workoutPreferencesResponse.data)
+        );
+        console.log("Workout preferences saved to localStorage");
+      }
     } catch (error) {
       console.error("Error fetching preferences:", error.message);
     }
     return user;
   } catch (error) {
     console.error("Error in login:", error.message);
+    throw error;
   }
 };
 

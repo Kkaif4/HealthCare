@@ -101,7 +101,7 @@ export const generateDietPlan = async (req, res) => {
     console.log("Diet Plan saved successfully");
     res.status(200).json({
       success: true,
-      dietPlan: formattedPlan,
+      data: user,
     });
   } catch (error) {
     console.error("Error generating diet plan:", error);
@@ -159,6 +159,7 @@ export const getDietPreferences = async (req, res) => {
         message: "Diet Preferences not found for this user",
       });
     }
+    console.log("prefrences send to response");
     res.json({
       success: true,
       data: dietPreferences,

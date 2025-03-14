@@ -47,56 +47,82 @@ const Dashboard = () => {
       console.error("Error parsing user from localStorage:", error.message);
     }
   });
-  const [diet, setDiet] = useState(null);
   const [dietPreferences, setDietPreferences] = useState(null);
   const [wokroutPreferences, setWorkoutPreferences] = useState(null);
   const [bmi, setBmi] = useState(0);
 
   // Fetch user data on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error("Error parsing user from localStorage:", error.message);
+    const fetchUserData = () => {
+      // get user data
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser && typeof parsedUser === "object") {
+            setUser(parsedUser);
+            console.log("User data retrieved: -> ", parsedUser);
+          } else {
+            console.error(
+              "Invalid user data retrieved from localStorage:",
+              storedUser
+            );
+          }
+        } catch (error) {
+          console.error("Error parsing user from localStorage:", error.message);
+        }
+      } else {
+        console.log("No user data found in local storage");
       }
-    }
-  }, []);
-
-  useEffect(() => {
-    const storedPreferences = localStorage.getItem("dietPreferences");
-    if (storedPreferences) {
-      try {
-        setDietPreferences(JSON.parse(storedPreferences));
-      } catch (error) {
-        console.error(
-          "Error parsing diet preferences from localStorage:",
-          error.message
-        );
+      //Get diet preferences
+      const storedDietPrefs = localStorage.getItem("dietPreferences");
+      if (storedDietPrefs) {
+        try {
+          const parsedDietPrefs = JSON.parse(storedDietPrefs);
+          if (parsedDietPrefs && typeof parsedDietPrefs === "object") {
+            setDietPreferences(parsedDietPrefs);
+            console.log("Diet preferences loaded:", parsedDietPrefs);
+          } else {
+            console.error("Invalid diet preferences format");
+            setDietPreferences({});
+          }
+        } catch (error) {
+          console.error("Error parsing diet preferences:", error.message);
+          setDietPreferences({});
+        }
+      } else {
+        console.log("No diet preferences found in localStorage");
         setDietPreferences({});
       }
-    } else {
-      console.log("Couldn't find any preferences");
-      setDietPreferences({});
-    }
-  }, []);
-  useEffect(() => {
-    const storedPreferences = localStorage.getItem("workoutPreferences");
-    if (storedPreferences) {
-      try {
-        setWorkoutPreferences(JSON.parse(storedPreferences));
-      } catch (error) {
-        console.error(
-          "Error parsing diet preferences from localStorage:",
-          error.message
-        );
+
+      //get workout prefrences
+      const storedWorkoutPrefs = localStorage.getItem("workoutPreferences");
+      if (storedWorkoutPrefs) {
+        try {
+          const parsedWorkoutPrefs = JSON.parse(storedWorkoutPrefs);
+          if (parsedWorkoutPrefs && typeof parsedWorkoutPrefs === "object") {
+            setWorkoutPreferences(parsedWorkoutPrefs);
+            console.log("Workout preferences loaded:", parsedWorkoutPrefs);
+          } else {
+            console.error("Invalid workout preferences format");
+            setWorkoutPreferences({});
+          }
+        } catch (error) {
+          console.error("Error parsing workout preferences:", error.message);
+          setWorkoutPreferences({});
+        }
+      } else {
+        console.log("No workout preferences found in localStorage");
         setWorkoutPreferences({});
       }
-    } else {
-      console.log("Couldn't find any preferences");
-      setWorkoutPreferences({});
-    }
+    };
+    fetchUserData();
+    window.addEventListener("storage", fetchUserData);
+
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener("storage", fetchUserData);
+    };
   }, []);
 
   const handleLogout = async () => {

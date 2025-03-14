@@ -102,7 +102,7 @@ export const generateWorkoutPlan = async (req, res) => {
         .json({ success: false, message: "Failed to generate diet plan" });
     }
     const WorkoutPlan = cleanGeminiResponse(Text);
-    console.log("diet plan generated");
+    console.log("Workout plan generated");
     user.workoutPlan.text = null;
     user.workoutPlan.text = WorkoutPlan;
     user.workoutPlan.createdAt = Date.now();
