@@ -84,10 +84,10 @@ const Footer = () => {
                   Documentation
                 </a>
               </li>
-             
+
               <li>
                 <a
-                  href="https://aistudio.google.com/prompts/new_chat"
+                  href="https://ai.google.dev/"
                   className="text-light/80 hover:text-primary"
                 >
                   API Status
