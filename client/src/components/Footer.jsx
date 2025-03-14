@@ -84,11 +84,7 @@ const Footer = () => {
                   Documentation
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-light/80 hover:text-primary">
-                  Help Center
-                </a>
-              </li>
+             
               <li>
                 <a
                   href="https://aistudio.google.com/prompts/new_chat"

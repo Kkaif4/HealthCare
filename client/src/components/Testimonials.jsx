@@ -38,6 +38,19 @@ const Testimonials = () => {
           <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-4"></div>
         </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mb-12 flex justify-center"
+        >
+          <img 
+            src="/images/team.jpg" // Update this path to your actual image
+            alt="Our Team"
+            className="rounded-lg shadow-xl max-w-2xl w-full object-cover h-80"
+          />
+        </motion.div>
+
         <div className="grid md:grid-cols-2 gap-12">
           {developers.map((developer, index) => (
             <motion.div
