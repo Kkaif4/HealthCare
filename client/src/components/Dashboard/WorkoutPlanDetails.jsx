@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "react-router-dom";
-
+import { getMe } from "../../services/authSerives.js";
 const PlanDetails = ({ onClose }) => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(true);
@@ -12,27 +12,17 @@ const PlanDetails = ({ onClose }) => {
   const [user, setUser] = useState({});
   useEffect(() => {
     const fetchPlan = async () => {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        try {
-          const parsedUser = JSON.parse(storedUser);
-          if (parsedUser && typeof parsedUser === "object") {
-            setUser(parsedUser);
-            setLoading(false);
-          } else {
-            console.error(
-              "Invalid user data retrieved from localStorage:",
-              storedUser
-            );
-          }
-        } catch (error) {
-          console.error("Error parsing user from localStorage:", error.message);
-          setError("Failed to load user data. Please try again later.");
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        console.log("No user data found in local storage");
+      try {
+        console.log("hello");
+        await getMe();
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        setUser(storedUser);
+        console.log(storedUser);
+        setLoading(false);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPlan();
@@ -88,12 +78,9 @@ const PlanDetails = ({ onClose }) => {
                 </span>
               </h2>
               <Link to="/dashboard">
-              <button
-                
-                className="text-light/60 hover:text-primary transition-colors"
-              >
-                <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
-              </button>
+                <button className="text-light/60 hover:text-primary transition-colors">
+                  <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
+                </button>
               </Link>
             </div>
           </div>

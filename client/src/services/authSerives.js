@@ -11,15 +11,12 @@ export const login = async (email, password) => {
     // Store the token and user data in local storage
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
-
     const userId = user._id;
-
     //Check if the userId exists
     if (!userId) {
       console.log("Couldn't find the userId");
       return user;
     }
-
     //Get Diet Preferences
     try {
       const dietPreferencesResponse = await getDietPreferences(userId);
@@ -32,7 +29,6 @@ export const login = async (email, password) => {
     } catch (error) {
       console.log("Error fetching preferences:", error.message);
     }
-
     // Get workout preferences
     try {
       const workoutPreferencesResponse = await getWorkoutPreferences(userId);
@@ -69,6 +65,22 @@ export const register = async (formData) => {
   }
 };
 
+export const getMe = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.get("/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const user = response.data.data;
+    localStorage.setItem("user", JSON.stringify(user));
+    return user;
+  } catch (error) {
+    console.error("Error fetching user profile:", error.message);
+    throw error;
+  }
+};
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");

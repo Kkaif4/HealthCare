@@ -71,7 +71,7 @@ Grocery list:
 ...
 Meal prep tips:
 ...
-generate a response which in html file but without head tag and body just text of the body with tags and proper formatting
+generate a response which in html file but without head tag and body just text of the html tags and proper formatting like li, ui, strong, br, etc. make it readable do space formatting also
 `;
 };
 
@@ -141,7 +141,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Form Tips: [form tips]
     Recovery: [recovery details]
     
-    generate a response which in html file but without head tag and body just text of the html tags and proper formatting like li, ui, strong, br, etc.
+    generate a response which in html file but without head tag and body just text of the html tags and proper formatting like li, ui, strong, br, etc. make it readable do space formatting also
     
   `;
 };

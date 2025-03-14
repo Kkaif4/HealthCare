@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { getMe, login } from "./authSerives.js";
 /**
  * Save diet preferences to the database
  * @param {Object} dietPreferences - User's diet preferences data
@@ -39,7 +39,12 @@ export const saveDietPreferences = async (formData) => {
 
       // Generate diet plan
       await generateDietPlan(user);
-
+      //getting Profile
+      try {
+        await getMe(user);
+      } catch (err) {
+        console.log("Error getting Profile:", err.message);
+      }
       const updatedUserResponse = await axios.get(`/profile`, user, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -49,7 +54,6 @@ export const saveDietPreferences = async (formData) => {
       if (updatedUserResponse && updatedUserResponse.data) {
         console.log(updatedUserResponse.data);
         localStorage.setItem("user", JSON.stringify(updatedUserResponse.data));
-        console.log("Updated user with diet plan saved to localStorage");
       }
 
       if (dietPreferenceResponse && dietPreferenceResponse.data) {
@@ -57,7 +61,6 @@ export const saveDietPreferences = async (formData) => {
           "dietPreferences",
           JSON.stringify(dietPreferenceResponse.data)
         );
-        console.log("Updated diet preferences saved to localStorage");
       }
     } catch (error) {
       console.log("Error generating diet plan:", error.message);
@@ -127,6 +130,15 @@ export const saveWorkoutPreferences = async (formData) => {
       // Generate workout plan
       await generateWorkoutPlan(user);
 
+      //getting Profile
+      try {
+        const response = await getMe(user);
+        if (response && response.data) {
+          localStorage.setItem("user", JSON.stringify(response.data));
+        }
+      } catch (err) {
+        console.error("Error getting profile", err.message);
+      }
       // Update localStorage with new data
       const updatedUserResponse = await axios.get(`/profile`, user, {
         headers: {
