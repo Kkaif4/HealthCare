@@ -159,3 +159,28 @@ export const getWorkoutPlan = async (req, res) => {
     });
   }
 };
+
+export const getWorkoutPreferences = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const wokroutPreferences = await Preferences.findOne({ userId });
+    if (!wokroutPreferences) {
+      return res.status(404).json({
+        success: false,
+        message: "Diet Preferences not found for this user",
+      });
+    }
+    res.json({
+      success: true,
+      data: wokroutPreferences,
+      message: "Workout Preferences",
+    });
+  } catch (error) {
+    console.error("Error getting diet preferences:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve diet preferences",
+      error: error.message,
+    });
+  }
+};

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
-import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { saveDietPreferences } from "../../services/planServices";
 
-const DietPlanForm = ({ onClose}) => {
+const DietPlanForm = ({ onClose }) => {
   const [isLoading, setLoadin] = useState(false);
   const [formData, setFormData] = useState({
     dietGoal: "",
@@ -32,9 +31,7 @@ const DietPlanForm = ({ onClose}) => {
     setLoadin(true);
     try {
       await saveDietPreferences(formData);
-      toast.success("Diet Plan saved successfully");
     } catch (error) {
-      toast.error("Failed to save diet plan");
       console.error("Error generating diet plan:", error);
     } finally {
       setLoadin(false);
@@ -230,7 +227,7 @@ const DietPlanForm = ({ onClose}) => {
             </div>
 
             {/* Submit Button */}
-            <Link to={"/diet-plan-details"}>
+            {/* <Link to={"/diet-plan-details"}> */}
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.02 }}
@@ -240,7 +237,7 @@ const DietPlanForm = ({ onClose}) => {
               >
                 <FiCheckCircle className="mr-2" /> Generate Plan
               </motion.button>
-            </Link>
+            {/* </Link> */}
           </form>
         </motion.div>
       </div>
