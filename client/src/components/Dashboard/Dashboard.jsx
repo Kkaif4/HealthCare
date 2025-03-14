@@ -18,7 +18,7 @@ import {
   FiX,
   FiChevronDown,
   FiChevronUp,
-  FiLogOut
+  FiLogOut,
 } from "react-icons/fi";
 
 const Dashboard = () => {
@@ -38,13 +38,14 @@ const Dashboard = () => {
   const [newTodo, setNewTodo] = useState("");
   const [user, setUser] = useState(() => {
     try {
-      const User = localStorage.getItem('user')
+      const User = localStorage.getItem("user");
       return User || null;
     } catch (error) {
       console.error("Error parsing user from localStorage:", error.message);
     }
   });
   const [diet, setDiet] = useState(null);
+  const [dietPreferences, setDietPreferences] = useState(null);
   const [bmi, setBmi] = useState(0);
 
   // Fetch user data on mount
@@ -56,6 +57,24 @@ const Dashboard = () => {
       } catch (error) {
         console.error("Error parsing user from localStorage:", error.message);
       }
+    }
+  }, []);
+
+  useEffect(() => {
+    const storedPreferences = localStorage.getItem("dietPreferences");
+    if (storedPreferences) {
+      try {
+        setDietPreferences(JSON.parse(storedPreferences));
+      } catch (error) {
+        console.error(
+          "Error parsing diet preferences from localStorage:",
+          error.message
+        );
+        setDietPreferences({});
+      }
+    } else {
+      console.log("Couldn't find any preferences");
+      setDietPreferences({});
     }
   }, []);
 
@@ -309,9 +328,6 @@ const Dashboard = () => {
                     No user data found.
                   </p>
                 )}
-                <button className="mt-3 w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                  <FiEdit className="mr-2" /> Edit Profile
-                </button>
               </div>
 
               <div className="bg-dark/80 backdrop-blur-lg p-4 rounded-xl border border-primary/20">
@@ -320,12 +336,11 @@ const Dashboard = () => {
                 </h2>
                 <div className="space-y-3">
                   <div className="p-3 bg-dark/70 rounded-lg border border-primary/20">
-                    <h3 className="text-lg font-bold mb-1">Primary Goal</h3>
-                    <p className="text-light/80">{user.goal}</p>
+                    <p className="text-light/80">
+                      <b>Workout Goal: </b>
+                      {dietPreferences?.dietGoal || "Not specified"}
+                    </p>
                   </div>
-                  <button className="w-full bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                    <FiEdit className="mr-2" /> Update Goal
-                  </button>
                 </div>
               </div>
 
@@ -386,14 +401,21 @@ const Dashboard = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created: 
+                      <FiCalendar className="mr-2" /> Created:
+                      {new Date(user.dietPlan?.createdAt).toLocaleDateString(
+                        "en-IN",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </div>
                     <Link to="/diet-plan-details">
-                    <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                      <FiEdit className="mr-2" /> View Details
-                    </button>
+                      <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
+                        <FiEdit className="mr-2" /> View Details
+                      </button>
                     </Link>
-                    
                   </div>
                 </motion.div>
 
@@ -408,15 +430,22 @@ const Dashboard = () => {
                     </span>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex items-center text-light/80">
-                      <FiCalendar className="mr-2" /> Created: 
+                  <div className="flex items-center text-light/80">
+                      <FiCalendar className="mr-2" /> Created:
+                      {new Date(user.workoutPlan?.createdAt).toLocaleDateString(
+                        "en-IN",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </div>
                     <Link to="/workout-plan-details">
-                    <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
-                      <FiEdit className="mr-2" /> View Details
-                    </button>
+                      <button className="w-full mt-2 bg-primary/20 hover:bg-primary/30 text-primary py-2 rounded-lg transition-colors flex items-center justify-center">
+                        <FiEdit className="mr-2" /> View Details
+                      </button>
                     </Link>
-                
                   </div>
                 </motion.div>
               </div>

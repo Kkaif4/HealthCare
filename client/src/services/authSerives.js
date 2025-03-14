@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { getDietPreferences } from "./planServices.js";
 export const login = async (email, password) => {
   try {
     const response = await axios.post("/auth/login", {
@@ -11,8 +11,9 @@ export const login = async (email, password) => {
     localStorage.setItem("user", JSON.stringify(user));
     const userId = user._id;
     try {
-      const preferences = getPreferences(userId);
-      localStorage.setItem("dietPreference", JSON.stringify(preferences));
+      const preferences = await getDietPreferences(userId);
+      localStorage.removeItem("dietPreferences");
+      localStorage.setItem("dietPreferences", JSON.stringify(preferences.data));
     } catch (error) {
       console.error("Error fetching preferences:", error.message);
     }
@@ -36,15 +37,5 @@ export const register = async (formData) => {
     throw new Error(
       error.response?.data?.message || "Registration request failed"
     );
-  }
-};
-
-const getPreferences = async (userId) => {
-  try {
-    const res = await axios.get(`/plans/user-diet-preferences/${userId}`);
-    return res.data;
-  } catch (error) {
-    console.error("Error fetching diet preferences:", error.message);
-    return null;
   }
 };

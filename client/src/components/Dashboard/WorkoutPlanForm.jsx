@@ -1,29 +1,41 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiArrowLeft, FiCheckCircle, FiActivity } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { FiArrowLeft, FiCheckCircle, FiActivity } from "react-icons/fi";
+import { Link } from "react-router-dom";
+import { saveWorkoutPreferences } from "../../services/planServices";
 
-const WorkoutPlanForm = ({ onClose, onSubmit }) => {
+const WorkoutPlanForm = ({ onClose }) => {
+  const [isLoading, setLoadin] = useState(false);
   const [formData, setFormData] = useState({
-    workoutGoal: "weight-loss",
-    workoutPreferences: "gym",
+    workoutGoal: "",
+    workoutPreferences: "",
     targetWeight: "",
-    timePeriod: "3",
-    availableTimePerDay: "60",
+    timePeriod: "",
+    workoutDuration: "",
     equipment: "",
-    medicalConstraints: "",
-    activityLevel: "moderate",
-    workoutDaysPerWeek: "3"
+    healthConditions: "",
+    injuryHistory: "",
+    activityLevel: "",
+    workoutDaysPerWeek: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setLoadin(true);
+    console.log(formData);
+    try {
+      await saveWorkoutPreferences(formData);
+      onClose();
+    } catch (error) {
+      console.error("Error saving workout preferences:", error);
+    } finally {
+      setLoadin(false);
+    }
   };
 
   return (
@@ -45,7 +57,7 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
                   Generate Workout Plan
                 </span>
               </h2>
-              <button 
+              <button
                 onClick={onClose}
                 className="text-light/60 hover:text-primary transition-colors"
               >
@@ -57,13 +69,16 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Workout Goal Selection */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Workout Goal</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Workout Goal
+              </label>
               <select
                 name="workoutGoal"
                 value={formData.workoutGoal}
                 onChange={handleChange}
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
+                <option value="">Select</option>
                 <option value="weight-loss">Weight Loss</option>
                 <option value="weight-gain">Weight Gain</option>
                 <option value="muscle-gain">Muscle Gain</option>
@@ -73,29 +88,35 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
 
             {/* Workout Preferences */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Workout Preferences</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Workout Preferences
+              </label>
               <select
                 name="workoutPreferences"
                 value={formData.workoutPreferences}
                 onChange={handleChange}
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
+                <option value="">Select</option>
                 <option value="home">Home</option>
                 <option value="gym">Gym</option>
                 <option value="outdoor">Outdoor</option>
                 <option value="yoga">Yoga</option>
               </select>
             </div>
-            
+
             {/* Activity Level */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Activity Level</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Activity Level
+              </label>
               <select
                 name="activityLevel"
                 value={formData.activityLevel}
                 onChange={handleChange}
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               >
+                <option value="">Select</option>
                 <option value="sedentary">Sedentary</option>
                 <option value="light">Light</option>
                 <option value="moderate">Moderate</option>
@@ -107,7 +128,9 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Target Weight */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Target Weight (kg)</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Target Weight (kg)
+                </label>
                 <input
                   type="number"
                   name="targetWeight"
@@ -121,7 +144,9 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Time Period */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Time Period (months)</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Time Period (months)
+                </label>
                 <input
                   type="number"
                   name="timePeriod"
@@ -137,11 +162,13 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Available Time Per Day */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Available Time Per Day (minutes)</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Available Time Per Day (minutes)
+                </label>
                 <input
                   type="number"
-                  name="availableTimePerDay"
-                  value={formData.availableTimePerDay}
+                  name="workoutDuration"
+                  value={formData.workoutDuration}
                   onChange={handleChange}
                   min="15"
                   max="240"
@@ -153,7 +180,9 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
 
               {/* Workout Days Per Week */}
               <div>
-                <label className="block text-light/80 mb-2 font-medium">Workout Days Per Week</label>
+                <label className="block text-light/80 mb-2 font-medium">
+                  Workout Days Per Week
+                </label>
                 <input
                   type="number"
                   name="workoutDaysPerWeek"
@@ -170,7 +199,9 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
 
             {/* Equipment */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Available Equipment</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Available Equipment
+              </label>
               <textarea
                 name="equipment"
                 value={formData.equipment}
@@ -182,10 +213,24 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
 
             {/* Medical Constraints */}
             <div>
-              <label className="block text-light/80 mb-2 font-medium">Medical Constraints</label>
+              <label className="block text-light/80 mb-2 font-medium">
+                Medical Conditions
+              </label>
               <textarea
-                name="medicalConstraints"
-                value={formData.medicalConstraints}
+                name="healthConditions"
+                value={formData.healthConditions}
+                onChange={handleChange}
+                placeholder="List any injuries, conditions, or limitations..."
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
+              ></textarea>
+            </div>
+            <div>
+              <label className="block text-light/80 mb-2 font-medium">
+                Injury History
+              </label>
+              <textarea
+                name="injuryHistory"
+                value={formData.injuryHistory}
                 onChange={handleChange}
                 placeholder="List any injuries, conditions, or limitations..."
                 className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
@@ -193,11 +238,12 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
             </div>
 
             {/* Submit Button */}
-            <Link to="/workout-plan-details">
+            <Link to="/WorkoutPlanDetails">
             <motion.button
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              disabled={isLoading}
               className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
             >
               <FiActivity className="mr-2" /> Generate Workout Plan
@@ -207,33 +253,6 @@ const WorkoutPlanForm = ({ onClose, onSubmit }) => {
         </motion.div>
       </div>
     </motion.div>
-  );
-};
-
-// Reusable option component for goals and preferences
-const GoalOption = ({ name, value, selected, onChange }) => {
-  const formattedValue = value.split('-').map(word => 
-    word.charAt(0).toUpperCase() + word.slice(1)
-  ).join(' ');
-
-  return (
-    <label className="cursor-pointer">
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={selected}
-        onChange={onChange}
-        className="sr-only"
-      />
-      <div className={`p-2 md:p-3 rounded-lg text-center border text-sm md:text-base transition-all ${
-        selected 
-          ? 'border-primary bg-primary/20 text-primary font-medium' 
-          : 'border-primary/20 bg-dark/40 text-light/60'
-      }`}>
-        {formattedValue}
-      </div>
-    </label>
   );
 };
 

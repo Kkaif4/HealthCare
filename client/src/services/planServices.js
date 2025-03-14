@@ -19,10 +19,8 @@ export const saveDietPreferences = async (formData) => {
       await generateDietPlan(user);
       localStorage.removeItem("user");
       localStorage.setItem("user", JSON.stringify(response.data));
-
-      localStorage.remove();
     } catch (error) {
-      console.error("Error generating diet plan:", error.message);
+      console.log("Error generating diet plan:", error.message);
     }
     return response.data;
   } catch (error) {
@@ -56,15 +54,25 @@ export const generateDietPlan = async (userData) => {
  * @param {Object} workoutPreferences - User's workout preferences data
  * @returns {Promise} - API response
  */
-export const saveWorkoutPreferences = async (workoutPreferences) => {
+export const saveWorkoutPreferences = async (formData) => {
   try {
-    const response = await axios.post(
-      `/plans/workout-preferences`,
-      workoutPreferences,
-      {
-        withCredentials: true,
-      }
-    );
+    const token = localStorage.getItem("token");
+    const response = await axios.post(`/plans/workout-preferences`, formData, {
+      withCredentials: true,
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+    console.log(response);
+
+    try {
+      const user = localStorage.getItem("user");
+      await generateWorkoutPlan(user);
+      localStorage.removeItem("user");
+      localStorage.setItem("user", JSON.stringify(response.data));
+    } catch (error) {
+      console.log("Error generating workout plan:", error.message);
+    }
     return response.data;
   } catch (error) {
     throw (
@@ -78,10 +86,13 @@ export const saveWorkoutPreferences = async (workoutPreferences) => {
  * @param {Object} userData - User data required for workout plan generation
  * @returns {Promise} - API response with generated workout plan
  */
-export const generateWorkoutPlan = async (userData) => {
+const generateWorkoutPlan = async (userData) => {
   try {
     const response = await axios.post(`/plans/generate-workout`, userData, {
       withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     return response.data;
   } catch (error) {
@@ -110,11 +121,21 @@ export const getDietPlan = async (user) => {
  * @param {string} userId - User ID
  * @returns {Promise} - API response with user's workout plan
  */
-export const getUserWorkoutPlan = async (userId) => {
+export const getWorkoutPlan = async (userId) => {
   try {
     const response = await axios.get(`/plans/workout/${userId}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to fetch workout plan" };
+  }
+};
+
+export const getDietPreferences = async (userId) => {
+  try {
+    const res = await axios.get(`/plans/user-diet-preferences/${userId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching diet preferences:", error.message);
+    return null;
   }
 };

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { saveDietPreferences } from "../../services/planServices";
 
-const DietPlanForm = ({ onClose, onPlanGenerated }) => {
+const DietPlanForm = ({ onClose}) => {
   const [isLoading, setLoadin] = useState(false);
   const [formData, setFormData] = useState({
     dietGoal: "",
@@ -245,36 +245,6 @@ const DietPlanForm = ({ onClose, onPlanGenerated }) => {
         </motion.div>
       </div>
     </motion.div>
-  );
-};
-
-// Reusable option component for diet goals
-const GoalOption = ({ name, value, selected, onChange }) => {
-  const formattedValue = value
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-
-  return (
-    <label className="cursor-pointer">
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={selected}
-        onChange={onChange}
-        className="sr-only"
-      />
-      <div
-        className={`p-2 md:p-3 rounded-lg text-center border text-sm md:text-base transition-all ${
-          selected
-            ? "border-primary bg-primary/20 text-primary font-medium"
-            : "border-primary/20 bg-dark/40 text-light/60"
-        }`}
-      >
-        {formattedValue}
-      </div>
-    </label>
   );
 };
 

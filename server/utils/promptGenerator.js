@@ -138,6 +138,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Modifications: [modification details]
     Form Tips: [form tips]
     Recovery: [recovery details]
+    
     generate a response which in html file but without head tag and body just text of the body with tags and proper formatting
   `;
 };

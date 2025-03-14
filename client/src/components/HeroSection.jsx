@@ -1,7 +1,16 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const handleGetStarted = () => {
+    if (user) {
+      navigate(`/dashboard`);
+    } else {
+      navigate("/login");
+    }
+  };
   return (
     <section className="relative pt-32 pb-20 px-6 min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
@@ -18,11 +27,13 @@ const HeroSection = () => {
           <p className="text-xl md:text-2xl text-light/80 mb-8">
             Your personalized journey to optimal health powered by OptiLife AI
           </p>
-          <Link to="/dashboard">
-            <button className="bg-primary hover:bg-secondary text-light font-semibold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105">
-              Get Started
-            </button>
-          </Link>
+
+          <button
+            onClick={handleGetStarted}
+            className="bg-primary hover:bg-secondary text-light font-semibold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105"
+          >
+            Get Started
+          </button>
         </motion.div>
 
         {/* Image */}
