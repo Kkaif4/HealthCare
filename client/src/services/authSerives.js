@@ -39,3 +39,10 @@ export const register = async (formData) => {
     );
   }
 };
+
+export const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("dietPreferences");
+  localStorage.removeItem("workoutPreferences");
+};

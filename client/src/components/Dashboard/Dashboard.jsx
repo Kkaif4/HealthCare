@@ -4,11 +4,8 @@ import { Menu } from "@headlessui/react";
 import DietPlanForm from "./DietPlanForm";
 import WorkoutPlanForm from "./WorkoutPlanForm";
 import { Link } from "react-router-dom";
-
-import axios from "axios"; // ✅ Axios imported
-import { useDispatch } from "react-redux"; // ✅ Redux (if using)
-import { useNavigate } from "react-router-dom"; // ✅ React Router
-
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../services/authSerives.js";
 import {
   FiUser,
   FiEdit,
@@ -27,8 +24,7 @@ import {
 } from "react-icons/fi";
 
 const Dashboard = () => {
-  const dispatch = useDispatch(); // ✅ Redux dispatch
-  const navigate = useNavigate(); // ✅ Navigation
+  const navigate = useNavigate();
   const [showDietForm, setShowDietForm] = useState(false);
   const [showWorkoutForm, setShowWorkoutForm] = useState(false);
   const [showToDoList, setShowToDoList] = useState(false);
@@ -85,16 +81,10 @@ const Dashboard = () => {
   }, []);
   const handleLogout = async () => {
     try {
-      // Call the backend logout route to clear cookies
-      await axios.post("server\routesauthRoutes.js");
-
-      // Clear user state
-      dispatch({ type: "LOGOUT" });
-
-      // Redirect to login
+      logout();
       navigate("/login");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error logging out:", error.message);
     }
   };
   // Handle window resize
