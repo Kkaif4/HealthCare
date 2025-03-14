@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
 const PlanDetails = ({ onClose }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const [user, setUser] = useState({});
   useEffect(() => {
     const fetchPlan = async () => {
       const storedUser = localStorage.getItem("user");
@@ -16,7 +16,6 @@ const PlanDetails = ({ onClose }) => {
           const parsedUser = JSON.parse(storedUser);
           if (parsedUser && typeof parsedUser === "object") {
             setUser(parsedUser);
-            console.log("user----->", parsedUser);
             setLoading(false);
           } else {
             console.error(
@@ -35,7 +34,8 @@ const PlanDetails = ({ onClose }) => {
       }
     };
     fetchPlan();
-  });
+    setLoading(false);
+  }, []);
 
   if (loading) {
     return (
@@ -93,7 +93,11 @@ const PlanDetails = ({ onClose }) => {
               </button>
             </div>
           </div>
-          <div>{user.dietPlan.text}</div>
+          {user && user.dietPlan ? (
+            <div>{user.dietPlan.text}</div>
+          ) : (
+            <p>Loading diet plan...</p>
+          )}
         </motion.div>
       </div>
     </motion.div>
