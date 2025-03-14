@@ -44,12 +44,6 @@ const Signup = () => {
       formDataObj.append("height", formData.height);
       formDataObj.append("medicalHistory", formData.medicalHistory);
 
-      // ✅ Log FormData contents properly
-      console.log("FormData before sending:");
-      for (let [key, value] of formDataObj.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
       const userData = await register(formDataObj);
 
       if (userData) {
