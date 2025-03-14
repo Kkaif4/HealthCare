@@ -5,6 +5,7 @@ import FeaturesSection from './components/FeaturesSection';
 import HowItWorks from './components/HowItWorks';
 import Testimonials from './components/Testimonials';
 import Footer from './components/Footer';
+import Vision from './components/Vision.jsx';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -19,6 +20,7 @@ const LandingPage = () => {
       <HeroSection />
       <FeaturesSection />
       <HowItWorks />
+      <Vision/>
       <Testimonials />
       <Footer />
     </>
