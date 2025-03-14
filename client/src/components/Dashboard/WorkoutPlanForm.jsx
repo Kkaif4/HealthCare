@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FiArrowLeft, FiCheckCircle, FiActivity } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { FiArrowLeft, FiActivity } from "react-icons/fi";
 import { saveWorkoutPreferences } from "../../services/planServices";
 
 const WorkoutPlanForm = ({ onClose }) => {
-  const [isLoading, setLoadin] = useState(false);
+  const navigate = useNavigate();
+  const [isLoading, setisLoading] = useState(false);
   const [formData, setFormData] = useState({
     workoutGoal: "",
     workoutPreferences: "",
@@ -26,17 +27,29 @@ const WorkoutPlanForm = ({ onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadin(true);
-    console.log(formData);
+    setisLoading(true);
     try {
-      await saveWorkoutPreferences(formData);
-      onClose();
+      await Promise.all([
+        saveWorkoutPreferences(formData),
+        new Promise((resolve) => setTimeout(resolve, 15000)),
+      ]);
     } catch (error) {
       console.error("Error saving workout preferences:", error);
     } finally {
-      setLoadin(false);
+      setisLoading(false);
+      navigate("/workout-plan-details");
     }
   };
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-dark text-light backdrop-blur-md">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-lg font-semibold">Loading plan details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div

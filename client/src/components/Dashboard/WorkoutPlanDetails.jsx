@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { getMe } from "../../services/authSerives.js";
 const PlanDetails = () => {
   const navigate = useNavigate();
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setisLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState({});
   useEffect(() => {
@@ -15,24 +15,25 @@ const PlanDetails = () => {
         await getMe();
         const storedUser = JSON.parse(localStorage.getItem("user"));
         setUser(storedUser);
-        console.log(storedUser);
-        setLoading(false);
+        setTimeout(() => {
+          setisLoading(false);
+        }, 5000);
       } catch (error) {
         setError(error.message);
       } finally {
-        setLoading(false);
+        setisLoading(false);
       }
     };
     fetchPlan();
-    setLoading(false);
+    setisLoading(false);
   }, []);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-dark text-light flex items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center bg-dark text-light backdrop-blur-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading plan details...</p>
+          <p className="mt-4 text-lg font-semibold">Loading plan details...</p>
         </div>
       </div>
     );

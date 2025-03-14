@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { getMe } from "../../services/authSerives.js";
 const PlanDetails = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState({});
   useEffect(() => {
@@ -26,12 +26,12 @@ const PlanDetails = () => {
     fetchPlan();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-dark text-light flex items-center justify-center">
+      <div className="fixed inset-0 flex items-center justify-center bg-dark text-light backdrop-blur-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Loading plan details...</p>
+          <p className="mt-4 text-lg font-semibold">Loading plan details...</p>
         </div>
       </div>
     );

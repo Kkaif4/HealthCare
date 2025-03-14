@@ -101,7 +101,7 @@ const Footer = () => {
             <div className="space-y-2">
               <div className="flex items-center text-light/80">
                 <EnvelopeIcon className="h-5 w-5 mr-2 text-primary" />
-                @gmail.com
+                ayyubbhai1885@gmail.com
               </div>
               <div className="flex items-center text-light/80">
                 <EnvelopeIcon className="h-5 w-5 mr-2 text-primary" />
@@ -109,7 +109,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center text-light/80">
                 <PhoneIcon className="h-5 w-5 mr-2 text-primary" />
-                +919878654521
+                +919518963866
+              </div>
+              <div className="flex items-center text-light/80">
+                <PhoneIcon className="h-5 w-5 mr-2 text-primary" />
+                +918552965115
               </div>
             </div>
           </div>

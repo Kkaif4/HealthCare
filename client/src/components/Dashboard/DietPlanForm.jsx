@@ -46,10 +46,10 @@ const DietPlanForm = ({ onClose }) => {
   };
   if (isLoading) {
     return (
-      <div className="h-full w-full min-h-screen bg-dark text-light flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4">Creating your perfect diet plan...</p>
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <span className="block text-lg font-semibold mb-2">Loading...</span>
+          <div className="animate-spin h-8 w-8 border-t-4 border-blue-500 border-solid rounded-full mx-auto"></div>
         </div>
       </div>
     );
