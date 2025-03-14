@@ -110,8 +110,7 @@ export const generateWorkoutPlan = async (req, res) => {
     // Send the formatted response
     res.status(200).json({
       success: true,
-      workoutPlan: user.workoutPlan.text,
-      workoutPlanCreated: user.workoutPlan.createdAt,
+      data: user,
     });
   } catch (error) {
     console.error("Error generating workout plan:", error);

@@ -73,11 +73,11 @@ const PlanDetails = ({ onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4"
     >
-      <div relative w-full max-w-3xl mx-auto my-4>
+      <div className="relative w-full max-w-3xl mx-auto my-4 scrollbar-hide">
         <motion.div
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto"
+          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto scrollbar-hide"
         >
           <div className="bg-dark z-10 pb-4 mb-4 border-b border-primary/10">
             <div className="flex items-center justify-between">

@@ -124,9 +124,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     7. Tips for proper form and technique.
     8. Recovery recommendations.
 
-    The plan should be practical and focused on helping the person reach their fitness goals.
-
-    Rule: Return the workout plan in simple text with no additional formatting, symbols, json, or html.
+    The plan should be practical and focused on helping the person reach their fitness goals..
 
     Example output format:
     Workout Overview: [overview]
@@ -143,6 +141,7 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Form Tips: [form tips]
     Recovery: [recovery details]
     
-    generate a response which in html file but without head tag and body just text of the body with tags and proper formatting
+    generate a response which in html file but without head tag and body just text of the html tags and proper formatting like li, ui, strong, br, etc.
+    
   `;
 };

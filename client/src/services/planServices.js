@@ -47,6 +47,7 @@ export const saveDietPreferences = async (formData) => {
       });
 
       if (updatedUserResponse && updatedUserResponse.data) {
+        console.log(updatedUserResponse.data);
         localStorage.setItem("user", JSON.stringify(updatedUserResponse.data));
         console.log("Updated user with diet plan saved to localStorage");
       }
