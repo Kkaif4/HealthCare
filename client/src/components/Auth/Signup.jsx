@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-import { register } from "../../services/authSerives"; // Update import path
+import { register } from "../../services/authSerives.js";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -15,12 +15,9 @@ const Signup = () => {
     medicalHistory: "",
   });
 
-  const [avatar, setAvatar] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,34 +27,14 @@ const Signup = () => {
     }));
   };
 
-  const handlePhotoChange = (e) => {
-    if (e.target.files?.[0]) {
-      const selectedFile = e.target.files[0];
-      setAvatar(selectedFile);
-
-      const reader = new FileReader();
-      reader.onloadend = () => setPreviewUrl(reader.result);
-      reader.readAsDataURL(selectedFile);
-    }
-  };
-
-  const triggerFileInput = () => fileInputRef.current.click();
-
-  const removePhoto = () => {
-    setAvatar(null);
-    setPreviewUrl("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-  
     try {
       const formDataObj = new FormData();
-      
-      // Append all form fields with proper formatting
+
+      // Append all form fields
       formDataObj.append("name", formData.name);
       formDataObj.append("email", formData.email);
       formDataObj.append("password", formData.password);
@@ -66,33 +43,29 @@ const Signup = () => {
       formDataObj.append("weight", formData.weight);
       formDataObj.append("height", formData.height);
       formDataObj.append("medicalHistory", formData.medicalHistory);
-      
-      // Append avatar if exists
-      if (avatar) {
-        formDataObj.append("avatar", avatar);
-      }
-  
-      // Debug: Log form data before sending
+
+      // ✅ Log FormData contents properly
+      console.log("FormData before sending:");
       for (let [key, value] of formDataObj.entries()) {
-        console.log(key, value);
+        console.log(`${key}: ${value}`);
       }
-  
+
       const userData = await register(formDataObj);
-      
+
       if (userData) {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      const errorMessage = error.response?.data?.error?.message || 
-                          error.response?.data?.message || 
-                          "Registration failed. Please check your inputs.";
+      console.log("Registration error:", error);
+      const errorMessage =
+        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
+        "Registration failed. Please check your inputs.";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-dark flex items-center justify-center p-4">
@@ -112,7 +85,6 @@ const Signup = () => {
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Personal Information Section */}
             <div className="space-y-6 md:col-span-2">

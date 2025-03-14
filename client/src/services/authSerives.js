@@ -54,6 +54,10 @@ export const login = async (email, password) => {
 
 export const register = async (formData) => {
   try {
+    console.log("FormData inside register function:");
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
     const { data } = await axios.post("/auth/register", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
