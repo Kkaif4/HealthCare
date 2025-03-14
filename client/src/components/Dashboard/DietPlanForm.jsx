@@ -31,19 +31,19 @@ const DietPlanForm = ({ onClose }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true); // Show loading screen immediately
-
     // Save data in background (non-blocking)
     try {
-      await saveDietPreferences(formData);
+      await Promise.all([
+        saveDietPreferences(formData),
+        new Promise((resolve) => setTimeout(resolve, 15000)),
+      ]);
+
     } catch (error) {
       console.error("Error saving preferences:", error);
-    }
-
-    // Force 15-second minimum loading time
-    setTimeout(() => {
+    } finally {
+      setIsLoading(false);
       navigate("/diet-plan-details");
-      setIsLoading(true);
-    }, 15000);
+    }
   };
 
   if (isLoading) {

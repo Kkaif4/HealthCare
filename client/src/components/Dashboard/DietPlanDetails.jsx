@@ -94,7 +94,7 @@ const PlanDetails = ({ onClose }) => {
             </div>
           </div>
           {user && user.dietPlan ? (
-            <div>{user.dietPlan.text}</div>
+            <div dangerouslySetInnerHTML={{ __html: user.dietPlan.text }} />
           ) : (
             <p>Loading diet plan...</p>
           )}
