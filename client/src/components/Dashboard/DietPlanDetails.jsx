@@ -16,7 +16,6 @@ const PlanDetails = () => {
         await getMe();
         const storedUser = JSON.parse(localStorage.getItem("user"));
         setUser(storedUser);
-        console.log(storedUser);
         setLoading(false);
       } catch (error) {
         setError(error.message);

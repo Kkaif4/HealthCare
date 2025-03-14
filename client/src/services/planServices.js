@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getMe, login } from "./authSerives.js";
+import { getMe } from "./authSerives.js";
 /**
  * Save diet preferences to the database
  * @param {Object} dietPreferences - User's diet preferences data
@@ -147,7 +147,6 @@ export const saveWorkoutPreferences = async (formData) => {
       });
       if (updatedUserResponse && updatedUserResponse.data) {
         localStorage.setItem("user", JSON.stringify(updatedUserResponse.data));
-        console.log("Updated user with workout plan saved to localStorage");
       }
 
       if (workoutPreferenceResponse && workoutPreferenceResponse.data) {
@@ -155,11 +154,6 @@ export const saveWorkoutPreferences = async (formData) => {
           "workoutPreferences",
           JSON.stringify(workoutPreferenceResponse.data)
         );
-        console.log(
-          "Updated workout preferences",
-          workoutPreferenceResponse.data
-        );
-        console.log("Updated workout preferences saved to localStorage");
       }
     } catch (error) {
       console.log("Error fetching preferences:", error.message);
