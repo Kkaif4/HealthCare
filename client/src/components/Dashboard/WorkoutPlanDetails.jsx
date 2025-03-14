@@ -74,7 +74,7 @@ const PlanDetails = ({ onClose }) => {
             <div className="flex items-center justify-between">
               <h2 className="text-xl md:text-2xl font-bold text-light flex items-center">
                 <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Generate Diet Plan
+                  My Workout Plan
                 </span>
               </h2>
               <Link to="/dashboard">
