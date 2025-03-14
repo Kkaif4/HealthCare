@@ -78,7 +78,7 @@ export const generateWorkoutPlan = async (req, res) => {
     }
 
     // Construct prompt for Gemini API
-    const prompt = constructWorkoutPlanPrompt(user, preferences);
+    const prompt = constructWorkoutPlanPrompt(preferences, user);
 
     const response = await geminiModel.generateContent(prompt);
     if (

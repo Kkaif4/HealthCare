@@ -8,6 +8,12 @@
 export const constructDietPlanPrompt = (user, preferences) => {
   return `
 Create a personalized Indian diet plan based on the following details:
+Strict Rule for creating Response:
+- Generate Response in html format
+- Do not Include HTML, body, header tags
+- use div, li, ui, p, b, strong and italic tags etc. as per requirement
+- Importrtant: Use <br> tag for better formatting 
+
 User Information:
 - Name: ${user.name}
 - Age: ${user.age}
@@ -71,7 +77,6 @@ Grocery list:
 ...
 Meal prep tips:
 ...
-generate a response which in html file but without head tag and body just text of the html tags and proper formatting like li, ui, strong, br, etc. make it readable do space formatting also
 `;
 };
 
@@ -81,7 +86,11 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
 
   return `
     Create a personalized workout plan for the following individual:
-
+    Strict Rule for creating Response:
+    - Generate Response in html format
+    - Do not Include HTML, body, header tags
+    - use div, li, ui, p, b, strong and italic tags etc. as per requirement
+    - Importrtant: Use <br> tag for better formatting 
     Name: ${user?.name || "Not specified"}
     Age: ${user?.age || "Not specified"}
     Gender: ${user?.gender || "Not specified"}
@@ -140,8 +149,6 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     Modifications: [modification details]
     Form Tips: [form tips]
     Recovery: [recovery details]
-    
-    generate a response which in html file but without head tag and body just text of the html tags and proper formatting like li, ui, strong, br, etc. make it readable do space formatting also
-    
+
   `;
 };

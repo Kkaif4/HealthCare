@@ -4,16 +4,14 @@ import { motion } from "framer-motion";
 import { FiArrowLeft } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { getMe } from "../../services/authSerives.js";
-const PlanDetails = ({ onClose }) => {
+const PlanDetails = () => {
   const navigate = useNavigate();
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [user, setUser] = useState({});
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        console.log("hello");
         await getMe();
         const storedUser = JSON.parse(localStorage.getItem("user"));
         setUser(storedUser);
