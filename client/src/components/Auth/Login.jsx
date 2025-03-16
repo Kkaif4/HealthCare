@@ -1,42 +1,42 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../services/authSerives';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "../../services/authSerives";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
       // Call the login API function
       const userData = await login(formData.email, formData.password);
-      
+
       if (userData) {
         // Handle successful login
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        setError('Login failed. Please check your credentials.');
+        setError("Login failed. Please check your credentials.");
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      setError(err.response?.data?.message || "An error occurred during login");
     } finally {
       setIsLoading(false);
     }
@@ -106,12 +106,12 @@ const Login = () => {
             disabled={isLoading}
             className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Authenticating...' : 'Login'}
+            {isLoading ? "Authenticating..." : "Login"}
           </motion.button>
 
           <div className="text-center text-light/80 space-y-2">
             <p>
-              New to Health Track?{' '}
+              New to Health Track?{" "}
               <Link
                 to="/signup"
                 className="text-primary hover:text-secondary transition-colors"
@@ -120,19 +120,19 @@ const Login = () => {
               </Link>
             </p>
             <p className="text-xs">
-              By continuing, you agree to our{' '}
+              By continuing, you agree to our{" "}
               <Link
-                to="/terms"
+                to="/terms-and-conditions"
                 className="text-primary hover:text-secondary transition-colors"
               >
-                Terms
-              </Link>{' '}
-              and{' '}
+                Terms adn conditions
+              </Link>{" "}
+              and{" "}
               <Link
-                to="/privacy"
+                to="/privacy-policy"
                 className="text-primary hover:text-secondary transition-colors"
               >
-                Privacy
+                Privacy Policy
               </Link>
             </p>
           </div>

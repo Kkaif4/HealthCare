@@ -39,6 +39,14 @@ app.use((req, res) => {
   }
 });
 
+// test api
+
+app.use("/", (req, res) => {
+  res.send("API working ").json({ message: "API is working" });
+});
+
+// Serve static files
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/plans", planRoutes);
