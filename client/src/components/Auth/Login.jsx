@@ -36,7 +36,7 @@ const Login = () => {
         setError("Login failed. Please check your credentials.");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred during login");
+      setError(err.response?.message || "User Does not exist try Signup");
     } finally {
       setIsLoading(false);
     }

@@ -87,3 +87,22 @@ export const logout = () => {
   localStorage.removeItem("dietPreferences");
   localStorage.removeItem("workoutPreferences");
 };
+
+export const deleteAccount = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    const response = await axios.delete("/profile/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("dietPreferences");
+    localStorage.removeItem("workoutPreferences");
+    return response.data.message;
+  } catch (error) {
+    console.error("Error deleting account:", error.message);
+    throw error;
+  }
+};

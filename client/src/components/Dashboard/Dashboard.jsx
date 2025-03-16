@@ -5,7 +5,7 @@ import DietPlanForm from "./DietPlanForm";
 import WorkoutPlanForm from "./WorkoutPlanForm";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../services/authSerives.js";
+import { logout, deleteAccount } from "../../services/authSerives.js";
 import {
   FiUser,
   FiEdit,
@@ -125,6 +125,17 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error.message);
+    }
+  };
+
+  // hanlde logout
+  const handleDeleteAccout = async () => {
+    try {
+      logout();
+      deleteAccount();
       navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error.message);
@@ -301,6 +312,18 @@ const Dashboard = () => {
                         }`}
                       >
                         <FiLogOut className="inline mr-2" /> Log Out
+                      </button>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={handleDeleteAccout}
+                        className={`w-full text-left px-4 py-2 text-red-600 rounded-md ${
+                          active ? "bg-primary/20" : ""
+                        }`}
+                      >
+                        <FiLogOut className="inline mr-2" /> Delete Yout Account
                       </button>
                     )}
                   </Menu.Item>

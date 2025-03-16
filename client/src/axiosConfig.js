@@ -1,7 +1,5 @@
 import axios from "axios";
-import dotenv from "dotenv";
 
-dotenv.config();
 axios.defaults.baseURL =
   process.env.NODE_ENV !== "production"
     ? "http://localhost:5000/api"

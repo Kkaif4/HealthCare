@@ -28,20 +28,9 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Handle wrong API requests
-app.use((req, res) => {
-  if (req.accepts("html")) {
-    res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
-  } else {
-    res
-      .status(404)
-      .json({ success: false, message: "API not found or wrong API request" });
-  }
-});
-
 // test api
 
-app.use("/", (req, res) => {
+app.use("/test", (req, res) => {
   res.send("API working ").json({ message: "API is working" });
 });
 
@@ -57,4 +46,9 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.dir(`Server running on port ${PORT}`);
+});
+
+// Handle wrong API requests
+app.use((req, res) => {
+  res.status(404).json({ message: "API endpoint not found" });
 });

@@ -99,10 +99,9 @@ export const changePassword = async (req, res) => {
 
 //5. Delete account
 export const deleteAccount = async (req, res) => {
+  console.log("deleteAccount");
   try {
-    const user = await User.findById(req.user.id);
-    User.findByIdAndDelete(user.id);
-
+    await User.findByIdAndDelete(req.user.id);
     res.clearCookie("token");
     res.status(200).json({ success: true, message: "Account deleted" });
   } catch (error) {
