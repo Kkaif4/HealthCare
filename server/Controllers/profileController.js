@@ -1,6 +1,6 @@
 // controllers/profileController.js
 import User from "../models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import DietPreferences from "../models/DietPreferences.js";
 import WorkoutPreference from "../models/WorkoutPreferences.js";
 import { v2 as cloudinary } from "cloudinary";
