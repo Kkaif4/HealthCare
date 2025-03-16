@@ -1,7 +1,11 @@
 import axios from "axios";
+import dotenv from "dotenv";
 
+dotenv.config();
 axios.defaults.baseURL =
-  process.env.NODE_ENV !== "production" ? "http://localhost:5000/api" : "https://health-care-sepia-tau.vercel.app/api";
+  process.env.NODE_ENV !== "production"
+    ? "http://localhost:5000/api"
+    : "https://health-care-sepia-tau.vercel.app/api";
 
 axios.defaults.withCredentials = true;
 axios.defaults.credentials = true;
