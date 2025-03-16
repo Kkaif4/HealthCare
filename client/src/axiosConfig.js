@@ -1,7 +1,7 @@
 import axios from "axios";
 
 axios.defaults.baseURL =
-  process.env.NODE_ENV !== "production" ? "http://localhost:5000/api" : "/";
+  process.env.NODE_ENV !== "production" ? "http://localhost:5000/api" : "https://health-care-sepia-tau.vercel.app/api";
 
 axios.defaults.withCredentials = true;
 axios.defaults.credentials = true;
