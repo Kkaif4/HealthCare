@@ -1,9 +1,6 @@
 import axios from "axios";
 
-axios.defaults.baseURL =
-  process.env.NODE_ENV !== "production"
-    ? "http://localhost:5000/api"
-    : "https://healthcare-kafv.onrender.com/api";
+axios.defaults.baseURL = "https://healthcare-kafv.onrender.com/api";
 
 axios.defaults.withCredentials = true;
 axios.defaults.credentials = true;
