@@ -52,7 +52,7 @@ export const register = async (formData) => {
   try {
     const { data } = await axios.post("/auth/register", formData, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     });
     localStorage.setItem("user", JSON.stringify(data));

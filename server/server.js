@@ -46,6 +46,7 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.dir(`Server running on port ${PORT}`);
+  console.log(process.env.CLIENT_URL);
 });
 
 // Handle wrong API requests
