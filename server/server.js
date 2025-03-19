@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 const allowedOrigins = [
-  process.env.CLIENT_URL?.replace(/\/$/, ""),
+  "https://health-care-henna-alpha.vercel.app",
   "http://localhost:3000",
 ];
 app.use(
