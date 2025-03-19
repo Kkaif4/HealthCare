@@ -25,7 +25,7 @@
     "react-toastify": "^11.0.5",
     "web-vitals": "^2.1.4"
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "https://healthcare-kafv.onrender.com/api",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

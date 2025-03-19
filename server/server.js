@@ -16,7 +16,6 @@ const __dirname = path.dirname(__filename);
 connectDB();
 
 //Middleware
-app.use(express.json());
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -25,6 +24,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
