@@ -1,8 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
@@ -11,30 +9,36 @@ import { errorHandler } from "./middlewares/errorMW.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 connectDB();
 
-//Middleware
+const allowedOrigins = [
+  process.env.CLIENT_URL?.replace(/\/$/, ""),
+  "http://localhost:3000",
+];
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("❌ CORS blocked request from:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+//Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // test api
-
 app.use("/test", (req, res) => {
   res.send("API working ").json({ message: "API is working" });
 });
-
-// Serve static files
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -46,7 +50,6 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.dir(`Server running on port ${PORT}`);
-  console.log(process.env.CLIENT_URL);
 });
 
 // Handle wrong API requests

@@ -8,7 +8,7 @@ const Testimonials = () => {
       description:
         "Crafting elegant user interfaces with modern frameworks and responsive design principles",
       image: "/images/dev-1.jpg",
-      linkedin: "http://linkedin.com/in/vahid-patel-0a7a06260/",
+      linkedin: "https://linkedin.com/in/vahid-patel-0a7a06260/",
     },
     {
       name: "Kaif Shaikh",
