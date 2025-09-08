@@ -92,6 +92,7 @@ export const deleteAccount = async () => {
   const token = localStorage.getItem("token");
   try {
     const response = await axios.delete("/profile/", {
+      withCredentials: true,
       headers: {
         Authorization: `Bearer ${token}`,
       },
