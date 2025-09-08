@@ -1,8 +1,8 @@
-import { motion } from "framer-motion";
-import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
-import { LinkedinIcon, TwitterIcon } from "react-share";
-import { Instagram } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/24/outline';
+import { LinkedinIcon, TwitterIcon } from 'react-share';
+import { Instagram } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -43,22 +43,15 @@ const Footer = () => {
               <li>
                 <a
                   href="#features"
-                  className="text-light/80 hover:text-primary"
-                >
+                  className="text-light/80 hover:text-primary">
                   Features
                 </a>
               </li>
               <li>
                 <a
                   href="#how-it-works"
-                  className="text-light/80 hover:text-primary"
-                >
+                  className="text-light/80 hover:text-primary">
                   How It Works
-                </a>
-              </li>
-              <li>
-                <a href="#team" className="text-light/80 hover:text-primary">
-                  About Us
                 </a>
               </li>
             </ul>
@@ -71,24 +64,23 @@ const Footer = () => {
               <li>
                 <Link
                   to="/blog-page"
-                  className="text-light/80 hover:text-primary transition-colors duration-200"
-                >
+                  className="text-light/80 hover:text-primary transition-colors duration-200">
                   Blog
                 </Link>
               </li>
               <li>
                 <a
                   href="https://github.com/Kkaif4/HealthCare"
-                  className="text-light/80 hover:text-primary"
-                >
+                  target="_blank"
+                  className="text-light/80 hover:text-primary">
                   Documentation
                 </a>
               </li>
               <li>
                 <a
                   href="https://ai.google.dev/"
-                  className="text-light/80 hover:text-primary"
-                >
+                  target="_blank"
+                  className="text-light/80 hover:text-primary">
                   API Status
                 </a>
               </li>
