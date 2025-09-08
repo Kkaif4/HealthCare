@@ -6,6 +6,9 @@ import authRoutes from './routes/authRoutes.js';
 import planRoutes from './routes/planRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import { errorHandler } from './middlewares/errorMW.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
