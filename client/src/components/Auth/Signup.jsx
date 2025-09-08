@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { register } from '../../services/authSerives.js';
 
 const Signup = () => {
+  const navigate = useNavigate();
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -24,7 +25,6 @@ const Signup = () => {
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;

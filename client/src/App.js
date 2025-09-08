@@ -29,6 +29,16 @@ const LandingPage = () => {
   );
 };
 
+// 404 Component
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-4xl font-bold text-red-500">404</h1>
+      <p className="text-lg mt-2">Page Not Found</p>
+    </div>
+  );
+}
+
 const App = () => {
   return (
     <Router>
@@ -67,6 +77,7 @@ const App = () => {
             }
           />
           <Route path="/blog-page" element={<Blog />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

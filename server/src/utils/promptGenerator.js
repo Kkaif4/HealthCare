@@ -30,23 +30,23 @@ Dietary Goals & Preferences:
 - Budget: ${preferences.budget}
 - Allergies: ${
     preferences.foodAllergies.length
-      ? preferences.foodAllergies.join(", ")
-      : "None"
+      ? preferences.foodAllergies.join(', ')
+      : 'None'
   }
 - Favorite Foods: ${
     preferences.favoriteFoods.length
-      ? preferences.favoriteFoods.join(", ")
-      : "None specified"
+      ? preferences.favoriteFoods.join(', ')
+      : 'None specified'
   }
 - Disliked Foods: ${
     preferences.dislikedFoods.length
-      ? preferences.dislikedFoods.join(", ")
-      : "None specified"
+      ? preferences.dislikedFoods.join(', ')
+      : 'None specified'
   }
 - Dietary Restrictions: ${
     preferences.dietaryRestrictions.length
-      ? preferences.dietaryRestrictions.join(", ")
-      : "None"
+      ? preferences.dietaryRestrictions.join(', ')
+      : 'None'
   }
 
 Requirements for the Diet Plan:
@@ -81,8 +81,8 @@ Meal prep tips:
 };
 
 export const constructWorkoutPlanPrompt = (preferences, user) => {
-  const heightUnit = "cm";
-  const weightUnit = "kg";
+  const heightUnit = 'cm';
+  const weightUnit = 'kg';
 
   return `
     Create a personalized workout plan for the following individual:
@@ -91,36 +91,36 @@ export const constructWorkoutPlanPrompt = (preferences, user) => {
     - Do not Include HTML, body, header tags
     - use div, li, ui, p, b, strong and italic tags etc. as per requirement
     - Importrtant: Use <br> tag for better formatting [add extra <br> tags]
-    Name: ${user?.name || "Not specified"}
-    Age: ${user?.age || "Not specified"}
-    Gender: ${user?.gender || "Not specified"}
-    Height: ${user?.height || "Not specified"} ${heightUnit}
-    Weight: ${user?.weight || "Not specified"} ${weightUnit}
-    Medical History: ${user?.medicalHistory || "Not specified"}
-    Activity Level: ${preferences?.activityLevel || "Not specified"}
+    Name: ${user?.name || 'Not specified'}
+    Age: ${user?.age || 'Not specified'}
+    Gender: ${user?.gender || 'Not specified'}
+    Height: ${user?.height || 'Not specified'} ${heightUnit}
+    Weight: ${user?.weight || 'Not specified'} ${weightUnit}
+    Medical History: ${user?.medicalHistory || 'Not specified'}
+    Activity Level: ${preferences?.activityLevel || 'Not specified'}
     Health Conditions: ${
-      preferences?.healthConditions?.join(", ") || "None reported"
+      preferences?.healthConditions?.join(', ') || 'None reported'
     }
 
     Workout Preferences:
-    - Workout Goal: ${preferences?.workoutGoal || "Not specified"}
-    - Workout Location: ${preferences?.workoutLocation || "Not specified"}
+    - Workout Goal: ${preferences?.workoutGoal || 'Not specified'}
+    - Workout Location: ${preferences?.workoutLocation || 'Not specified'}
     - Target Weight: ${
-      preferences?.targetWeight || "Not specified"
+      preferences?.targetWeight || 'Not specified'
     } ${weightUnit}
-    - Time Period: ${preferences?.timePeriod || "Not specified"}
+    - Time Period: ${preferences?.timePeriod || 'Not specified'}
     - Available Time Per Day: ${
-      preferences?.workoutDuration || "Not specified"
+      preferences?.workoutDuration || 'Not specified'
     } mins
-    - Equipment: ${preferences?.equipment?.join(", ") || "None specified"}
+    - Equipment: ${preferences?.equipment?.join(', ') || 'None specified'}
     - Workout Duration: ${
-      preferences?.workoutDuration || "Not specified"
+      preferences?.workoutDuration || 'Not specified'
     } minutes per session
     - Injury History: ${
-      preferences?.injuryHistory?.join(", ") || "None reported"
+      preferences?.injuryHistory?.join(', ') || 'None reported'
     }
     - Workout Days Per Week: ${
-      preferences?.workoutDaysPerWeek || "Not specified"
+      preferences?.workoutDaysPerWeek || 'Not specified'
     } days per week
 
     Please create a detailed workout plan that includes:
