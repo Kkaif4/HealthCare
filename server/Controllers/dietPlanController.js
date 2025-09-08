@@ -1,8 +1,8 @@
-import User from "../models/User.js";
-import Preferences from "../models/DietPreferences.js";
-import initializeModel from "../config/gemini.js";
-import { constructDietPlanPrompt } from "../utils/promptGenerator.js";
-import { cleanGeminiResponse } from "../utils/responseFormatter.js";
+import User from '../models/User.js';
+import Preferences from '../models/DietPreferences.js';
+import initializeModel from '../config/gemini.js';
+import { constructDietPlanPrompt } from '../utils/promptGenerator.js';
+import { cleanGeminiResponse } from '../utils/responseFormatter.js';
 const geminiModel = initializeModel();
 // Save user diet Preferences
 export const saveDietPreferences = async (req, res, next) => {
@@ -21,10 +21,8 @@ export const saveDietPreferences = async (req, res, next) => {
 
     const userId = req.user.id;
 
-    // Delete previous Preferences
     await Preferences.deleteMany({ userId });
 
-    // Create new Preferences
     const preferences = await Preferences.create({
       userId,
       dietGoal,
@@ -37,14 +35,12 @@ export const saveDietPreferences = async (req, res, next) => {
       targetWeight,
       timePeriod,
     });
-    console.log("new Preferences created");
     res.status(201).json({
       success: true,
       data: preferences,
     });
   } catch (error) {
-    console.error("Error saving Preferences:", error.message);
-    next(error);
+    next(error).message;
   }
 };
 
@@ -58,24 +54,23 @@ export const generateDietPlan = async (req, res) => {
     if (!req.user || !req.user.id) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid user request" });
+        .json({ success: false, message: 'Invalid user request' });
     }
     const user = await User.findById(req.user.id);
     const userId = user.id;
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found" });
+        .json({ success: false, message: 'User not found' });
     }
 
     const preferences = await Preferences.findOne({ userId });
     if (!preferences) {
       return res
         .status(404)
-        .json({ success: false, message: "Diet Preferences not found" });
+        .json({ success: false, message: 'Diet Preferences not found' });
     }
 
-    // Construct prompt for Gemini API
     const prompt = constructDietPlanPrompt(user, preferences);
     const response = await geminiModel.generateContent(prompt);
     if (
@@ -85,29 +80,27 @@ export const generateDietPlan = async (req, res) => {
       !response.response.candidates[0].content.parts ||
       response.response.candidates[0].content.parts.length === 0
     ) {
-      console.error("Gemini API returned an invalid response:", response);
+      console.error('Gemini API returned an invalid response:', response);
       return res.status(500).json({
         success: false,
-        message: "Failed to generate diet plan due to invalid API response",
+        message: 'Failed to generate diet plan due to invalid API response',
       });
     }
     const plan = response.response.candidates[0].content.parts[0].text;
     const formattedPlan = cleanGeminiResponse(plan);
-    console.log("diet plan generated");
     user.dietPlan.text = null;
     user.dietPlan.text = formattedPlan;
     user.dietPlan.createdAt = Date.now();
     await user.save();
-    console.log("Diet Plan saved successfully");
     res.status(200).json({
       success: true,
       data: user,
     });
   } catch (error) {
-    console.error("Error generating diet plan:", error);
+    console.error('Error generating diet plan:', error);
     res.status(500).json({
       success: false,
-      message: "Failed to generate diet plan",
+      message: 'Failed to generate diet plan',
       error: error.message,
     });
   }
@@ -126,12 +119,12 @@ export const getDietPlan = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found" });
+        .json({ success: false, message: 'User not found' });
     }
     if (!user.dietPlan) {
       return res.status(404).json({
         success: false,
-        message: "No diet plan found for this user try generating diet plan",
+        message: 'No diet plan found for this user try generating diet plan',
       });
     }
     res.status(200).json({
@@ -140,10 +133,10 @@ export const getDietPlan = async (req, res) => {
       dietPlanCreated: user.dietPlan.createdAt,
     });
   } catch (error) {
-    console.error("Error getting diet plan:", error);
+    console.error('Error getting diet plan:', error);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve diet plan",
+      message: 'Failed to retrieve diet plan',
       error: error.message,
     });
   }
@@ -156,20 +149,19 @@ export const getDietPreferences = async (req, res) => {
     if (!dietPreferences) {
       return res.status(404).json({
         success: false,
-        message: "Diet Preferences not found for this user",
+        message: 'Diet Preferences not found for this user',
       });
     }
-    console.log("prefrences send to response");
     res.json({
       success: true,
       data: dietPreferences,
-      message: "Diet Preferences",
+      message: 'Diet Preferences',
     });
   } catch (error) {
-    console.error("Error getting diet preferences:", error);
+    console.error('Error getting diet preferences:', error.message);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve diet preferences",
+      message: 'Failed to retrieve diet preferences',
       error: error.message,
     });
   }

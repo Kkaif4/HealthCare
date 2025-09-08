@@ -1,8 +1,8 @@
-import initializeModel from "../config/gemini.js";
-import User from "../models/User.js";
-import Preferences from "../models/WorkoutPreferences.js";
-import { constructWorkoutPlanPrompt } from "../utils/promptGenerator.js";
-import { cleanGeminiResponse } from "../utils/responseFormatter.js";
+import initializeModel from '../config/gemini.js';
+import User from '../models/User.js';
+import Preferences from '../models/WorkoutPreferences.js';
+import { constructWorkoutPlanPrompt } from '../utils/promptGenerator.js';
+import { cleanGeminiResponse } from '../utils/responseFormatter.js';
 const geminiModel = initializeModel();
 // Save user workout preferences
 export const saveWorkoutPreferences = async (req, res, next) => {
@@ -37,13 +37,12 @@ export const saveWorkoutPreferences = async (req, res, next) => {
       targetWeight,
       timePeriod,
     });
-    console.log("New wokrout preferences created");
     res.status(201).json({
       success: true,
       data: preferences,
     });
   } catch (error) {
-    console.error("Error saving workout preferences:", error.message);
+    console.error('Error saving workout preferences:', error.message);
     next(error);
   }
 };
@@ -58,14 +57,14 @@ export const generateWorkoutPlan = async (req, res) => {
     if (!req.user || !req.user.id) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid user request" });
+        .json({ success: false, message: 'Invalid user request' });
     }
     const user = await User.findById(req.user.id);
     const userId = user.id;
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found" });
+        .json({ success: false, message: 'User not found' });
     }
 
     const preferences = await Preferences.findOne({
@@ -74,7 +73,7 @@ export const generateWorkoutPlan = async (req, res) => {
     if (!preferences) {
       return res
         .status(404)
-        .json({ success: false, message: "Workout preferences not found" });
+        .json({ success: false, message: 'Workout preferences not found' });
     }
 
     // Construct prompt for Gemini API
@@ -88,10 +87,10 @@ export const generateWorkoutPlan = async (req, res) => {
       !response.response.candidates[0].content.parts ||
       response.response.candidates[0].content.parts.length === 0
     ) {
-      console.error("Gemini API returned an invalid response:", response);
+      console.error('Gemini API returned an invalid response:', response);
       return res.status(500).json({
         success: false,
-        message: "Failed to generate diet plan due to invalid API response",
+        message: 'Failed to generate diet plan due to invalid API response',
       });
     }
     const Text = response.response.candidates[0].content.parts[0].text;
@@ -99,10 +98,10 @@ export const generateWorkoutPlan = async (req, res) => {
       console.log("Couldn't generate diet plan");
       return res
         .status(500)
-        .json({ success: false, message: "Failed to generate diet plan" });
+        .json({ success: false, message: 'Failed to generate diet plan' });
     }
     const WorkoutPlan = cleanGeminiResponse(Text);
-    console.log("Workout plan generated");
+    console.log('Workout plan generated');
     user.workoutPlan.text = null;
     user.workoutPlan.text = WorkoutPlan;
     user.workoutPlan.createdAt = Date.now();
@@ -113,10 +112,10 @@ export const generateWorkoutPlan = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    console.error("Error generating workout plan:", error);
+    console.error('Error generating workout plan:', error);
     res.status(500).json({
       success: false,
-      message: "Failed to generate workout plan",
+      message: 'Failed to generate workout plan',
       error: error.message,
     });
   }
@@ -136,12 +135,12 @@ export const getWorkoutPlan = async (req, res) => {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User not found" });
+        .json({ success: false, message: 'User not found' });
     }
     if (!user.workoutPlan) {
       return res.status(404).json({
         success: false,
-        message: "No workout plan found for this user",
+        message: 'No workout plan found for this user',
       });
     }
 
@@ -150,10 +149,10 @@ export const getWorkoutPlan = async (req, res) => {
       workoutPlan: user.workoutPlan,
     });
   } catch (error) {
-    console.error("Error getting workout plan:", error);
+    console.error('Error getting workout plan:', error);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve workout plan",
+      message: 'Failed to retrieve workout plan',
       error: error.message,
     });
   }
@@ -166,19 +165,19 @@ export const getWorkoutPreferences = async (req, res) => {
     if (!wokroutPreferences) {
       return res.status(404).json({
         success: false,
-        message: "Diet Preferences not found for this user",
+        message: 'Diet Preferences not found for this user',
       });
     }
     res.json({
       success: true,
       data: wokroutPreferences,
-      message: "Workout Preferences",
+      message: 'Workout Preferences',
     });
   } catch (error) {
-    console.error("Error getting diet preferences:", error);
+    console.error('Error getting diet preferences:', error);
     res.status(500).json({
       success: false,
-      message: "Failed to retrieve diet preferences",
+      message: 'Failed to retrieve diet preferences',
       error: error.message,
     });
   }

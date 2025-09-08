@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
-import { login } from "../../services/authSerives";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../../services/authSerives';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setIsLoading(true);
 
     try {
@@ -31,12 +31,13 @@ const Login = () => {
 
       if (userData) {
         // Handle successful login
-        navigate("/dashboard");
+        navigate('/dashboard');
       } else {
-        setError("Login failed. Please check your credentials.");
+        setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
-      setError(err.response?.message || "User Does not exist try Signup");
+      console.error('Login error:', err);
+      setError(err.response.data.error || 'User Does not exist try Signup');
     } finally {
       setIsLoading(false);
     }
@@ -48,8 +49,7 @@ const Login = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-dark/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20 shadow-xl"
-      >
+        className="w-full max-w-md bg-dark/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20 shadow-xl">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Welcome Back
@@ -61,8 +61,7 @@ const Login = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mb-6 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg"
-          >
+            className="mb-6 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
             {error}
           </motion.div>
         )}
@@ -104,34 +103,30 @@ const Login = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={isLoading}
-            className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Authenticating..." : "Login"}
+            className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+            {isLoading ? 'Authenticating...' : 'Login'}
           </motion.button>
 
           <div className="text-center text-light/80 space-y-2">
             <p>
-              New to Health Track?{" "}
+              New to Health Track?{' '}
               <Link
                 to="/signup"
-                className="text-primary hover:text-secondary transition-colors"
-              >
+                className="text-primary hover:text-secondary transition-colors">
                 Create Account
               </Link>
             </p>
             <p className="text-xs">
-              By continuing, you agree to our{" "}
+              By continuing, you agree to our{' '}
               <Link
                 to="/terms-and-conditions"
-                className="text-primary hover:text-secondary transition-colors"
-              >
+                className="text-primary hover:text-secondary transition-colors">
                 Terms adn conditions
-              </Link>{" "}
-              and{" "}
+              </Link>{' '}
+              and{' '}
               <Link
                 to="/privacy-policy"
-                className="text-primary hover:text-secondary transition-colors"
-              >
+                className="text-primary hover:text-secondary transition-colors">
                 Privacy Policy
               </Link>
             </p>

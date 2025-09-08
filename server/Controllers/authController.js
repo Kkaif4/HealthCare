@@ -1,12 +1,12 @@
-import User from "../models/User.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import User from '../models/User.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production", // HTTPS in production
-  sameSite: "strict",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'None',
+  maxAge: 60 * 60 * 1000,
 };
 
 // Register User
@@ -22,13 +22,11 @@ export const register = async (req, res, next) => {
       height,
       medicalHistory,
     } = req.body;
-    // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      console.log("Email already registered try to login");
       return res
         .status(400)
-        .json({ success: false, message: "User already exists" });
+        .json({ success: false, message: 'User already exists' });
     }
 
     // Create user
@@ -42,16 +40,15 @@ export const register = async (req, res, next) => {
       height,
       medicalHistory,
     });
-    console.log("User registered successfully");
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: '7d',
     });
 
     // Set cookie and send response
     res
-      .cookie("token", token, cookieOptions)
+      .cookie('token', token, cookieOptions)
       .status(201)
       .json({
         success: true,
@@ -65,8 +62,7 @@ export const register = async (req, res, next) => {
         },
       });
   } catch (error) {
-    console.error("Error registering user:", error.message);
-    next(error);
+    next(error.message || 'Server Error');
   }
 };
 
@@ -75,41 +71,38 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      console.log("required fields missing");
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: 'All fields are required' });
     }
     //find user
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      console.log("User not found");
-      return res.status(400).json({ success: false, error: "User not found" });
+      return res.status(400).json({ success: false, error: 'User not found' });
     }
 
     // Check if password exists in the user object
     if (!user.password) {
-      console.log("Password not found in database");
       return res.status(500).json({
         success: false,
-        error: "Server error - Password not found in database",
+        error: 'Server error - Password not found in database',
       });
     }
 
     // Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log("Invalid credentials");
       return res
         .status(400)
-        .json({ success: false, error: "Invalid credentials" });
+        .json({ success: false, error: 'Invalid credentials' });
     }
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: '7d',
     });
+
     // Set cookie and send response
     res
-      .cookie("token", token, cookieOptions)
+      .cookie('token', token, cookieOptions)
       .status(200)
       .json({
         success: true,
@@ -122,19 +115,20 @@ export const login = async (req, res, next) => {
           age: user.age,
         },
       });
-    console.log("User Logged in Successfully");
   } catch (error) {
-    console.log(error.message);
-    next(error);
+    next(error.message || 'Server Error');
   }
 };
 
 // Logout User
 export const logout = (req, res) => {
-  console.log("User logged out");
   // Clear cookie and send response
   res
-    .clearCookie("token", cookieOptions)
+    .clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
+    })
     .status(200)
-    .json({ success: true, message: "Logged out successfully" });
+    .json({ success: true, message: 'Logged out successfully' });
 };

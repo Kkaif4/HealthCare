@@ -1,21 +1,25 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
-import { saveDietPreferences } from "../../services/planServices";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import {
+  generateDietPlan,
+  refreshUserData,
+  saveDietPreferences,
+} from '../../services/planServices';
 
 const DietPlanForm = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    dietGoal: "",
-    dietType: "",
-    foodAllergies: [],
-    favoriteFoods: [],
-    dislikedFoods: [],
-    budget: "",
-    targetWeight: "",
-    timePeriod: "",
-    dietaryRestrictions: "",
+    dietGoal: '',
+    dietType: '',
+    foodAllergies: '',
+    favoriteFoods: '',
+    dislikedFoods: '',
+    budget: '',
+    targetWeight: '',
+    timePeriod: '',
+    dietaryRestrictions: '',
   });
 
   const navigate = useNavigate();
@@ -28,28 +32,81 @@ const DietPlanForm = ({ onClose }) => {
     }));
   };
 
+  const [error, setError] = useState(null);
+
+  const validateForm = () => {
+    if (!formData.dietGoal) return 'Diet Goal is required';
+    if (!formData.dietType || formData.dietType === 'select')
+      return 'Diet Type is required';
+    if (!formData.budget || formData.budget === 'select')
+      return 'Budget is required';
+    if (!formData.targetWeight) return 'Target Weight is required';
+    if (!formData.timePeriod) return 'Time Period is required';
+    return null;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true); // Show loading screen immediately
-    // Save data in background (non-blocking)
+    setError(null);
+
+    // Validate form
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      await Promise.all([
-        saveDietPreferences(formData),
-        new Promise((resolve) => setTimeout(resolve, 15000)),
-      ]);
+      const cleanedFormData = {
+        ...formData,
+        foodAllergies: formData.foodAllergies
+          ? formData.foodAllergies
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+        favoriteFoods: formData.favoriteFoods
+          ? formData.favoriteFoods
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+        dislikedFoods: formData.dislikedFoods
+          ? formData.dislikedFoods
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+        targetWeight: Number(formData.targetWeight),
+        timePeriod: Number(formData.timePeriod),
+      };
+      const prefs = await saveDietPreferences(cleanedFormData);
+      console.log('Preferences saved:', prefs);
+      const plan = await generateDietPlan();
+      console.log('Diet Plan generated:', plan);
+      await refreshUserData();
+      onClose();
+      navigate('/diet-plan-details');
     } catch (error) {
-      console.error("Error saving preferences:", error);
-    } finally {
+      setError(
+        error.message || 'Failed to save diet preferences. Please try again.'
+      );
       setIsLoading(false);
-      navigate("/diet-plan-details");
     }
   };
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-dark text-light backdrop-blur-md">
-        <div className="text-center">
+        <div className="text-center p-6 bg-dark/90 rounded-xl border border-primary/20 shadow-xl">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-lg font-semibold">Loading plan details...</p>
+          <p className="mt-4 text-lg font-semibold">
+            Generating your personalized diet plan...
+          </p>
+          <p className="mt-2 text-sm text-light/60">
+            This may take a few moments
+          </p>
         </div>
       </div>
     );
@@ -59,14 +116,12 @@ const DietPlanForm = ({ onClose }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4"
-    >
+      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4">
       <div className="relative w-full max-w-3xl mx-auto my-4">
         <motion.div
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto"
-        >
+          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto">
           <div className="bg-dark z-10 pb-4 mb-4 border-b border-primary/10">
             <div className="flex items-center justify-between">
               <h2 className="text-xl md:text-2xl font-bold text-light flex items-center">
@@ -76,12 +131,17 @@ const DietPlanForm = ({ onClose }) => {
               </h2>
               <button
                 onClick={onClose}
-                className="text-light/60 hover:text-primary transition-colors"
-              >
+                className="text-light/60 hover:text-primary transition-colors">
                 <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
               </button>
             </div>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Diet Goal Selection */}
@@ -94,8 +154,7 @@ const DietPlanForm = ({ onClose }) => {
                 value={formData.dietGoal}
                 onChange={handleChange}
                 required
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="">Select your Diet Goal</option>
                 <option value="weight-loss">Weight Loss</option>
                 <option value="muscle-gain">Muscle Gain</option>
@@ -113,8 +172,7 @@ const DietPlanForm = ({ onClose }) => {
                 name="dietType"
                 value={formData.dietType}
                 onChange={handleChange}
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="select">Select your Diet Type</option>
                 <option value="vegetarian">Vegetarian</option>
                 <option value="non-vegetarian">Non-Vegetarian</option>
@@ -136,8 +194,7 @@ const DietPlanForm = ({ onClose }) => {
                   value={formData.foodAllergies}
                   onChange={handleChange}
                   placeholder="List any food allergies..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-                ></textarea>
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
               </div>
 
               {/* Favorite Foods */}
@@ -150,8 +207,7 @@ const DietPlanForm = ({ onClose }) => {
                   value={formData.favoriteFoods}
                   onChange={handleChange}
                   placeholder="List your favorite foods..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-                ></textarea>
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
               </div>
 
               {/* Disliked Foods */}
@@ -164,8 +220,7 @@ const DietPlanForm = ({ onClose }) => {
                   value={formData.dislikedFoods}
                   onChange={handleChange}
                   placeholder="List foods you dislike..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-                ></textarea>
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
               </div>
 
               {/* Dietary Restrictions */}
@@ -178,8 +233,7 @@ const DietPlanForm = ({ onClose }) => {
                   value={formData.dietaryRestrictions}
                   onChange={handleChange}
                   placeholder="Any additional dietary restrictions..."
-                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-                ></textarea>
+                  className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
               </div>
             </div>
 
@@ -193,8 +247,7 @@ const DietPlanForm = ({ onClose }) => {
                 value={formData.budget}
                 onChange={handleChange}
                 required
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="select">Select your budget</option>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -242,8 +295,7 @@ const DietPlanForm = ({ onClose }) => {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
-            >
+              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center">
               <FiCheckCircle className="mr-2" /> Generate Plan
             </motion.button>
           </form>

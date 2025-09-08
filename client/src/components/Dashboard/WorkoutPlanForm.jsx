@@ -1,23 +1,28 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiActivity } from "react-icons/fi";
-import { saveWorkoutPreferences } from "../../services/planServices";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import {
+  saveWorkoutPreferences,
+  generateWorkoutPlan,
+  refreshUserData,
+} from '../../services/planServices';
+import { FiActivity, FiArrowLeft } from 'react-icons/fi';
 
 const WorkoutPlanForm = ({ onClose }) => {
   const navigate = useNavigate();
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    workoutGoal: "",
-    workoutPreferences: "",
-    targetWeight: "",
-    timePeriod: "",
-    workoutDuration: "",
-    equipment: "",
-    healthConditions: "",
-    injuryHistory: "",
-    activityLevel: "",
-    workoutDaysPerWeek: "",
+    workoutGoal: '',
+    workoutPreferences: '',
+    targetWeight: '',
+    timePeriod: '',
+    workoutDuration: '',
+    equipment: '',
+    healthConditions: '',
+    injuryHistory: '',
+    activityLevel: '',
+    workoutDaysPerWeek: '',
   });
 
   const handleChange = (e) => {
@@ -25,44 +30,95 @@ const WorkoutPlanForm = ({ onClose }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const validateForm = () => {
+    if (!formData.workoutGoal) return 'Workout Goal is required';
+    if (!formData.workoutPreferences) return 'Workout Preferences are required';
+    if (!formData.targetWeight) return 'Target Weight is required';
+    if (!formData.timePeriod) return 'Time Period is required';
+    if (!formData.workoutDuration) return 'Workout Duration is required';
+    if (!formData.workoutDaysPerWeek)
+      return 'Workout Days Per Week is required';
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setisLoading(true);
+    setError(null);
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      await Promise.all([
-        saveWorkoutPreferences(formData),
-        new Promise((resolve) => setTimeout(resolve, 15000)),
-      ]);
+      const cleanedFormData = {
+        ...formData,
+        equipment: formData.equipment
+          ? formData.equipment
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+        healthConditions: formData.healthConditions
+          ? formData.healthConditions
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+        injuryHistory: formData.injuryHistory
+          ? formData.injuryHistory
+              .split(',')
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [],
+        targetWeight: Number(formData.targetWeight),
+        timePeriod: Number(formData.timePeriod),
+        workoutDuration: Number(formData.workoutDuration),
+        workoutDaysPerWeek: Number(formData.workoutDaysPerWeek),
+      };
+
+      const prefs = await saveWorkoutPreferences(cleanedFormData);
+      console.log('Preferences saved:', prefs);
+      const plan = await generateWorkoutPlan();
+      console.log('Workout Plan generated:', plan);
+      await refreshUserData();
+      onClose();
+      navigate('/workout-plan-details');
     } catch (error) {
-      console.error("Error saving workout preferences:", error);
-    } finally {
-      setisLoading(false);
-      navigate("/workout-plan-details");
+      setError(
+        error.message || 'Failed to save workout preferences. Please try again.'
+      );
+      setIsLoading(false);
     }
   };
   if (isLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-dark text-light backdrop-blur-md">
-        <div className="text-center">
+        <div className="text-center p-6 bg-dark/90 rounded-xl border border-primary/20 shadow-xl">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-lg font-semibold">Loading plan details...</p>
+          <p className="mt-4 text-lg font-semibold">
+            Generating your personalized workout plan...
+          </p>
+          <p className="mt-2 text-sm text-light/60">
+            This may take a few moments
+          </p>
         </div>
       </div>
     );
   }
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4"
-    >
+      className="fixed inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md overflow-y-auto p-4">
       <div className="relative w-full max-w-3xl mx-auto my-4">
         <motion.div
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
-          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto"
-        >
+          className="bg-dark border border-primary/20 rounded-xl shadow-lg p-4 md:p-6 max-h-[90vh] overflow-y-auto">
           <div className=" bg-dark z-10 pb-4 mb-4 border-b border-primary/10 ">
             <div className="flex items-center justify-between">
               <h2 className="text-xl md:text-2xl font-bold text-light flex items-center">
@@ -72,12 +128,17 @@ const WorkoutPlanForm = ({ onClose }) => {
               </h2>
               <button
                 onClick={onClose}
-                className="text-light/60 hover:text-primary transition-colors"
-              >
+                className="text-light/60 hover:text-primary transition-colors">
                 <FiArrowLeft className="h-5 w-5 md:h-6 md:w-6" />
               </button>
             </div>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Workout Goal Selection */}
@@ -89,8 +150,7 @@ const WorkoutPlanForm = ({ onClose }) => {
                 name="workoutGoal"
                 value={formData.workoutGoal}
                 onChange={handleChange}
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="">Select</option>
                 <option value="weight-loss">Weight Loss</option>
                 <option value="weight-gain">Weight Gain</option>
@@ -108,8 +168,7 @@ const WorkoutPlanForm = ({ onClose }) => {
                 name="workoutPreferences"
                 value={formData.workoutPreferences}
                 onChange={handleChange}
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="">Select</option>
                 <option value="home">Home</option>
                 <option value="gym">Gym</option>
@@ -127,8 +186,7 @@ const WorkoutPlanForm = ({ onClose }) => {
                 name="activityLevel"
                 value={formData.activityLevel}
                 onChange={handleChange}
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              >
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary">
                 <option value="">Select</option>
                 <option value="sedentary">Sedentary</option>
                 <option value="light">Light</option>
@@ -220,8 +278,7 @@ const WorkoutPlanForm = ({ onClose }) => {
                 value={formData.equipment}
                 onChange={handleChange}
                 placeholder="List any equipment you have access to..."
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-              ></textarea>
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
             </div>
 
             {/* Medical Constraints */}
@@ -234,8 +291,7 @@ const WorkoutPlanForm = ({ onClose }) => {
                 value={formData.healthConditions}
                 onChange={handleChange}
                 placeholder="List any injuries, conditions, or limitations..."
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-              ></textarea>
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
             </div>
             <div>
               <label className="block text-light/80 mb-2 font-medium">
@@ -246,8 +302,7 @@ const WorkoutPlanForm = ({ onClose }) => {
                 value={formData.injuryHistory}
                 onChange={handleChange}
                 placeholder="List any injuries, conditions, or limitations..."
-                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"
-              ></textarea>
+                className="w-full bg-dark/60 border border-primary/20 rounded-lg p-3 text-light focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary min-h-20"></textarea>
             </div>
 
             {/* Submit Button */}
@@ -257,8 +312,7 @@ const WorkoutPlanForm = ({ onClose }) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center"
-            >
+              className="w-full bg-gradient-to-r from-primary to-secondary text-dark py-3 rounded-lg font-bold text-lg shadow-lg flex items-center justify-center">
               <FiActivity className="mr-2" /> Generate Workout Plan
             </motion.button>
             {/* </Link> */}

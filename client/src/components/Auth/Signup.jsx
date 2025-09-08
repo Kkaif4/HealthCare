@@ -1,21 +1,21 @@
-import { motion } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-import { register } from "../../services/authSerives.js";
+import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { register } from '../../services/authSerives.js';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    age: "",
-    gender: "",
-    weight: "",
-    height: "",
-    medicalHistory: "",
+    name: '',
+    email: '',
+    password: '',
+    age: '',
+    gender: '',
+    weight: '',
+    height: '',
+    medicalHistory: '',
   });
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -29,32 +29,29 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
     setIsLoading(true);
     try {
       const formDataObj = new FormData();
 
-      // Append all form fields
-      formDataObj.append("name", formData.name);
-      formDataObj.append("email", formData.email);
-      formDataObj.append("password", formData.password);
-      formDataObj.append("age", formData.age);
-      formDataObj.append("gender", formData.gender);
-      formDataObj.append("weight", formData.weight);
-      formDataObj.append("height", formData.height);
-      formDataObj.append("medicalHistory", formData.medicalHistory);
+      formDataObj.append('name', formData.name);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('password', formData.password);
+      formDataObj.append('age', formData.age);
+      formDataObj.append('gender', formData.gender);
+      formDataObj.append('weight', formData.weight);
+      formDataObj.append('height', formData.height);
+      formDataObj.append('medicalHistory', formData.medicalHistory);
 
       const userData = await register(formDataObj);
 
       if (userData) {
-        navigate("/login");
+        navigate('/login');
       }
     } catch (error) {
-      console.log("Registration error:", error);
+      console.log('Registration error:', error.message);
       const errorMessage =
-        error.response?.data?.error?.message ||
-        error.response?.data?.message ||
-        "Registration failed. Please check your inputs.";
+        error.message || 'Registration failed. Please check your inputs.';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -78,8 +75,7 @@ const Signup = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-dark/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20 shadow-xl"
-      >
+        className="w-full max-w-2xl bg-dark/80 backdrop-blur-lg rounded-2xl p-8 border border-primary/20 shadow-xl">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Health Profile Setup
@@ -88,7 +84,14 @@ const Signup = () => {
             Create your free health tracking account
           </p>
         </div>
-
+        {error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mb-6 p-3 text-red-500 bg-red-500/10 border border-red-500/20 rounded-lg">
+            {error}
+          </motion.div>
+        )}
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Personal Information Section */}
@@ -182,8 +185,7 @@ const Signup = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
-                  >
+                    className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all">
                     <option value="" disabled>
                       Select your gender
                     </option>
@@ -243,8 +245,7 @@ const Signup = () => {
               <div>
                 <label
                   htmlFor="medicalHistory"
-                  className="block text-light/80 mb-2"
-                >
+                  className="block text-light/80 mb-2">
                   Medical History
                   <span className="text-light/60 text-sm ml-2">(Optional)</span>
                 </label>
@@ -255,8 +256,7 @@ const Signup = () => {
                   onChange={handleChange}
                   rows="3"
                   className="w-full bg-dark/60 border border-primary/20 rounded-lg px-4 py-3 text-light focus:border-primary focus:ring-2 focus:ring-primary/50 transition-all"
-                  placeholder="List any relevant medical conditions, allergies, or medications"
-                ></textarea>
+                  placeholder="List any relevant medical conditions, allergies, or medications"></textarea>
                 <p className="text-light/60 text-sm mt-1">
                   This information will be kept private and helps us personalize
                   your health recommendations
@@ -270,35 +270,31 @@ const Signup = () => {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors"
-            >
+              className="w-full bg-primary text-light py-3 rounded-lg font-semibold hover:bg-secondary transition-colors">
               Create Health Profile
             </motion.button>
           </div>
 
           <div className="text-center text-light/80 space-y-2">
             <p>
-              Already have an account?{" "}
+              Already have an account?{' '}
               <Link
                 to="/login"
-                className="text-primary hover:text-secondary transition-colors"
-              >
+                className="text-primary hover:text-secondary transition-colors">
                 Login
               </Link>
             </p>
             <p className="text-xs">
-              By creating an account, you agree to our{" "}
+              By creating an account, you agree to our{' '}
               <Link
                 to="/terms"
-                className="text-primary hover:text-secondary transition-colors"
-              >
+                className="text-primary hover:text-secondary transition-colors">
                 Terms of Service
-              </Link>{" "}
-              and{" "}
+              </Link>{' '}
+              and{' '}
               <Link
                 to="/privacy"
-                className="text-primary hover:text-secondary transition-colors"
-              >
+                className="text-primary hover:text-secondary transition-colors">
                 Privacy Policy
               </Link>
             </p>
