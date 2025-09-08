@@ -66,7 +66,6 @@ export const register = async (req, res, next) => {
   }
 };
 
-//Login user
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -79,7 +78,6 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'User not found' });
     }
 
-    // Check if password exists in the user object
     if (!user.password) {
       return res.status(500).json({
         success: false,
@@ -87,7 +85,6 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res

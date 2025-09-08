@@ -1,9 +1,16 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { register } from '../../services/authSerives.js';
 
 const Signup = () => {
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
